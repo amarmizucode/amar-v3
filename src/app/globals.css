@@ -167,10 +167,19 @@ html {
  * The flex column is ours to keep: `<main class="flex-1">` used to resolve its
  * flex against `body`, which is no longer its parent.
  */
-#smooth-content {
+#smooth-content,
+#overscroll-shift {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+}
+
+/*
+ * Takes the overscroll bounce transform. Separate from #smooth-content so it
+ * never competes with the transform the smoother writes there.
+ */
+#overscroll-shift {
+  flex: 1;
 }
 
 body {
