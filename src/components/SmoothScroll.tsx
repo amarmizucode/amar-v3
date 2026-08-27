@@ -5,14 +5,12 @@ import { useGSAP } from "@gsap/react";
 import { gsap, ScrollSmoother, ScrollTrigger } from "@/lib/gsap";
 
 /**
- * How far the page can rubber-band past each end, in px, and how much input it
- * takes to get there (higher = stiffer).
+ * How far the page can rubber-band past the bottom, in px, and how much input
+ * it takes to get there (higher = stiffer).
  *
- * The bottom is deliberately longer and looser than the top: on touch the top
- * belongs to the browser's pull-to-refresh, so the bottom is the only end that
- * stretches there and it can afford a fuller travel.
+ * The bottom is the only end that stretches — the top belongs to the browser's
+ * pull-to-refresh — so it can afford a fairly full, loose travel.
  */
-const TOP = { max: 110, resistance: 7 };
 const BOTTOM = { max: 240, resistance: 3.2 };
 
 /**
@@ -24,13 +22,16 @@ const BOTTOM = { max: 240, resistance: 3.2 };
  * ScrollSmoother owns ScrollTrigger.update itself, so scrub-linked triggers
  * stay in sync with the smoothed position with no extra wiring.
  *
- * Overscroll bounce is layered on top: the smoother has no elastic end of its
- * own, so continued input at either limit stretches #overscroll-shift (a plain
- * inner wrapper, kept separate so this transform never fights the smoother's
- * own transform on #smooth-content) and releases it on an elastic ease.
+ * Overscroll bounce is layered on top, and is touch-only — desktop keeps a
+ * hard stop at both ends, since a rubber-band on the wheel reads as the page
+ * having come loose rather than as a gesture. On touch the smoother has no
+ * elastic end of its own, so continued input at the bottom stretches
+ * #overscroll-shift (a plain inner wrapper, kept separate so this transform
+ * never fights the smoother's own transform on #smooth-content) and releases
+ * it on an elastic ease.
  *
- * One deliberate exception: pulling down by touch at the very top is left to
- * the browser, so mobile keeps its native pull-to-refresh.
+ * Pulling down at the very top is left to the browser, so mobile keeps its
+ * native pull-to-refresh.
  */
 export function SmoothScroll({ children }: { children: ReactNode }) {
   const wrapper = useRef<HTMLDivElement>(null);
@@ -104,16 +105,15 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
      * `delta` is positive scrolling down. Returns true when the gesture was
      * absorbed by the stretch, so the caller can swallow it.
      *
-     * `isTouch` opts the gesture out of the custom stretch at the top: pulling
-     * down there is the browser's own pull-to-refresh, so the event is left
-     * entirely alone rather than being absorbed. The bottom, and the wheel at
-     * both ends, still get the elastic bounce.
+     * The top end is skipped entirely: pulling down there is the browser's own
+     * pull-to-refresh, so the event is left alone rather than being absorbed.
+     * Only the bottom gets the elastic bounce.
      */
-    const push = (delta: number, isTouch = false) => {
+    const push = (delta: number) => {
       const end = atEnd();
-      if (isTouch && end === -1) return false;
+      if (end === -1) return false;
       // Pulling back towards the page unwinds the stretch before it scrolls.
-      if (!end || (end === -1 && delta > 0) || (end === 1 && delta < 0)) {
+      if (!end || delta < 0) {
         if (!stretch) return false;
         release();
         return false;
@@ -124,17 +124,13 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
 
       // Asymptotic so the stretch eases into its limit instead of hitting a
       // hard stop — the resistance builds the further you pull.
-      const { max, resistance } = end === 1 ? BOTTOM : TOP;
+      const { max, resistance } = BOTTOM;
       const raw = stretch - delta / resistance;
       stretch = max * Math.tanh(raw / max);
       draw();
       return true;
     };
 
-    // A wheel gesture has no end event, so the release is debounced: it fires
-    // once input goes quiet rather than on every tick, which would snap the
-    // stretch back before it could build.
-    let idle = 0;
     /**
      * Absorbing means the normalizer must not also see the event, so the
      * gesture is stopped outright rather than just default-prevented.
@@ -145,12 +141,6 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
       event.stopImmediatePropagation();
     };
 
-    const onWheel = (event: WheelEvent) => {
-      if (push(event.deltaY)) absorb(event);
-      window.clearTimeout(idle);
-      idle = window.setTimeout(release, 90);
-    };
-
     let touchY = 0;
     const onTouchStart = (event: TouchEvent) => {
       touchY = event.touches[0].clientY;
@@ -159,8 +149,32 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
       const y = event.touches[0].clientY;
       const delta = touchY - y;
       touchY = y;
-      if (push(delta, true)) absorb(event);
+      if (push(delta)) absorb(event);
     };
+
+    /*
+     * In-page anchors, delegated. The smoother translates the content rather
+     * than really scrolling it, so a native hash jump has nothing to move —
+     * `smoother.scrollTo` is what actually gets there. `#top` has no offset to
+     * resolve, so it goes straight to 0.
+     */
+    const onClick = (event: MouseEvent) => {
+      if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey) return;
+      const link = (event.target as Element | null)?.closest?.('a[href^="#"]');
+      if (!link) return;
+
+      const hash = link.getAttribute("href")!;
+      if (hash.length < 2) return;
+
+      const destination = hash === "#top" ? 0 : document.querySelector(hash);
+      if (destination === null) return;
+
+      event.preventDefault();
+      smoother.scrollTo(destination, true, "top top");
+      history.pushState(null, "", hash);
+    };
+
+    document.addEventListener("click", onClick);
 
     /*
      * Capture phase, and non-passive. `normalizeScroll: true` installs an
@@ -169,19 +183,17 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
      * gesture, so the stretch never armed. Capturing puts these first.
      */
     const opts = { passive: false, capture: true } as const;
-    window.addEventListener("wheel", onWheel, opts);
     window.addEventListener("touchstart", onTouchStart, { passive: true, capture: true });
     window.addEventListener("touchmove", onTouchMove, opts);
     window.addEventListener("touchend", release, true);
     window.addEventListener("touchcancel", release, true);
 
     return () => {
-      window.removeEventListener("wheel", onWheel, opts);
+      document.removeEventListener("click", onClick);
       window.removeEventListener("touchstart", onTouchStart, { capture: true });
       window.removeEventListener("touchmove", onTouchMove, opts);
       window.removeEventListener("touchend", release, true);
       window.removeEventListener("touchcancel", release, true);
-      window.clearTimeout(idle);
       releasing?.kill();
       gsap.set(target, { y: 0 });
       smoother.kill();

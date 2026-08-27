@@ -33,9 +33,19 @@ export function SiteHeader() {
 
   return (
     <header
-      className="navbar_wrap fixed inset-x-0 top-0 z-[999] w-full"
+      className={`navbar_wrap fixed inset-x-0 top-0 z-[999] w-full${open ? " is--open" : ""}`}
       style={{ paddingBlock: "var(--site-margin)" }}
     >
+      {/* Progressive blur: four stacked backdrop layers, each blurring twice
+          as much as the last and masked to a shorter band, so the content
+          scrolling under the header dissolves rather than meeting a hard edge. */}
+      <div className="navbar-blur" aria-hidden>
+        <span />
+        <span />
+        <span />
+        <span />
+      </div>
+
       <div className="navbar_contain shell grid-12 items-center bg-transparent">
         {/* Wordmark: columns 1-5. */}
         <div

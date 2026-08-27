@@ -1706,3 +1706,85 @@ body[data-theme="00"] .app-aside .option.theme .icon-container { transition-dela
   background-color: var(--palette-background);
   color: var(--palette-foreground);
 }
+
+/* ---------------------------------------------------------------------------
+ * Header scrim — progressive blur
+ *
+ * The floating controls in .app-aside sit on a flat backdrop-filter. The
+ * header needs the same treatment but must not end on a hard edge, so a
+ * single blur is split into stacked layers: each layer blurs twice as much
+ * as the one below it and is masked to a band that starts lower down. The
+ * eye reads the sum as one blur ramping from strong at the top to nothing at
+ * the bottom, with no seam.
+ * ------------------------------------------------------------------------ */
+.navbar_wrap {
+  /* How far past the header's own box the scrim keeps going. The ramp needs
+   * room below the nav text to finish, otherwise it reads as an edge sitting
+   * right under the links. */
+  --navbar-blur-trail: clamp(3rem, 1.5rem + 6vw, 7rem);
+}
+
+.navbar_wrap::before {
+  content: "";
+  position: absolute;
+  inset: calc(var(--site-margin) * -1) 0 calc(var(--navbar-blur-trail) * -1) 0;
+  z-index: -1;
+  pointer-events: none;
+  /* Only --100 and --0 are defined per theme stop, so the tint is a fade
+   * between those two rather than a mid-opacity stop. */
+  background: linear-gradient(
+    to bottom,
+    var(--color--background--100) 0%,
+    var(--color--background--100) 18%,
+    var(--color--background--0) 100%
+  );
+  opacity: 0.7;
+}
+
+.navbar_wrap .navbar-blur {
+  position: absolute;
+  inset: calc(var(--site-margin) * -1) 0 calc(var(--navbar-blur-trail) * -1) 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.navbar_wrap .navbar-blur > span {
+  position: absolute;
+  inset: 0;
+}
+
+/* Each stop: blur strength, and the band of the scrim it covers. The masks
+ * overlap so neighbouring layers cross-fade instead of banding. */
+.navbar_wrap .navbar-blur > span:nth-child(1) {
+  -webkit-backdrop-filter: blur(1px);
+  backdrop-filter: blur(1px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 62%, transparent 100%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 62%, transparent 100%);
+}
+
+.navbar_wrap .navbar-blur > span:nth-child(2) {
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 46%, transparent 84%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 46%, transparent 84%);
+}
+
+.navbar_wrap .navbar-blur > span:nth-child(3) {
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 30%, transparent 66%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 30%, transparent 66%);
+}
+
+.navbar_wrap .navbar-blur > span:nth-child(4) {
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 14%, transparent 48%);
+  mask-image: linear-gradient(to bottom, #000 0%, #000 14%, transparent 48%);
+}
+
+/* The mobile sheet paints its own background — the scrim would double up. */
+.navbar_wrap.is--open::before,
+.navbar_wrap.is--open .navbar-blur {
+  opacity: 0;
+}
