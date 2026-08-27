@@ -13,7 +13,9 @@ export type Testimonial = {
 };
 
 /** How long each testimonial holds before advancing, in ms. */
-const HOLD = 6000;
+const HOLD = 11000;
+
+const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 /**
  * Testimonial slider, following the reference's `problems_stats_navigation`:
@@ -27,43 +29,68 @@ export function Testimonials({ items }: { items: Testimonial[] }) {
   const bar = useRef<HTMLDivElement>(null);
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
+  // Bumped on every advance, manual or automatic. The hold timer and the
+  // progress fill key off this rather than off `index` alone, so stepping to a
+  // slide that happens to be the current one still restarts both from zero.
+  const [tick, setTick] = useState(0);
 
   const go = useCallback(
-    (next: number) => setIndex((n) => (next + items.length) % items.length),
+    (next: number) => {
+      setIndex((next + items.length) % items.length);
+      setTick((t) => t + 1);
+    },
     [items.length],
   );
 
-  // Auto-advance. Restarts whenever the index changes, so a manual step
-  // gives the new slide a full hold rather than the remainder of the old one.
-  useEffect(() => {
-    if (paused) return;
-    const id = window.setTimeout(() => go(index + 1), HOLD);
-    return () => window.clearTimeout(id);
-  }, [index, paused, go]);
+  // The progress fill IS the timer: the slide advances when the bar finishes,
+  // so the two can never drift apart. Restarted per step, and pausing on hover
+  // holds the fill — and therefore the advance — in place rather than letting
+  // one run on without the other.
+  const fill = useRef<gsap.core.Tween | null>(null);
 
-  // Progress fill, restarted per slide and matched to the same hold.
   useGSAP(
     () => {
       if (!bar.current) return;
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      if (reducedMotion()) {
         gsap.set(bar.current, { scaleX: 1 });
         return;
       }
-      gsap.fromTo(
+      fill.current = gsap.fromTo(
         bar.current,
         { scaleX: 0 },
-        { scaleX: 1, duration: HOLD / 1000, ease: "none", paused },
+        {
+          scaleX: 1,
+          duration: HOLD / 1000,
+          ease: "none",
+          onComplete: () => go(index + 1),
+        },
       );
     },
-    { dependencies: [index, paused] },
+    { dependencies: [index, tick] },
   );
+
+  // Pause/resume the fill without restarting it.
+  useEffect(() => {
+    const tween = fill.current;
+    if (!tween) return;
+    if (paused) tween.pause();
+    else tween.resume();
+  }, [paused, index, tick]);
+
+  // Under reduced motion the fill is drawn complete and never runs, so it
+  // cannot drive the advance — a plain hold timer stands in for it.
+  useEffect(() => {
+    if (!reducedMotion() || paused) return;
+    const id = window.setTimeout(() => go(index + 1), HOLD);
+    return () => window.clearTimeout(id);
+  }, [index, tick, paused, go]);
 
   // Quote swap.
   useGSAP(
     () => {
       const live = root.current?.querySelector("[data-slide]");
       if (!live) return;
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      if (reducedMotion()) return;
 
       gsap.fromTo(
         live,

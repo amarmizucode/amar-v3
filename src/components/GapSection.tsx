@@ -123,10 +123,9 @@ export function GapSection() {
           <img src={MEDIA.gap} alt="" className="gap_image absolute inset-0 h-full w-full object-cover" />
         </div>
 
-        {/* Headings sit above the cover and travel inward, in the normal text
-            colour. Below md they stack to two lines, so the block is centred a
-            little above the midpoint to leave the supporting copy its room. */}
-        <div className="absolute left-0 top-[44%] z-10 flex w-full -translate-y-1/2 items-center justify-center md:top-1/2">
+        {/* Headings sit above the cover and travel inward, in the normal
+            text colour. Shares the cover's centre line at every width. */}
+        <div className="absolute left-0 top-1/2 z-10 flex w-full -translate-y-1/2 items-center justify-center">
           {/* gap-[0.28em] keeps "CLOSE" and "THAT" apart once both halves
               have converged to x:0. */}
           <h2 className="flex w-full flex-col items-center justify-center gap-0 px-[5vw] md:w-auto md:flex-row md:gap-[clamp(0.75rem,1.9vw,1.75rem)] md:px-0">
