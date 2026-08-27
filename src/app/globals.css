@@ -1,0 +1,1644 @@
+@import "tailwindcss";
+
+@theme inline {
+  /*
+   * Palette entries resolve through runtime custom properties, NOT literals.
+   *
+   * `@theme inline` substitutes values at build time, so writing a hex here
+   * compiles `bg-background` to `background-color: #fff` and no theme swap
+   * can ever reach it. Indirecting through --palette-* keeps a var() in the
+   * emitted utility; the theme ramp redefines those on <body>.
+   */
+  --color-background: var(--palette-background);
+  --color-foreground: var(--palette-foreground);
+  --color-muted: var(--palette-muted);
+  --color-rule: var(--palette-rule);
+  --color-chip: var(--palette-chip);
+
+  --font-sans: var(--font-inter);
+
+  /* Editorial scale from the Figma frame (1536px artboard) */
+  --text-display: 102px;
+  --text-display--line-height: 0.95;
+  --text-display--letter-spacing: -0.03em;
+
+  --text-lede: 24px;
+  --text-lede--line-height: 1.3;
+  --text-lede--letter-spacing: -0.03em;
+
+  /*
+   * Statement heading: 44px at desktop (1440px and up), easing down to 28px
+   * on small screens. 120% leading, -3% tracking.
+   */
+  --text-statement: clamp(1.75rem, 1.25rem + 1.6667vw, 2.75rem);
+  --text-statement--line-height: 1.2;
+  --text-statement--letter-spacing: -0.03em;
+
+  --text-cta: 44px;
+  --text-cta--line-height: 1.3;
+  --text-cta--letter-spacing: -0.0327em;
+}
+
+/*
+ * Opacity ramp defaults. The generated [data-theme="NN"] blocks are the only
+ * other place these are declared, so without a :root baseline anything that
+ * reads them before the attribute is applied resolves to nothing — which
+ * silently drops borders, chips and the grid overlay's rules.
+ * Mirrors stop 16 (black on white).
+ */
+:root {
+  --color--foreground--100: rgb(0 0 0 / 1);
+  --color--foreground--50: rgb(0 0 0 / 0.5);
+  --color--foreground--33: rgb(0 0 0 / 0.333);
+  --color--foreground--25: rgb(0 0 0 / 0.25);
+  --color--foreground--20: rgb(0 0 0 / 0.2);
+  --color--foreground--15: rgb(0 0 0 / 0.15);
+  --color--foreground--10: rgb(0 0 0 / 0.1);
+  --color--foreground--5: rgb(0 0 0 / 0.05);
+  --color--foreground--0: rgb(0 0 0 / 0);
+  --color--background--100: rgb(255 255 255 / 1);
+  --color--background--0: rgb(255 255 255 / 0);
+}
+
+/* Light-palette defaults; body[data-theme] re-points these to the ramp. */
+:root {
+  --palette-background: #ffffff;
+  --palette-foreground: #000000;
+  --palette-muted: #8b8a8a;
+  --palette-rule: #e5e5e5;
+  --palette-chip: #f2f2f2;
+}
+
+/*
+ * Page shell: 36px outer margin, 12 columns, 24px gutters. The type scale was
+ * set against the Figma's 1536px artboard; the layout caps wider, at
+ * --grid-max, so content keeps filling large displays before it centres.
+ */
+@utility shell {
+  width: 100%;
+  margin-inline: auto;
+  max-width: var(--grid-max);
+  padding-inline: var(--grid-margin);
+}
+
+@utility grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: var(--grid-gutter);
+}
+
+/*
+ * Width of N grid columns, derived from the same 12-col / 24px-gutter system
+ * so media can be sized in column units the way the reference does.
+ */
+/*
+ * Page grid, as one source of truth.
+ *
+ * The shell, the 12-column grid, the column-width helpers and the debug
+ * overlay all derive from these, so a guide line always lands exactly on a
+ * content edge. Previously each hardcoded its own numbers — the overlay used
+ * a 40px margin and 20px gutter against the shell's 16/36px and 24px, so the
+ * guides never matched anything.
+ *
+ * --grid-width accounts for the shell's max-width: past --grid-max the content
+ * stops growing and centres, so the guides have to do the same.
+ */
+:root {
+  --grid-margin: 36px;
+  --grid-gutter: 24px;
+  --grid-max: 1920px;
+
+  /*
+   * Content always uses 12 tracks; --grid-guides is only how many the debug
+   * overlay draws. They are separate on purpose: the site's column placements
+   * are written against 12 tracks, so halving the content grid would reflow
+   * every section, whereas halving the guides just keeps them legible.
+   */
+  --grid-columns: 12;
+  --grid-guides: 12;
+
+  --grid-width: min(100vw, var(--grid-max));
+  --grid-content: calc(var(--grid-width) - 2 * var(--grid-margin));
+  --grid-column: calc(
+    (var(--grid-content) - (var(--grid-columns) - 1) * var(--grid-gutter)) / var(--grid-columns)
+  );
+
+  --column-width-2: calc(var(--grid-column) * 2 + 1 * var(--grid-gutter));
+  --column-width-3: calc(var(--grid-column) * 3 + 2 * var(--grid-gutter));
+  --column-width-4: calc(var(--grid-column) * 4 + 3 * var(--grid-gutter));
+}
+
+/*
+ * Column ladder, ported from the reference: as the viewport narrows the grid
+ * halves rather than squeezing twelve unusably thin columns. Its breakpoints
+ * are 1020 / 760 / 500px.
+ */
+@media (width <= 1020px) {
+  :root {
+    --grid-guides: 6;
+    --grid-margin: 20px;
+    --grid-gutter: 20px;
+  }
+}
+
+@media (width <= 760px) {
+  :root {
+    --grid-guides: 3;
+  }
+}
+
+@media (width <= 500px) {
+  :root {
+    --grid-guides: 2;
+    --grid-margin: 16px;
+    --grid-gutter: 16px;
+  }
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--palette-background);
+  color: var(--palette-foreground);
+  -webkit-font-smoothing: antialiased;
+}
+
+/*
+ * Optical left alignment for display type.
+ *
+ * A glyph's outline starts inset from its box by the font's left side bearing,
+ * so text set flush to a grid line still looks indented. Measured from the
+ * Inter 600 TTF (unitsPerEm 2048): "A" lsb=50 (0.0244em), "R" lsb=150
+ * (0.0732em) — hence a per-initial value rather than one constant.
+ *
+ * Expressed in em so the correction scales with the fluid font size.
+ */
+:root {
+  --lsb-A: 0.0244em;
+  --lsb-R: 0.0732em;
+
+  /*
+   * Additional initials, measured the same way from the Inter 600 glyf table.
+   * Flat-sided caps (B D E F H I L M N P R) share xMin 150; round caps (C G O)
+   * are 103; the diagonals (A V W) are 50.
+   */
+  --lsb-flat: 0.0732em;
+  --lsb-round: 0.0503em;
+  --lsb-T: 0.0405em;
+  --lsb-S: 0.0464em;
+}
+
+.optical-A {
+  margin-left: calc(var(--lsb-A) * -1);
+}
+
+.optical-R {
+  margin-left: calc(var(--lsb-R) * -1);
+}
+
+/*
+ * Generic variants for lists where the initial varies per item, so each word
+ * still sets flush to the grid line rather than looking indented.
+ */
+.optical-flat {
+  margin-left: calc(var(--lsb-flat) * -1);
+}
+
+.optical-round {
+  margin-left: calc(var(--lsb-round) * -1);
+}
+
+.optical-T {
+  margin-left: calc(var(--lsb-T) * -1);
+}
+
+.optical-S {
+  margin-left: calc(var(--lsb-S) * -1);
+}
+
+/* Fluid display type so the 102px headline scales instead of overflowing. */
+.display {
+  font-weight: 600;
+  text-transform: uppercase;
+  line-height: 0.95;
+  letter-spacing: -0.03em;
+  font-size: clamp(2.75rem, 6.64vw, 6.375rem);
+}
+
+/* Monolog-style link underline that wipes in from the left on hover. */
+.link-wipe {
+  position: relative;
+}
+
+.link-wipe::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  height: 1px;
+  width: 100%;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.link-wipe:hover::after,
+.link-wipe:focus-visible::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .link-wipe::after {
+    transition: none;
+  }
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * Header primitives, ported from the bymonolog reference.
+ *
+ * The reference drives its navbar off a fluid `--site--margin` clamp and two
+ * small interaction primitives: a nav label that swaps for a "(SOON)" tag on
+ * hover, and a Menu/Close pair that slides within a clipped box. Both are
+ * transform-only so they stay cheap.
+ * ---------------------------------------------------------------------------
+ */
+:root {
+  /* clamp(0.75rem, …, 1.75rem) across a 20rem→100rem viewport, as in the reference. */
+  --site-margin: clamp(0.75rem, 0.4375rem + 1.25vw, 1.75rem);
+  --nav-space-1: clamp(0.375rem, 0.34375rem + 0.15625vw, 0.5rem);
+  --nav-space-2: clamp(0.625rem, 0.59375rem + 0.15625vw, 0.75rem);
+  --nav-space-6: clamp(2rem, 1.875rem + 0.625vw, 2.5rem);
+  --nav-radius: 0.15rem;
+
+  /*
+   * Section rhythm from the reference (`_spacing---section-space--*` and
+   * `space--*`), kept as clamps over the same 20–100rem viewport range.
+   */
+  --space-5: clamp(1.75rem, 1.6875rem + 0.3125vw, 2rem);
+  --section-space-small: clamp(3rem, 2.5rem + 2.5vw, 5rem);
+  --section-space-large: clamp(5.5rem, 4.375rem + 5.625vw, 10rem);
+  --nav-ease: cubic-bezier(0.16, 1, 0.35, 1);
+  --nav-expo-out: cubic-bezier(0.2, 1, 0.36, 1);
+}
+
+/*
+ * Nav link hover, ported from the reference's `[data-link-hover]` rules.
+ *
+ * Despite being commented "underline fill" there, it is a full-height block:
+ * height 100% at z-index -1, so it wipes in *behind* the label across the
+ * link's whole padded box, right-origin at rest and left-origin on hover so
+ * the fill enters from the side it will later exit toward. 900ms expo-out.
+ *
+ * Gated on a real pointer, as the reference gates it — on touch there is no
+ * hover to leave, so the fill would stick after a tap.
+ */
+.nav-link {
+  position: relative;
+  isolation: isolate;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .nav-link::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    background: var(--color-hover-fill);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 900ms var(--nav-expo-out);
+  }
+
+  .nav-link:hover::before,
+  .nav-link:focus-visible::before {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  /* Label sits on the filled row, so it takes the opposite ink. */
+  .nav-link:hover,
+  .nav-link:focus-visible {
+    color: var(--color-hover-ink);
+  }
+}
+
+/* Menu/Close: same clipped-slide mechanic, driven by aria-expanded. */
+.menu-toggle-track {
+  position: relative;
+  display: inline-flex;
+  overflow: hidden;
+  line-height: 0.85;
+}
+
+.menu-toggle-track > span {
+  display: block;
+  transition: transform 0.35s var(--nav-ease);
+}
+
+.menu-toggle-track > .is-close {
+  position: absolute;
+  inset: 0;
+  transform: translateY(105%);
+}
+
+[aria-expanded="true"] .menu-toggle-track > span {
+  transform: translateY(-105%);
+}
+
+[aria-expanded="true"] .menu-toggle-track > .is-close {
+  transform: translateY(0);
+}
+
+/*
+ * CTA pill (`g_btn_main` + `g_btn_aside_*`), matching the reference exactly.
+ *
+ * Three things move on hover, and none of them is opacity on the label:
+ *  - the text slides up 1.2em, its duplicate supplied by a text-shadow sitting
+ *    exactly one 1.2em step below, so the copy rises into the vacated slot;
+ *  - the two arrows travel diagonally, +100%/-100% out and the clone in from
+ *    -100%/+100%;
+ *  - the aside background scales to 0.8.
+ * The button itself dips to 0.9 opacity and scales to 0.95 while held, on an
+ * overshoot ease.
+ */
+.btn-pill {
+  --active-ease: cubic-bezier(0.48, 1.68, 0.64, 1);
+  --active-speed: 0.35s;
+  --btn-slide: 0.65s cubic-bezier(0.16, 1, 0.35, 1);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  gap: var(--nav-space-1);
+  padding: 0.25em 0.25em 0.25em var(--nav-space-1);
+  border-radius: var(--nav-radius);
+  background: var(--palette-foreground);
+  color: var(--palette-background);
+  overflow: clip;
+  transition:
+    transform var(--active-speed) var(--active-ease),
+    opacity var(--active-speed) cubic-bezier(0.16, 1, 0.35, 1),
+    color 0.25s ease,
+    background-color 0.25s ease;
+}
+
+.btn-pill:hover {
+  opacity: 0.9;
+}
+
+.btn-pill:active {
+  transform: scale(0.95);
+}
+
+.btn-pill_text_contain {
+  overflow: clip;
+}
+
+/* The shadow copy is the second label — it must match the pill background. */
+.btn-pill_text {
+  display: block;
+  line-height: 1;
+  text-shadow: 0 1.2em 0 var(--palette-background);
+  transition: transform var(--btn-slide);
+}
+
+.btn-pill:hover .btn-pill_text {
+  transform: translateY(-1.2em);
+}
+
+.btn-pill_aside {
+  position: relative;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  width: 1.5em;
+  height: 100%;
+  border-radius: var(--nav-radius);
+  overflow: hidden;
+}
+
+.btn-pill_aside_bg {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--nav-radius);
+  background: var(--palette-muted);
+  transition: transform var(--btn-slide);
+}
+
+.btn-pill:hover .btn-pill_aside_bg {
+  transform: scale(0.8);
+}
+
+.btn-pill_icon {
+  position: relative;
+  z-index: 1;
+  width: 1em;
+  color: var(--palette-background);
+  transition: transform var(--btn-slide);
+}
+
+.btn-pill_icon.is-absolute {
+  position: absolute;
+  transform: translate(-100%, 100%);
+}
+
+.btn-pill:hover .btn-pill_icon {
+  transform: translate(100%, -100%);
+}
+
+.btn-pill:hover .btn-pill_icon.is-absolute {
+  transform: translate(0%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-link::before,
+  .menu-toggle-track > span,
+  .btn-pill,
+  .btn-pill_text,
+  .btn-pill_aside_bg,
+  .btn-pill_icon {
+    transition: none;
+  }
+}
+
+/*
+ * SplitText wraps each word of the gap headings in its own inline-block
+ * element, which collapses the whitespace that used to separate them. A right
+ * margin keeps the gap through the character animation; the last word's is
+ * trimmed so the line stays optically centred.
+ */
+.gap_word {
+  margin-right: 0.12em;
+}
+
+.gap_word:last-child {
+  margin-right: 0;
+}
+
+/*
+ * MediaFrame aspect ratio. Both candidates arrive as inline custom properties
+ * so the ratio can differ by breakpoint — an inline `aspect-ratio` could not.
+ */
+.media_frame {
+  aspect-ratio: var(--ratio-mobile);
+}
+
+@media (width >= 768px) {
+  .media_frame {
+    aspect-ratio: var(--ratio-desktop);
+  }
+}
+
+/* Inline arrow sitting on the same line as the heading text beside it. */
+.inline-arrow {
+  display: inline-block;
+  /* Cap height of the display face, so it reads the same size as the text. */
+  width: 0.72em;
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * Footer sizing, ported from the bymonolog reference (`footer_*`).
+ *
+ * The reference footer does NOT use the page shell's 36px gutter — it pads by
+ * `--site--margin` on all four sides. Its top row is a 12-column grid split
+ * 6 / 5 (nav / aside) with a 1rem gutter, and the whole block is separated
+ * from the page above by `section-space--page-top`.
+ *
+ * Spacing tokens below are the reference's own clamps, rewritten from its
+ * `clamp(a*1rem, …100vw, b*1rem)` form over a 20rem→100rem viewport into
+ * plain `clamp(a, m + c*vw, b)`. Slope c = (b-a)/80 * 100 vw.
+ * ---------------------------------------------------------------------------
+ */
+:root {
+  /* The footer grid is the page grid — same gutter, not the reference's 1rem. */
+  --footer-gutter: var(--grid-gutter);
+
+  /* space--3 → space--8 */
+  --f-space-3: clamp(0.875rem, 0.84375rem + 0.15625vw, 1rem);
+  --f-space-4: clamp(1.25rem, 1.1875rem + 0.3125vw, 1.5rem);
+  --f-space-5: clamp(1.75rem, 1.6875rem + 0.3125vw, 2rem);
+  --f-space-7: clamp(2.25rem, 2.0625rem + 0.9375vw, 3rem);
+  --f-space-8: clamp(2.5rem, 2.125rem + 1.875vw, 4rem);
+
+  --f-section-main: clamp(4rem, 3.25rem + 3.75vw, 7rem);
+  --f-section-small: clamp(3rem, 2.5rem + 2.5vw, 5rem);
+  --f-section-page-top: clamp(7rem, 5.25rem + 8.75vw, 14rem);
+
+  /*
+   * Footer nav rows: 52px at the 1600px ceiling, easing down to 32px on
+   * small screens. Leading 1, -0.03em.
+   */
+  --f-h3: clamp(2rem, 1.6875rem + 1.5625vw, 3.25rem);
+  /* Email / socials: h5 = clamp(1.375rem … 1.5rem), leading 1.1. */
+  /* Socials, measured ~27px at the same width. */
+  --f-h5: clamp(1.375rem, 1.3125rem + 0.3125vw, 1.6875rem);
+
+  /*
+   * Hover inversion. The fill is solid black on a light theme and solid
+   * white on a dark one; the ink on top is always the opposite.
+   *
+   * Reads --palette-* rather than --color-*: these are declared on :root, so
+   * a --color-* reference here would resolve in :root's scope and stay pinned
+   * to the light default. body[data-theme] overrides both anyway, but keeping
+   * the palette layer throughout avoids that trap.
+   */
+  --color-hover-fill: var(--palette-foreground);
+  --color-hover-ink: var(--palette-background);
+}
+
+/* Outer frame: site margin, not the page shell. */
+.footer_wrap {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  /*
+   * Frames on the page grid rather than the reference's --site-margin: same
+   * max-width, margin and centring as .shell, so the footer's columns land on
+   * the same lines as the sections above it (and as the grid overlay).
+   */
+  width: 100%;
+  max-width: var(--grid-max);
+  margin-inline: auto;
+  padding-inline: var(--grid-margin);
+  padding-top: var(--f-space-8);
+  padding-bottom: var(--grid-margin);
+  row-gap: var(--f-section-page-top);
+}
+
+/*
+ * Top row. Mobile stacks with a section-space--small gap; from md up it is
+ * the reference's 12-column grid at a 1rem gutter.
+ */
+.footer_top {
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: var(--f-section-small);
+  padding-bottom: 0;
+}
+
+@media (width >= 768px) {
+  .footer_top {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    column-gap: var(--footer-gutter);
+    row-gap: var(--f-space-7);
+    align-items: stretch;
+  }
+
+  /* 6 of 12 for the nav block, 5 of 12 for the aside — the reference split. */
+  .footer_eyebrow {
+    grid-column: 1 / span 6;
+  }
+
+  .footer_aside_contain {
+    grid-column: 8 / span 5;
+  }
+}
+
+/* Nav block: eyebrow, then the link list, separated by space--7. */
+.footer_eyebrow {
+  display: flex;
+  flex-direction: column;
+  row-gap: var(--f-space-7);
+  padding-top: 0;
+}
+
+@media (width >= 768px) {
+  .footer_eyebrow {
+    padding-top: var(--f-space-3);
+  }
+}
+
+.footer_nav_ul {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+}
+
+/* Each row spans the block and carries the reference's dotted rule. */
+.footer_nav_li {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  border-bottom: 1px dotted var(--palette-rule);
+}
+
+/*
+ * Nav rows. Hover behaviour lives in the [data-hover-highlight] port below.
+ */
+.footer_nav_text {
+  position: relative;
+  isolation: isolate;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  /* ~14px at desktop: solved from the measured 92px row pitch. */
+  padding-block: clamp(0.625rem, 0.5rem + 0.625vw, 0.875rem);
+  font-size: var(--f-h3);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+}
+
+/* Arrow rests offset and blurred, easing in on hover — as in the reference. */
+/* Flex so the SVG (width:100%) resolves against the row h3 size. */
+.footer_nav_arrow {
+  display: flex;
+  flex: none;
+  align-items: center;
+  opacity: 0;
+  filter: blur(3px);
+  transform: translateX(-25px);
+  transition:
+    transform 0.65s var(--nav-ease) var(--row-out-delay),
+    opacity 0.3s var(--nav-ease) var(--row-out-delay),
+    filter 0.3s var(--nav-ease) var(--row-out-delay);
+}
+
+.footer_nav_text:hover .footer_nav_arrow,
+.footer_nav_text:focus-visible .footer_nav_arrow {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateX(0);
+}
+
+/*
+ * Aside: details and socials wrap within the 5-column block, splitting at
+ * section-space--main horizontally and space--8 vertically.
+ */
+/*
+ * The aside occupies 5 of the page's 12 columns and subdivides them on the
+ * same grid: details on the first 3, socials on the last 2, and the AI chips
+ * wrapping to a second row beneath the details. The reference used a flex wrap
+ * with a ~112px gap, which put its inner edges on no line at all.
+ */
+.footer_aside_contain {
+  display: grid;
+  grid-template-columns: 1fr;
+  row-gap: var(--f-space-8);
+  padding-top: var(--f-space-3);
+  padding-bottom: var(--f-space-4);
+}
+
+@media (width >= 768px) {
+  .footer_aside_contain {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    column-gap: var(--grid-gutter);
+  }
+
+  .footer_aside_contain > :nth-child(1) {
+    grid-column: 1 / span 3;
+  }
+
+  .footer_aside_contain > :nth-child(2) {
+    grid-column: 4 / span 2;
+  }
+
+  /* Wraps under the details block, sharing its columns. */
+  .footer_aside_contain > :nth-child(3) {
+    grid-column: 1 / span 3;
+  }
+}
+
+.footer_aside_details {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: fit-content;
+  row-gap: var(--f-space-5);
+}
+
+.footer_middle_wrap {
+  display: flex;
+  flex-direction: column;
+  row-gap: var(--f-space-4);
+}
+
+/* The AI row runs horizontally at space--1. */
+.footer_middle_wrap.is-ai {
+  flex-direction: row;
+  align-items: center;
+  column-gap: var(--nav-space-1);
+}
+
+/* Square AI chips, 2.5em on their own font size. */
+.footer_ai_link {
+  display: grid;
+  place-items: center;
+  width: 2.5em;
+  aspect-ratio: 1;
+  border-radius: var(--nav-radius);
+  background: var(--palette-chip);
+  overflow: clip;
+}
+
+.footer_socials_ul {
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.2rem;
+}
+
+.footer_socials_li {
+  width: fit-content;
+}
+
+/*
+ * The reference pads its socials link by space--1 vertically with 20px of
+ * right slack (footer_socials_link). That padding is also what gives the
+ * hover fill a box to paint, so the email row takes the same treatment.
+ */
+.footer_socials_li > a,
+.footer_email {
+  display: flex;
+  align-items: center;
+  padding-block: var(--nav-space-1);
+  padding-right: 20px;
+}
+
+/* Email, address and socials all set at h5. */
+/* Socials stay at the reference h5. */
+.footer_lead {
+  font-size: var(--f-h5);
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+}
+
+/* The address is measure-limited rather than column-limited. */
+/*
+ * Email and the address beneath it are set at a flat 18px per request,
+ * rather than the reference h5 clamp the socials still use.
+ */
+.footer_email {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+}
+
+.footer_address {
+  max-width: 30ch;
+  font-size: 18px;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+
+/* Bottom bar sits section-space--main below the top row. */
+.footer_bottom {
+  display: flex;
+  flex-direction: column;
+  margin-top: var(--f-section-main);
+  row-gap: var(--f-space-4);
+}
+
+/*
+ * translateX needs a block box on the span. inline-block also shrink-wraps,
+ * which is right for the short inline rows (email, socials) but leaves a
+ * wrapped multi-line label ragged inside a justify-between row — those rows
+ * add flex-1 to take the free space, which needs a non-inline display to
+ * apply, so min-width:0 keeps the flex basis from forcing an overflow.
+ */
+.footer_hover_label {
+  display: inline-block;
+  min-width: 0;
+}
+
+/*
+ * Footer row hover, ported verbatim from the reference's inline
+ * [data-hover-highlight] rules.
+ *
+ * There is NO wipe fill here — that primitive (data-link-hover) is used only
+ * by the navbar. The footer hover is three coordinated moves:
+ *   - the label translates +10px and inverts to the opposite ink;
+ *   - the arrow travels to -10px, unblurs and fades in, inverting too;
+ *   - both ease on 0.65s expo-out, the arrow's opacity/filter on 0.3s.
+ *
+ * Gated on a fine pointer AND >=768px, exactly as the reference gates it.
+ */
+@media (hover: hover) and (pointer: fine) and (width >= 768px) {
+  .footer_hover_label {
+    transition: transform 0.65s var(--nav-ease);
+  }
+
+  /*
+   * Inverting fill behind the row. The reference cross-fades the background
+   * colour (accordion_css_item_bg) rather than wiping a block in from one
+   * side — there is no transform on it at all, so no origin either.
+   */
+  .footer_hover_row:hover::before,
+  .footer_hover_row:focus-visible::before {
+    background-color: var(--color-hover-fill);
+    transition-delay: 0s;
+  }
+
+  .footer_hover_row:hover .footer_hover_label,
+  .footer_hover_row:focus-visible .footer_hover_label {
+    transform: translateX(10px);
+    color: var(--color-hover-ink);
+    transition-delay: 0s;
+  }
+
+  .footer_hover_row:hover .footer_nav_arrow,
+  .footer_hover_row:focus-visible .footer_nav_arrow {
+    transform: translateX(-10px);
+    filter: blur(0);
+    opacity: 1;
+    color: var(--color-hover-ink);
+    transition-delay: 0s;
+  }
+
+  /*
+   * Markers that are always visible (the FAQ's square) counter-move by the
+   * same -10px but do not fade or unblur — the reference applies only the
+   * translate to .accordion_css_square.
+   */
+  .footer_hover_marker {
+    transition:
+      transform 0.65s var(--nav-ease),
+      color 0.65s var(--nav-ease),
+      border-color 0.65s var(--nav-ease);
+  }
+
+  .footer_hover_row:hover .footer_hover_marker,
+  .footer_hover_row:focus-visible .footer_hover_marker {
+    /*
+     * translate only — the rotate factor is owned by the open state, so
+     * composing them keeps an opened marker rotated while it slides.
+     */
+    --marker-x: -10px;
+    color: var(--color-hover-ink);
+    border-color: var(--color-hover-ink);
+    transition-delay: 0s;
+  }
+}
+
+/* The three (LABEL) captions above each aside block. */
+.footer_top_text {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--palette-muted);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .footer_hover_label,
+  .footer_hover_marker,
+  .footer_hover_row::before,
+  .footer_nav_arrow {
+    transition: none;
+  }
+}
+
+
+/*
+ * ===========================================================================
+ * Theme scale + grid overlay, ported from billysweeney.com.
+ *
+ * The reference is NOT a light/dark toggle: it is a 17-stop ramp
+ * (theme--00 .. theme--16) set as a class on <body> and driven by a rotated
+ * range input. Each stop defines one foreground at nine opacities over one
+ * background. 00 is pure black, 16 pure white; the middle stops are tinted.
+ *
+ * Values below are copied verbatim from its color.css; the class hook is
+ * rewritten as [data-theme="NN"] so React can own it as state.
+ * ===========================================================================
+ */
+[data-theme="00"] {
+  --color--foreground--100: rgb(255 255 255 / 1);
+  --color--foreground--50: rgb(255 255 255 / 0.6);
+  --color--foreground--33: rgb(255 255 255 / 0.45);
+  --color--foreground--25: rgb(255 255 255 / 0.4);
+  --color--foreground--20: rgb(255 255 255 / 0.27);
+  --color--foreground--15: rgb(255 255 255 / 0.22);
+  --color--foreground--10: rgb(255 255 255 / 0.17);
+  --color--foreground--5: rgb(255 255 255 / 0.12);
+  --color--foreground--0: rgb(255 255 255 / 0);
+  --color--background--100: rgb(0 0 0 / 1);
+  --color--background--0: rgb(0 0 0 / 0);
+}
+[data-theme="01"] {
+  --color--foreground--100: rgb(195 235 241 / 1);
+  --color--foreground--50: rgb(195 235 241 / 0.6);
+  --color--foreground--33: rgb(195 235 241 / 0.45);
+  --color--foreground--25: rgb(195 235 241 / 0.4);
+  --color--foreground--20: rgb(195 235 241 / 0.27);
+  --color--foreground--15: rgb(195 235 241 / 0.22);
+  --color--foreground--10: rgb(195 235 241 / 0.17);
+  --color--foreground--5: rgb(195 235 241 / 0.12);
+  --color--foreground--0: rgb(195 235 241 / 0);
+  --color--background--100: rgb(5 26 28 / 1);
+  --color--background--0: rgb(5 26 28 / 0);
+}
+[data-theme="02"] {
+  --color--foreground--100: rgb(183 212 245 / 1);
+  --color--foreground--50: rgb(183 212 245 / 0.6);
+  --color--foreground--33: rgb(183 212 245 / 0.45);
+  --color--foreground--25: rgb(183 212 245 / 0.4);
+  --color--foreground--20: rgb(183 212 245 / 0.27);
+  --color--foreground--15: rgb(183 212 245 / 0.22);
+  --color--foreground--10: rgb(183 212 245 / 0.17);
+  --color--foreground--5: rgb(183 212 245 / 0.12);
+  --color--foreground--0: rgb(183 212 245 / 0);
+  --color--background--100: rgb(24 41 56 / 1);
+  --color--background--0: rgb(24 41 56 / 0);
+}
+[data-theme="03"] {
+  --color--foreground--100: rgb(207 188 236 / 1);
+  --color--foreground--50: rgb(207 188 236 / 0.6);
+  --color--foreground--33: rgb(207 188 236 / 0.45);
+  --color--foreground--25: rgb(207 188 236 / 0.4);
+  --color--foreground--20: rgb(207 188 236 / 0.27);
+  --color--foreground--15: rgb(207 188 236 / 0.22);
+  --color--foreground--10: rgb(207 188 236 / 0.17);
+  --color--foreground--5: rgb(207 188 236 / 0.12);
+  --color--foreground--0: rgb(207 188 236 / 0);
+  --color--background--100: rgb(46 50 72 / 1);
+  --color--background--0: rgb(46 50 72 / 0);
+}
+[data-theme="04"] {
+  --color--foreground--100: rgb(248 166 211 / 1);
+  --color--foreground--50: rgb(248 166 211 / 0.6);
+  --color--foreground--33: rgb(248 166 211 / 0.45);
+  --color--foreground--25: rgb(248 166 211 / 0.4);
+  --color--foreground--20: rgb(248 166 211 / 0.27);
+  --color--foreground--15: rgb(248 166 211 / 0.22);
+  --color--foreground--10: rgb(248 166 211 / 0.17);
+  --color--foreground--5: rgb(248 166 211 / 0.12);
+  --color--foreground--0: rgb(248 166 211 / 0);
+  --color--background--100: rgb(64 54 79 / 1);
+  --color--background--0: rgb(64 54 79 / 0);
+}
+[data-theme="05"] {
+  --color--foreground--100: rgb(255 177 177 / 1);
+  --color--foreground--50: rgb(255 177 177 / 0.6);
+  --color--foreground--33: rgb(255 177 177 / 0.45);
+  --color--foreground--25: rgb(255 177 177 / 0.4);
+  --color--foreground--20: rgb(255 177 177 / 0.27);
+  --color--foreground--15: rgb(255 177 177 / 0.22);
+  --color--foreground--10: rgb(255 177 177 / 0.17);
+  --color--foreground--5: rgb(255 177 177 / 0.12);
+  --color--foreground--0: rgb(255 177 177 / 0);
+  --color--background--100: rgb(84 60 89 / 1);
+  --color--background--0: rgb(84 60 89 / 0);
+}
+[data-theme="06"] {
+  --color--foreground--100: rgb(242 195 164 / 1);
+  --color--foreground--50: rgb(242 195 164 / 0.6);
+  --color--foreground--33: rgb(242 195 164 / 0.45);
+  --color--foreground--25: rgb(242 195 164 / 0.4);
+  --color--foreground--20: rgb(242 195 164 / 0.27);
+  --color--foreground--15: rgb(242 195 164 / 0.22);
+  --color--foreground--10: rgb(242 195 164 / 0.17);
+  --color--foreground--5: rgb(242 195 164 / 0.12);
+  --color--foreground--0: rgb(242 195 164 / 0);
+  --color--background--100: rgb(119 58 53 / 1);
+  --color--background--0: rgb(119 58 53 / 0);
+}
+[data-theme="07"] {
+  --color--foreground--100: rgb(243 216 184 / 1);
+  --color--foreground--50: rgb(243 216 184 / 0.6);
+  --color--foreground--33: rgb(243 216 184 / 0.45);
+  --color--foreground--25: rgb(243 216 184 / 0.4);
+  --color--foreground--20: rgb(243 216 184 / 0.27);
+  --color--foreground--15: rgb(243 216 184 / 0.22);
+  --color--foreground--10: rgb(243 216 184 / 0.17);
+  --color--foreground--5: rgb(243 216 184 / 0.12);
+  --color--foreground--0: rgb(243 216 184 / 0);
+  --color--background--100: rgb(157 68 51 / 1);
+  --color--background--0: rgb(157 68 51 / 0);
+}
+[data-theme="08"] {
+  --color--foreground--100: rgb(243 230 207 / 1);
+  --color--foreground--50: rgb(243 230 207 / 0.6);
+  --color--foreground--33: rgb(243 230 207 / 0.45);
+  --color--foreground--25: rgb(243 230 207 / 0.4);
+  --color--foreground--20: rgb(243 230 207 / 0.27);
+  --color--foreground--15: rgb(243 230 207 / 0.22);
+  --color--foreground--10: rgb(243 230 207 / 0.17);
+  --color--foreground--5: rgb(243 230 207 / 0.12);
+  --color--foreground--0: rgb(243 230 207 / 0);
+  --color--background--100: rgb(233 79 14 / 1);
+  --color--background--0: rgb(233 79 14 / 0);
+}
+[data-theme="09"] {
+  --color--foreground--100: rgb(233 79 14 / 1);
+  --color--foreground--50: rgb(233 79 14 / 0.5);
+  --color--foreground--33: rgb(233 79 14 / 0.333);
+  --color--foreground--25: rgb(233 79 14 / 0.25);
+  --color--foreground--20: rgb(233 79 14 / 0.2);
+  --color--foreground--15: rgb(233 79 14 / 0.15);
+  --color--foreground--10: rgb(233 79 14 / 0.1);
+  --color--foreground--5: rgb(233 79 14 / 0.05);
+  --color--foreground--0: rgb(233 79 14 / 0);
+  --color--background--100: rgb(255 210 180 / 1);
+  --color--background--0: rgb(255 210 180 / 0);
+}
+[data-theme="10"] {
+  --color--foreground--100: rgb(119 78 52 / 1);
+  --color--foreground--50: rgb(119 78 52 / 0.5);
+  --color--foreground--33: rgb(119 78 52 / 0.333);
+  --color--foreground--25: rgb(119 78 52 / 0.25);
+  --color--foreground--20: rgb(119 78 52 / 0.2);
+  --color--foreground--15: rgb(119 78 52 / 0.15);
+  --color--foreground--10: rgb(119 78 52 / 0.1);
+  --color--foreground--5: rgb(119 78 52 / 0.05);
+  --color--foreground--0: rgb(119 78 52 / 0);
+  --color--background--100: rgb(243 230 207 / 1);
+  --color--background--0: rgb(243 230 207 / 0);
+}
+[data-theme="11"] {
+  --color--foreground--100: rgb(81 78 56 / 1);
+  --color--foreground--50: rgb(81 78 56 / 0.5);
+  --color--foreground--33: rgb(81 78 56 / 0.333);
+  --color--foreground--25: rgb(81 78 56 / 0.25);
+  --color--foreground--20: rgb(81 78 56 / 0.2);
+  --color--foreground--15: rgb(81 78 56 / 0.15);
+  --color--foreground--10: rgb(81 78 56 / 0.1);
+  --color--foreground--5: rgb(81 78 56 / 0.05);
+  --color--foreground--0: rgb(81 78 56 / 0);
+  --color--background--100: rgb(213 209 183 / 1);
+  --color--background--0: rgb(213 209 183 / 0);
+}
+[data-theme="12"] {
+  --color--foreground--100: rgb(59 66 54 / 1);
+  --color--foreground--50: rgb(59 66 54 / 0.5);
+  --color--foreground--33: rgb(59 66 54 / 0.333);
+  --color--foreground--25: rgb(59 66 54 / 0.25);
+  --color--foreground--20: rgb(59 66 54 / 0.2);
+  --color--foreground--15: rgb(59 66 54 / 0.15);
+  --color--foreground--10: rgb(59 66 54 / 0.1);
+  --color--foreground--5: rgb(59 66 54 / 0.05);
+  --color--foreground--0: rgb(59 66 54 / 0);
+  --color--background--100: rgb(209 218 203 / 1);
+  --color--background--0: rgb(209 218 203 / 0);
+}
+[data-theme="13"] {
+  --color--foreground--100: rgb(38 54 49 / 1);
+  --color--foreground--50: rgb(38 54 49 / 0.5);
+  --color--foreground--33: rgb(38 54 49 / 0.333);
+  --color--foreground--25: rgb(38 54 49 / 0.25);
+  --color--foreground--20: rgb(38 54 49 / 0.2);
+  --color--foreground--15: rgb(38 54 49 / 0.15);
+  --color--foreground--10: rgb(38 54 49 / 0.1);
+  --color--foreground--5: rgb(38 54 49 / 0.05);
+  --color--foreground--0: rgb(38 54 49 / 0);
+  --color--background--100: rgb(213 227 222 / 1);
+  --color--background--0: rgb(213 227 222 / 0);
+}
+[data-theme="14"] {
+  --color--foreground--100: rgb(30 40 42 / 1);
+  --color--foreground--50: rgb(30 40 42 / 0.5);
+  --color--foreground--33: rgb(30 40 42 / 0.333);
+  --color--foreground--25: rgb(30 40 42 / 0.25);
+  --color--foreground--20: rgb(30 40 42 / 0.2);
+  --color--foreground--15: rgb(30 40 42 / 0.15);
+  --color--foreground--10: rgb(30 40 42 / 0.1);
+  --color--foreground--5: rgb(30 40 42 / 0.05);
+  --color--foreground--0: rgb(30 40 42 / 0);
+  --color--background--100: rgb(222 235 238 / 1);
+  --color--background--0: rgb(222 235 238 / 0);
+}
+[data-theme="15"] {
+  --color--foreground--100: rgb(18 25 26 / 1);
+  --color--foreground--50: rgb(18 25 26 / 0.5);
+  --color--foreground--33: rgb(18 25 26 / 0.333);
+  --color--foreground--25: rgb(18 25 26 / 0.25);
+  --color--foreground--20: rgb(18 25 26 / 0.2);
+  --color--foreground--15: rgb(18 25 26 / 0.15);
+  --color--foreground--10: rgb(18 25 26 / 0.1);
+  --color--foreground--5: rgb(18 25 26 / 0.05);
+  --color--foreground--0: rgb(18 25 26 / 0);
+  --color--background--100: rgb(242 251 253 / 1);
+  --color--background--0: rgb(242 251 253 / 0);
+}
+[data-theme="16"] {
+  --color--foreground--100: rgb(0 0 0 / 1);
+  --color--foreground--50: rgb(0 0 0 / 0.5);
+  --color--foreground--33: rgb(0 0 0 / 0.333);
+  --color--foreground--25: rgb(0 0 0 / 0.25);
+  --color--foreground--20: rgb(0 0 0 / 0.2);
+  --color--foreground--15: rgb(0 0 0 / 0.15);
+  --color--foreground--10: rgb(0 0 0 / 0.1);
+  --color--foreground--5: rgb(0 0 0 / 0.05);
+  --color--foreground--0: rgb(0 0 0 / 0);
+  --color--background--100: rgb(255 255 255 / 1);
+  --color--background--0: rgb(255 255 255 / 0);
+}
+
+/*
+ * Bridge: the existing palette tokens now derive from the active theme, so
+ * every component already using bg-background / text-foreground follows the
+ * ramp without being touched.
+ */
+
+
+body[data-theme] {
+  color: var(--color--foreground--100);
+  background-color: var(--color--background--100);
+  transition:
+    color 0.3s ease,
+    background-color 0.3s ease;
+}
+
+body[data-theme] {
+  --palette-foreground: var(--color--foreground--100);
+  --palette-background: var(--color--background--100);
+  --palette-muted: var(--color--foreground--50);
+  --palette-rule: var(--color--foreground--15);
+  --palette-chip: var(--color--foreground--5);
+  /*
+   * Hover inversion follows the ramp: --foreground--100 is dark on light
+   * stops and light on dark stops, so the fill is always the opposite of
+   * the page and the ink the opposite of the fill.
+   */
+  --color-hover-fill: var(--color--foreground--100);
+  --color-hover-ink: var(--color--background--100);
+}
+
+/* ── Aside: the two fixed controls, bottom-left ──────────────────────── */
+.app-aside {
+  position: fixed;
+  /* Pinned to the right edge; the -12px pulls the 48px pills' optical edge
+     onto the margin, since they carry their own rounded padding. */
+  right: calc(var(--grid-margin) - 12px);
+  bottom: calc(var(--grid-margin) - 12px);
+  z-index: 100;
+}
+
+.app-aside .options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.app-aside .option {
+  width: 48px;
+  height: 48px;
+  border-radius: 24px;
+  background-color: var(--color--foreground--5);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.app-aside .option:hover {
+  cursor: pointer;
+  background-color: var(--color--foreground--15);
+}
+
+.app-aside .option:active {
+  background-color: var(--color--foreground--20);
+}
+
+.app-aside .option svg path {
+  fill: var(--color--foreground--100);
+}
+
+/*
+ * The SVGs carry their own 32x32 attributes and sit inside 48px flex boxes,
+ * so pin them against flex shrinking and clear the button's UA styling.
+ */
+.app-aside .option svg {
+  flex: none;
+  width: 32px;
+  height: 32px;
+  display: block;
+}
+
+.app-aside button.option {
+  appearance: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+}
+
+.app-aside .option.grid {
+  display: flex;
+  justify-content: center;
+  border: 0;
+  padding: 0;
+}
+
+.app-aside .option.grid .content {
+  display: flex;
+  align-items: center;
+}
+
+/* The theme option grows to 368px to expose the slider. */
+.app-aside .option.theme {
+  position: relative;
+  transition: height 0.3s ease 0.62s;
+}
+
+.app-aside .option.theme .icon-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  position: absolute;
+  bottom: 0;
+  transition: bottom 0.5s ease-in-out;
+}
+
+/* Rotated -90deg so a horizontal range input reads as a vertical one. */
+.app-aside .option.theme .slider-container {
+  width: 48px;
+  height: 48px;
+  border-radius: 24px;
+  transform: rotate(-90deg);
+  transform-origin: top left;
+  position: absolute;
+  bottom: -48px;
+  pointer-events: none;
+  transition: width 0.3s ease 0.62s;
+}
+
+.app-aside .option.theme .dots {
+  position: absolute;
+  width: 100%;
+  padding: 22px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.app-aside .option.theme .dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 2px;
+  transform: translateX(-16px);
+  opacity: 0;
+  transition:
+    transform 0.3s ease-in-out,
+    opacity 0.3s ease-in-out;
+}
+
+.app-aside .option.theme .slider {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 100%;
+  height: 48px;
+  outline: none;
+  position: absolute;
+  background-color: var(--color--background--0);
+  cursor: pointer;
+  /*
+   * The track is rotated, so dragging along it is a vertical gesture on
+   * screen. Without this the browser claims that gesture for page scrolling
+   * and the thumb never follows the finger — the control ends up click-only.
+   */
+  touch-action: none;
+}
+
+.app-aside .option.theme .slider::-webkit-slider-thumb {
+  appearance: none;
+  -webkit-appearance: none;
+  box-shadow: none;
+  background: transparent;
+  width: 48px;
+  height: 48px;
+  border-radius: 24px;
+  cursor: pointer;
+}
+
+.app-aside .option.theme .slider::-moz-range-thumb {
+  background: transparent;
+  box-shadow: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 24px;
+  cursor: pointer;
+}
+
+body[data-theme-slider="open"] .app-aside .option.theme {
+  height: 368px;
+  transition: height 0.3s ease;
+}
+
+body[data-theme-slider="open"] .app-aside .option.theme .icon-container {
+  transition: bottom 0.3s ease;
+  transition-delay: 0s !important;
+}
+
+body[data-theme-slider="open"] .app-aside .option.theme .slider-container {
+  width: 368px;
+  transition: width 0.3s ease;
+  pointer-events: auto;
+}
+
+body[data-theme-slider="open"] .app-aside .option.theme .dot {
+  transform: none;
+  opacity: 1;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
+}
+
+/* ── Grid overlay: 12 columns, 2 lines each, height 0 -> 100% ───────── */
+.app-grid-overlay {
+  z-index: 101;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  /*
+   * Mirrors the shell exactly: same max-width, margin and gutter, centred the
+   * same way, so every line falls on a column edge the content actually uses.
+   * Centred via left/translate because inset:0 would pin all four edges and
+   * defeat margin-inline:auto.
+   */
+  width: 100%;
+  max-width: var(--grid-max);
+  padding-inline: var(--grid-margin);
+  display: grid;
+  /* Tracks the live column count, so guides halve with the grid. */
+  grid-template-columns: repeat(var(--grid-guides), minmax(0, 1fr));
+  gap: var(--grid-gutter);
+  pointer-events: none;
+}
+
+/*
+ * The overlay renders 12 columns of markup; the ladder shows only the first
+ * --grid-guides of them, so the DOM does not have to change per breakpoint.
+ */
+@media (width <= 1020px) {
+  .app-grid-overlay .column:nth-child(n + 7) {
+    display: none;
+  }
+}
+
+@media (width <= 760px) {
+  .app-grid-overlay .column:nth-child(n + 4) {
+    display: none;
+  }
+}
+
+@media (width <= 500px) {
+  .app-grid-overlay .column:nth-child(n + 3) {
+    display: none;
+  }
+}
+
+.app-grid-overlay .column {
+  display: flex;
+  justify-content: space-between;
+}
+
+.app-grid-overlay .line {
+  width: 1px;
+  height: 0;
+  background-color: var(--color--foreground--15);
+  transition: height 1s ease;
+}
+
+.app-grid-overlay.is--visible .line {
+  height: 100%;
+}
+
+/* Synced gutter lines: adjacent lines share a delay, as in the reference. */
+.app-grid-overlay .column:nth-child(1) .line:nth-child(1) { transition-delay: 0.00s; }
+.app-grid-overlay .column:nth-child(1) .line:nth-child(2) { transition-delay: 0.04s; }
+.app-grid-overlay .column:nth-child(2) .line:nth-child(1) { transition-delay: 0.04s; }
+.app-grid-overlay .column:nth-child(2) .line:nth-child(2) { transition-delay: 0.08s; }
+.app-grid-overlay .column:nth-child(3) .line:nth-child(1) { transition-delay: 0.08s; }
+.app-grid-overlay .column:nth-child(3) .line:nth-child(2) { transition-delay: 0.12s; }
+.app-grid-overlay .column:nth-child(4) .line:nth-child(1) { transition-delay: 0.12s; }
+.app-grid-overlay .column:nth-child(4) .line:nth-child(2) { transition-delay: 0.16s; }
+.app-grid-overlay .column:nth-child(5) .line:nth-child(1) { transition-delay: 0.16s; }
+.app-grid-overlay .column:nth-child(5) .line:nth-child(2) { transition-delay: 0.20s; }
+.app-grid-overlay .column:nth-child(6) .line:nth-child(1) { transition-delay: 0.20s; }
+.app-grid-overlay .column:nth-child(6) .line:nth-child(2) { transition-delay: 0.24s; }
+.app-grid-overlay .column:nth-child(7) .line:nth-child(1) { transition-delay: 0.24s; }
+.app-grid-overlay .column:nth-child(7) .line:nth-child(2) { transition-delay: 0.28s; }
+.app-grid-overlay .column:nth-child(8) .line:nth-child(1) { transition-delay: 0.28s; }
+.app-grid-overlay .column:nth-child(8) .line:nth-child(2) { transition-delay: 0.32s; }
+.app-grid-overlay .column:nth-child(9) .line:nth-child(1) { transition-delay: 0.32s; }
+.app-grid-overlay .column:nth-child(9) .line:nth-child(2) { transition-delay: 0.36s; }
+.app-grid-overlay .column:nth-child(10) .line:nth-child(1) { transition-delay: 0.36s; }
+.app-grid-overlay .column:nth-child(10) .line:nth-child(2) { transition-delay: 0.40s; }
+.app-grid-overlay .column:nth-child(11) .line:nth-child(1) { transition-delay: 0.40s; }
+.app-grid-overlay .column:nth-child(11) .line:nth-child(2) { transition-delay: 0.44s; }
+.app-grid-overlay .column:nth-child(12) .line:nth-child(1) { transition-delay: 0.44s; }
+.app-grid-overlay .column:nth-child(12) .line:nth-child(2) { transition-delay: 0.48s; }
+
+/* Dot ramp: every 4th stop reads full-strength. */
+.app-aside .option.theme .dot:nth-child(1) { background-color: var(--color--foreground--100); transition-delay: 0.32s; }
+.app-aside .option.theme .dot:nth-child(2) { background-color: var(--color--foreground--25); transition-delay: 0.30s; }
+.app-aside .option.theme .dot:nth-child(3) { background-color: var(--color--foreground--25); transition-delay: 0.28s; }
+.app-aside .option.theme .dot:nth-child(4) { background-color: var(--color--foreground--25); transition-delay: 0.26s; }
+.app-aside .option.theme .dot:nth-child(5) { background-color: var(--color--foreground--100); transition-delay: 0.24s; }
+.app-aside .option.theme .dot:nth-child(6) { background-color: var(--color--foreground--25); transition-delay: 0.22s; }
+.app-aside .option.theme .dot:nth-child(7) { background-color: var(--color--foreground--25); transition-delay: 0.20s; }
+.app-aside .option.theme .dot:nth-child(8) { background-color: var(--color--foreground--25); transition-delay: 0.18s; }
+.app-aside .option.theme .dot:nth-child(9) { background-color: var(--color--foreground--100); transition-delay: 0.16s; }
+.app-aside .option.theme .dot:nth-child(10) { background-color: var(--color--foreground--25); transition-delay: 0.14s; }
+.app-aside .option.theme .dot:nth-child(11) { background-color: var(--color--foreground--25); transition-delay: 0.12s; }
+.app-aside .option.theme .dot:nth-child(12) { background-color: var(--color--foreground--25); transition-delay: 0.10s; }
+.app-aside .option.theme .dot:nth-child(13) { background-color: var(--color--foreground--100); transition-delay: 0.08s; }
+.app-aside .option.theme .dot:nth-child(14) { background-color: var(--color--foreground--25); transition-delay: 0.06s; }
+.app-aside .option.theme .dot:nth-child(15) { background-color: var(--color--foreground--25); transition-delay: 0.04s; }
+.app-aside .option.theme .dot:nth-child(16) { background-color: var(--color--foreground--25); transition-delay: 0.02s; }
+.app-aside .option.theme .dot:nth-child(17) { background-color: var(--color--foreground--100); transition-delay: 0.00s; }
+body[data-theme-slider="open"] .app-aside .option.theme .dot:nth-child(1) { transition-delay: 0.00s; }
+body[data-theme-slider="open"] .app-aside .option.theme .dot:nth-child(2) { transition-delay: 0.02s; }
+body[data-theme-slider="open"] .app-aside .option.theme .dot:nth-child(3) { transition-delay: 0.04s; }
+body[data-theme-slider="open"] .app-aside .option.theme .dot:nth-child(4) { transition-delay: 0.06s; }
+body[data-theme-slider="open"] .app-aside .option.theme .dot:nth-child(5) { transition-delay: 0.08s; }
+body[data-theme-slider="open"] .app-aside .option.theme .dot:nth-child(6) { transition-delay: 0.10s; }
+body[data-theme-slider="open"] .app-aside .option.theme .dot:nth-child(7) { transition-delay: 0.12s; }
+body[data-theme-slider="open"] .app-aside .option.theme .dot:nth-child(8) { transition-delay: 0.14s; }
+body[data-theme-slider="open"] .app-aside .option.theme .dot:nth-child(9) { transition-delay: 0.16s; }
+body[data-theme-slider="open"] .app-aside .option.theme .dot:nth-child(10) { transition-delay: 0.18s; }
+body[data-theme-slider="open"] .app-aside .option.theme .dot:nth-child(11) { transition-delay: 0.20s; }
+body[data-theme-slider="open"] .app-aside .option.theme .dot:nth-child(12) { transition-delay: 0.22s; }
+body[data-theme-slider="open"] .app-aside .option.theme .dot:nth-child(13) { transition-delay: 0.24s; }
+body[data-theme-slider="open"] .app-aside .option.theme .dot:nth-child(14) { transition-delay: 0.26s; }
+body[data-theme-slider="open"] .app-aside .option.theme .dot:nth-child(15) { transition-delay: 0.28s; }
+body[data-theme-slider="open"] .app-aside .option.theme .dot:nth-child(16) { transition-delay: 0.30s; }
+body[data-theme-slider="open"] .app-aside .option.theme .dot:nth-child(17) { transition-delay: 0.32s; }
+
+/* Icon rides the slider: 20px per stop. */
+body[data-theme-slider="open"][data-theme="00"] .app-aside .option.theme .icon-container { bottom: 0px; }
+body[data-theme-slider="open"][data-theme="01"] .app-aside .option.theme .icon-container { bottom: 20px; }
+body[data-theme-slider="open"][data-theme="02"] .app-aside .option.theme .icon-container { bottom: 40px; }
+body[data-theme-slider="open"][data-theme="03"] .app-aside .option.theme .icon-container { bottom: 60px; }
+body[data-theme-slider="open"][data-theme="04"] .app-aside .option.theme .icon-container { bottom: 80px; }
+body[data-theme-slider="open"][data-theme="05"] .app-aside .option.theme .icon-container { bottom: 100px; }
+body[data-theme-slider="open"][data-theme="06"] .app-aside .option.theme .icon-container { bottom: 120px; }
+body[data-theme-slider="open"][data-theme="07"] .app-aside .option.theme .icon-container { bottom: 140px; }
+body[data-theme-slider="open"][data-theme="08"] .app-aside .option.theme .icon-container { bottom: 160px; }
+body[data-theme-slider="open"][data-theme="09"] .app-aside .option.theme .icon-container { bottom: 180px; }
+body[data-theme-slider="open"][data-theme="10"] .app-aside .option.theme .icon-container { bottom: 200px; }
+body[data-theme-slider="open"][data-theme="11"] .app-aside .option.theme .icon-container { bottom: 220px; }
+body[data-theme-slider="open"][data-theme="12"] .app-aside .option.theme .icon-container { bottom: 240px; }
+body[data-theme-slider="open"][data-theme="13"] .app-aside .option.theme .icon-container { bottom: 260px; }
+body[data-theme-slider="open"][data-theme="14"] .app-aside .option.theme .icon-container { bottom: 280px; }
+body[data-theme-slider="open"][data-theme="15"] .app-aside .option.theme .icon-container { bottom: 300px; }
+body[data-theme-slider="open"][data-theme="16"] .app-aside .option.theme .icon-container { bottom: 320px; }
+body[data-theme="16"] .app-aside .option.theme .icon-container { transition-delay: 0.00s; }
+body[data-theme="15"] .app-aside .option.theme .icon-container { transition-delay: 0.02s; }
+body[data-theme="14"] .app-aside .option.theme .icon-container { transition-delay: 0.04s; }
+body[data-theme="13"] .app-aside .option.theme .icon-container { transition-delay: 0.06s; }
+body[data-theme="12"] .app-aside .option.theme .icon-container { transition-delay: 0.08s; }
+body[data-theme="11"] .app-aside .option.theme .icon-container { transition-delay: 0.10s; }
+body[data-theme="10"] .app-aside .option.theme .icon-container { transition-delay: 0.12s; }
+body[data-theme="09"] .app-aside .option.theme .icon-container { transition-delay: 0.14s; }
+body[data-theme="08"] .app-aside .option.theme .icon-container { transition-delay: 0.16s; }
+body[data-theme="07"] .app-aside .option.theme .icon-container { transition-delay: 0.18s; }
+body[data-theme="06"] .app-aside .option.theme .icon-container { transition-delay: 0.20s; }
+body[data-theme="05"] .app-aside .option.theme .icon-container { transition-delay: 0.22s; }
+body[data-theme="04"] .app-aside .option.theme .icon-container { transition-delay: 0.24s; }
+body[data-theme="03"] .app-aside .option.theme .icon-container { transition-delay: 0.26s; }
+body[data-theme="02"] .app-aside .option.theme .icon-container { transition-delay: 0.28s; }
+body[data-theme="01"] .app-aside .option.theme .icon-container { transition-delay: 0.30s; }
+body[data-theme="00"] .app-aside .option.theme .icon-container { transition-delay: 0.32s; }
+
+/*
+ * Row scaffolding and transitions live outside the hover query so the open
+ * state animates on touch devices too; only the :hover triggers are gated.
+ */
+.footer_hover_row {
+  position: relative;
+  isolation: isolate;
+}
+
+/*
+ * Asymmetric timing: the delay lives on the base (rest) declarations, so it
+ * applies on the way OUT only — the row lingers before settling back. The
+ * :hover rules re-zero the delay, keeping entry immediate.
+ */
+:root {
+  --row-out-delay: 180ms;
+}
+
+.footer_hover_row::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background-color: transparent;
+  transition: background-color 0.65s var(--nav-ease) var(--row-out-delay);
+}
+
+.footer_hover_label {
+  transition:
+    transform 0.65s var(--nav-ease) var(--row-out-delay),
+    color 0.65s var(--nav-ease) var(--row-out-delay);
+}
+
+/*
+ * Marker transform composition. Two independent factors: --marker-x from the
+ * row hover, --marker-rotate from the open state, so neither clobbers the
+ * other the way two `transform` declarations would.
+ */
+.footer_hover_marker {
+  --marker-x: 0px;
+  --marker-rotate: 0deg;
+  transform: translateX(var(--marker-x)) rotate(var(--marker-rotate));
+  transition:
+    transform 0.5s var(--nav-ease) var(--row-out-delay),
+    color 0.5s var(--nav-ease) var(--row-out-delay),
+    border-color 0.5s var(--nav-ease) var(--row-out-delay);
+}
+
+.footer_hover_marker.is-open {
+  --marker-rotate: 45deg;
+}
+
+/*
+ * An open row holds the hovered state: the reference duplicates the same
+ * three declarations under [data-accordion-status="active"], outside the
+ * hover query, so an expanded accordion stays filled and offset on touch too.
+ */
+.footer_hover_row.is-active::before {
+  background-color: var(--color-hover-fill);
+  transition-delay: 0s;
+}
+
+.footer_hover_row.is-active .footer_hover_label {
+  transform: translateX(10px);
+  color: var(--color-hover-ink);
+  transition-delay: 0s;
+}
+
+.footer_hover_row.is-active .footer_hover_marker {
+  --marker-x: -10px;
+  color: var(--color-hover-ink);
+  border-color: var(--color-hover-ink);
+  transition-delay: 0s;
+}
+
+/*
+ * Inline rows (the footer email and socials) set their label and arrow side
+ * by side with only a small gap. The default row interaction pushes the label
+ * +10px and the marker -10px, which closes that gap and overlaps the glyph, so
+ * here the marker travels WITH the label instead of against it.
+ *
+ * Rows whose marker sits at the far end of a wide row (footer nav, FAQ, works)
+ * keep the counter-move — there is space between them for it to read.
+ */
+.footer_hover_row.is-inline-row:hover .footer_hover_marker,
+.footer_hover_row.is-inline-row:focus-visible .footer_hover_marker,
+.footer_hover_row.is-inline-row .footer_hover_marker {
+  --marker-x: 0px;
+}
+
+.footer_hover_row.is-inline-row:hover .footer_hover_marker,
+.footer_hover_row.is-inline-row:focus-visible .footer_hover_marker {
+  --marker-x: 10px;
+}
+
+/* Cap-height sizing needs a flex box for the SVG's width:100% to resolve. */
+.footer_hover_marker .inline-arrow {
+  width: 0.72em;
+}
+
+/*
+ * Footer ground and stacking.
+ *
+ * These live outside @utility (and so outside @layer utilities) deliberately:
+ * inside it they tie with Tailwind's own colour utilities and are decided by
+ * source order. Unlayered rules beat every layer, so the footer reliably
+ * paints its own background at whichever theme stop is active.
+ *
+ * The footer also sits beneath the closing CTA's full-bleed image, which is
+ * why it needs an opaque ground of its own rather than inheriting one.
+ */
+.footer_wrap_main {
+  position: relative;
+  z-index: 1;
+  /*
+   * Paints from --palette-* rather than --color-*.
+   *
+   * The --color-* aliases are declared by Tailwind on :root, so a var()
+   * inside them resolves --palette-* in :ROOT's scope, where it is the static
+   * light default. The theme ramp redefines --palette-* on <body>, so reading
+   * the palette layer directly is what actually follows the active stop.
+   */
+  background-color: var(--palette-background);
+}
+
+.footer_wrap {
+  background-color: var(--palette-background);
+  color: var(--palette-foreground);
+}
