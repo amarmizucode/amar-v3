@@ -19,9 +19,14 @@ export function Preloader({ onDone }: { onDone: () => void }) {
 
       if (reduced) {
         gsap.set(root.current, { autoAlpha: 0, display: "none" });
+        document.body.classList.remove("cover-is-visible");
         onDone();
         return;
       }
+
+      // Raised for the cover's lifetime; the class is what hides the floating
+      // controls, and it is cleared as the cover starts to clear.
+      document.body.classList.add("cover-is-visible");
 
       const count = { value: 0 };
 
@@ -46,7 +51,7 @@ export function Preloader({ onDone }: { onDone: () => void }) {
             // Release the hero as the cover begins to clear, so its intro
             // plays through the fade rather than waiting for it to finish.
             onStart: () => {
-              document.body.classList.remove("is-loading");
+              document.body.classList.remove("cover-is-visible");
               onDone();
             },
           },

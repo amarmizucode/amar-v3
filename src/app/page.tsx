@@ -196,10 +196,12 @@ export default function Home() {
 
   return (
     <>
-      <SmoothScroll />
+      {/* Fixed-position UI lives outside the smooth wrapper — ScrollSmoother
+          transforms #smooth-content, which would break `position: fixed`. */}
       <Preloader onDone={() => setIntroReady(true)} />
       <SiteHeader />
 
+      <SmoothScroll>
       <main className="flex-1">
         {/* ── Hero ───────────────────────────────────────────────── */}
         <Hero start={introReady} />
@@ -635,6 +637,7 @@ export default function Home() {
           </div>
         </div>
       </footer>
+      </SmoothScroll>
     </>
   );
 }

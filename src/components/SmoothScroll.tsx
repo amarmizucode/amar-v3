@@ -1,30 +1,42 @@
 "use client";
 
-import { useEffect } from "react";
-import Lenis from "lenis";
-import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { useRef, type ReactNode } from "react";
+import { useGSAP } from "@gsap/react";
+import { gsap, ScrollSmoother } from "@/lib/gsap";
 
 /**
- * Drives Lenis off GSAP's ticker so scrub-linked ScrollTriggers stay in sync
- * with the smoothed scroll position instead of the native one.
+ * GSAP ScrollSmoother. Smoothing is applied by transforming #smooth-content
+ * inside a fixed-height #smooth-wrapper, so anything that must stay pinned to
+ * the viewport (header, preloader, overlays) has to render OUTSIDE this
+ * wrapper — transformed ancestors break `position: fixed`.
+ *
+ * ScrollSmoother owns ScrollTrigger.update itself, so scrub-linked triggers
+ * stay in sync with the smoothed position with no extra wiring.
  */
-export function SmoothScroll() {
-  useEffect(() => {
+export function SmoothScroll({ children }: { children: ReactNode }) {
+  const wrapper = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    const lenis = new Lenis({ duration: 0.5 });
+    const smoother = ScrollSmoother.create({
+      wrapper: wrapper.current!,
+      content: "#smooth-content",
+      smooth: 1.1,
+      // Touch gets a shorter duration than the wheel: the content tracks a
+      // finger directly, so desktop-length smoothing reads as lag.
+      smoothTouch: 0.35,
+      effects: true,
+      normalizeScroll: true,
+      ignoreMobileResize: true,
+    });
 
-    lenis.on("scroll", ScrollTrigger.update);
-
-    const raf = (time: number) => lenis.raf(time * 1000);
-    gsap.ticker.add(raf);
-    gsap.ticker.lagSmoothing(0);
-
-    return () => {
-      gsap.ticker.remove(raf);
-      lenis.destroy();
-    };
+    return () => smoother.kill();
   }, []);
 
-  return null;
+  return (
+    <div id="smooth-wrapper" ref={wrapper}>
+      <div id="smooth-content">{children}</div>
+    </div>
+  );
 }

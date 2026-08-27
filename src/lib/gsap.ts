@@ -1,5 +1,6 @@
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollSmoother } from "gsap/ScrollSmoother";
 import { SplitText } from "gsap/SplitText";
 import { CustomEase } from "gsap/CustomEase";
 
@@ -8,7 +9,7 @@ import { CustomEase } from "gsap/CustomEase";
  * from the reference build so motion across the site shares one vocabulary.
  */
 if (typeof window !== "undefined") {
-  gsap.registerPlugin(ScrollTrigger, SplitText, CustomEase);
+  gsap.registerPlugin(ScrollTrigger, ScrollSmoother, SplitText, CustomEase);
 
   if (!CustomEase.get("ease-primary")) {
     CustomEase.create("ease-primary", "0.55, 0, 0.7, 0");
@@ -27,4 +28,4 @@ export const DUR = {
   stagger: 0.05,
 } as const;
 
-export { gsap, ScrollTrigger, SplitText, CustomEase };
+export { gsap, ScrollTrigger, ScrollSmoother, SplitText, CustomEase };

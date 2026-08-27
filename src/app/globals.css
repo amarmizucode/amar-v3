@@ -156,7 +156,21 @@
 }
 
 html {
-  scroll-behavior: smooth;
+  /* ScrollSmoother drives the smoothing; native smooth scrolling fights it. */
+  scroll-behavior: auto;
+}
+
+/*
+ * ScrollSmoother sets the wrapper's own position/overflow/size inline when it
+ * initialises, so none of that belongs here — declaring it up front only
+ * clips the page during the pre-init (and reduced-motion) native-scroll pass.
+ * The flex column is ours to keep: `<main class="flex-1">` used to resolve its
+ * flex against `body`, which is no longer its parent.
+ */
+#smooth-content {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 body {
@@ -488,6 +502,19 @@ body {
 
 .gap_word:last-child {
   margin-right: 0;
+}
+
+/*
+ * The gap stage is normally held by a ScrollTrigger pin (ScrollSmoother
+ * translates the content, so `position: sticky` has no scrollport to resolve
+ * against). Under reduced motion the smoother never initialises and neither
+ * does the pin, so fall back to native sticky there.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .gap_contain {
+    position: sticky;
+    top: 0;
+  }
 }
 
 /*
@@ -1183,6 +1210,23 @@ body[data-theme] {
   z-index: 100;
 }
 
+/*
+ * Hidden while the preloader covers the page, then eased in once it lifts —
+ * the reference's own treatment (1s ease, 0.75s delay, so the controls arrive
+ * after the hero has begun its intro rather than competing with it).
+ */
+.app-aside .option {
+  transition:
+    opacity 1s cubic-bezier(0.33, 0, 0.2, 1) 0.75s,
+    background-color 0.25s ease;
+}
+
+body.cover-is-visible .app-aside .option {
+  opacity: 0;
+  pointer-events: none;
+  transition: none;
+}
+
 .app-aside .options {
   display: flex;
   flex-direction: column;
@@ -1246,7 +1290,15 @@ body[data-theme] {
 /* The theme option grows to 368px to expose the slider. */
 .app-aside .option.theme {
   position: relative;
-  transition: height 0.3s ease 0.62s;
+  /*
+   * Must restate the opacity reveal and background feedback from .option:
+   * transition is a shorthand, so declaring only height here would drop them
+   * and this pill would snap in while the grid pill eased.
+   */
+  transition:
+    height 0.3s ease 0.62s,
+    opacity 1s cubic-bezier(0.33, 0, 0.2, 1) 0.75s,
+    background-color 0.25s ease;
 }
 
 .app-aside .option.theme .icon-container {
@@ -1331,7 +1383,10 @@ body[data-theme] {
 
 body[data-theme-slider="open"] .app-aside .option.theme {
   height: 368px;
-  transition: height 0.3s ease;
+  transition:
+    height 0.3s ease,
+    opacity 1s cubic-bezier(0.33, 0, 0.2, 1) 0.75s,
+    background-color 0.25s ease;
 }
 
 body[data-theme-slider="open"] .app-aside .option.theme .icon-container {
