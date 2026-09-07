@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 /**
  * Theme scale + grid overlay, ported from billysweeney.com.
@@ -23,25 +23,56 @@ const DEFAULT_STOP = 16; // the reference ships on theme--16 (white)
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
+/*
+ * `prefers-color-scheme` is external state, so it is read through
+ * useSyncExternalStore rather than copied into React state by a mount effect.
+ * That keeps the first paint correct — no white-then-black repaint — and
+ * tracks a system theme change while the page is open. The server snapshot is
+ * `false`, matching the default white stop the server renders.
+ */
+const DARK_QUERY = "(prefers-color-scheme: dark)";
+
+const subscribeToDarkQuery = (onChange: () => void) => {
+  const mq = window.matchMedia?.(DARK_QUERY);
+  if (!mq) return () => {};
+  mq.addEventListener("change", onChange);
+  return () => mq.removeEventListener("change", onChange);
+};
+
+const getDarkQueryMatches = () =>
+  window.matchMedia?.(DARK_QUERY).matches ?? false;
+
+const getDarkQueryServerMatches = () => false;
+
 export function AppControls() {
-  const [stop, setStop] = useState(DEFAULT_STOP);
+  /*
+   * The reference honours prefers-color-scheme on load: if the user has not
+   * touched the slider and prefers dark, the ramp starts at stop 00.
+   *
+   * `stop` holds an explicit choice only; null means "follow the system". The
+   * effective stop is derived from it and a `prefers-color-scheme` subscription,
+   * so the preference never has to be copied into state on mount — that copy
+   * is what cascades an extra render. `prefersDark` starts false so the server
+   * and the first client render agree, and the subscription below corrects it
+   * before paint.
+   */
+  const [stop, setStop] = useState<number | null>(null);
   const [sliderOpen, setSliderOpen] = useState(false);
   const [gridOn, setGridOn] = useState(false);
   const themeOption = useRef<HTMLDivElement>(null);
   const sliderTrack = useRef<HTMLInputElement>(null);
 
-  // The reference honours prefers-color-scheme on load: if it is still on the
-  // default white stop and the user prefers dark, it jumps to stop 00.
-  useEffect(() => {
-    if (window.matchMedia?.("(prefers-color-scheme: dark)").matches) {
-      setStop((current) => (current === DEFAULT_STOP ? 0 : current));
-    }
-  }, []);
+  const prefersDark = useSyncExternalStore(
+    subscribeToDarkQuery,
+    getDarkQueryMatches,
+    getDarkQueryServerMatches,
+  );
+  const effectiveStop = stop ?? (prefersDark ? 0 : DEFAULT_STOP);
 
   // <body> is owned by the server layout, so drive its attributes directly.
   useEffect(() => {
-    document.body.dataset.theme = pad(stop);
-  }, [stop]);
+    document.body.dataset.theme = pad(effectiveStop);
+  }, [effectiveStop]);
 
   useEffect(() => {
     if (sliderOpen) document.body.dataset.themeSlider = "open";
@@ -138,7 +169,7 @@ export function AppControls() {
                 min={0}
                 max={STOPS - 1}
                 step={1}
-                value={stop}
+                value={effectiveStop}
                 aria-label="Theme"
                 onChange={(event) => setStop(Number(event.target.value))}
                 onPointerDown={onSliderPointerDown}

@@ -4,10 +4,16 @@ import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, DUR } from "@/lib/gsap";
 
+/** Session flag: the cover has played once this visit. */
+const SEEN_KEY = "amar:preloaded";
+
 /**
  * Counts 0 -> 100 behind a full-bleed cover, then lifts the cover and fires
- * `onDone` so the hero intro timeline can start. Uses ease-preloader from the
+ * `onDone` so the page intro can start. Uses ease-preloader from the
  * reference set.
+ *
+ * Plays once per visit: after it has run, every later mount (a navigation or
+ * a reload in the same tab) skips straight to `onDone`.
  */
 export function Preloader({ onDone }: { onDone: () => void }) {
   const root = useRef<HTMLDivElement>(null);
@@ -16,8 +22,15 @@ export function Preloader({ onDone }: { onDone: () => void }) {
   useGSAP(
     () => {
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      let seen = false;
+      try {
+        seen = sessionStorage.getItem(SEEN_KEY) === "1";
+        sessionStorage.setItem(SEEN_KEY, "1");
+      } catch {
+        // Storage unavailable: play it.
+      }
 
-      if (reduced) {
+      if (reduced || seen) {
         gsap.set(root.current, { autoAlpha: 0, display: "none" });
         document.body.classList.remove("cover-is-visible");
         onDone();

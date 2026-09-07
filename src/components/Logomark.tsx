@@ -1,10 +1,10 @@
 /**
  * Client logomark, inlined so it can follow the theme.
  *
- * The asset in `public/assets/logomark.svg` carries the brand blues
- * (#007AFF / #312ECB) baked into its paths, and loading it through
- * `next/image` renders it as an external image — CSS cannot reach inside, so
- * it stayed a fixed blue at every theme stop.
+ * The original SVG asset carried the brand blues (#007AFF / #312ECB) baked
+ * into its paths, and loading it through `next/image` renders it as an
+ * external image — CSS cannot reach inside, so it stayed a fixed blue at
+ * every theme stop. The file has been removed now that the paths live here.
  *
  * Inlined here with `currentColor`, it inherits the surrounding text colour
  * and so inverts with the ramp. The two paths carry different opacities to

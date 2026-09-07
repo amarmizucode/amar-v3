@@ -1,0 +1,2918 @@
+[
+  {
+    "folder": "Art Form",
+    "slug": "art-form",
+    "frames": [
+      {
+        "file": "Art 1.jpg",
+        "width": 3069,
+        "height": 2048,
+        "thumb": "/assets/photography-web/art-form/01-t.jpg",
+        "src": "/assets/photography-web/art-form/01.jpg",
+        "full": "/assets/photography-web/art-form/01-full.jpg"
+      },
+      {
+        "file": "Art 2.jpg",
+        "width": 3070,
+        "height": 2048,
+        "thumb": "/assets/photography-web/art-form/02-t.jpg",
+        "src": "/assets/photography-web/art-form/02.jpg",
+        "full": "/assets/photography-web/art-form/02-full.jpg"
+      },
+      {
+        "file": "Art 3.jpg",
+        "width": 2048,
+        "height": 2048,
+        "thumb": "/assets/photography-web/art-form/03-t.jpg",
+        "src": "/assets/photography-web/art-form/03.jpg",
+        "full": "/assets/photography-web/art-form/03-full.jpg"
+      },
+      {
+        "file": "Art 4.jpg",
+        "width": 3070,
+        "height": 2048,
+        "thumb": "/assets/photography-web/art-form/04-t.jpg",
+        "src": "/assets/photography-web/art-form/04.jpg",
+        "full": "/assets/photography-web/art-form/04-full.jpg"
+      },
+      {
+        "file": "Art 5.jpg",
+        "width": 3069,
+        "height": 2048,
+        "thumb": "/assets/photography-web/art-form/05-t.jpg",
+        "src": "/assets/photography-web/art-form/05.jpg",
+        "full": "/assets/photography-web/art-form/05-full.jpg"
+      },
+      {
+        "file": "Art 6.jpg",
+        "width": 3070,
+        "height": 2048,
+        "thumb": "/assets/photography-web/art-form/06-t.jpg",
+        "src": "/assets/photography-web/art-form/06.jpg",
+        "full": "/assets/photography-web/art-form/06-full.jpg"
+      },
+      {
+        "file": "Art 7.jpg",
+        "width": 2048,
+        "height": 2860,
+        "thumb": "/assets/photography-web/art-form/07-t.jpg",
+        "src": "/assets/photography-web/art-form/07.jpg",
+        "full": "/assets/photography-web/art-form/07-full.jpg"
+      },
+      {
+        "file": "Art 8.jpg",
+        "width": 2048,
+        "height": 3070,
+        "thumb": "/assets/photography-web/art-form/08-t.jpg",
+        "src": "/assets/photography-web/art-form/08.jpg",
+        "full": "/assets/photography-web/art-form/08-full.jpg"
+      },
+      {
+        "file": "Art 9.jpg",
+        "width": 4479,
+        "height": 6719,
+        "thumb": "/assets/photography-web/art-form/09-t.jpg",
+        "src": "/assets/photography-web/art-form/09.jpg",
+        "full": "/assets/photography-web/art-form/09-full.jpg"
+      },
+      {
+        "file": "Art 10.jpg",
+        "width": 8330,
+        "height": 10709,
+        "thumb": "/assets/photography-web/art-form/10-t.jpg",
+        "src": "/assets/photography-web/art-form/10.jpg",
+        "full": "/assets/photography-web/art-form/10-full.jpg"
+      },
+      {
+        "file": "Art 11.jpg",
+        "width": 3578,
+        "height": 4473,
+        "thumb": "/assets/photography-web/art-form/11-t.jpg",
+        "src": "/assets/photography-web/art-form/11.jpg",
+        "full": "/assets/photography-web/art-form/11-full.jpg"
+      },
+      {
+        "file": "Art 12.jpg",
+        "width": 6206,
+        "height": 4137,
+        "thumb": "/assets/photography-web/art-form/12-t.jpg",
+        "src": "/assets/photography-web/art-form/12.jpg",
+        "full": "/assets/photography-web/art-form/12-full.jpg"
+      },
+      {
+        "file": "Art 13.jpg",
+        "width": 6240,
+        "height": 4160,
+        "thumb": "/assets/photography-web/art-form/13-t.jpg",
+        "src": "/assets/photography-web/art-form/13.jpg",
+        "full": "/assets/photography-web/art-form/13-full.jpg"
+      },
+      {
+        "file": "Art 14.jpg",
+        "width": 9504,
+        "height": 6336,
+        "thumb": "/assets/photography-web/art-form/14-t.jpg",
+        "src": "/assets/photography-web/art-form/14.jpg",
+        "full": "/assets/photography-web/art-form/14-full.jpg"
+      },
+      {
+        "file": "Art 15.jpg",
+        "width": 5464,
+        "height": 3640,
+        "thumb": "/assets/photography-web/art-form/15-t.jpg",
+        "src": "/assets/photography-web/art-form/15.jpg",
+        "full": "/assets/photography-web/art-form/15-full.jpg"
+      },
+      {
+        "file": "Art 16.jpg",
+        "width": 6240,
+        "height": 4160,
+        "thumb": "/assets/photography-web/art-form/16-t.jpg",
+        "src": "/assets/photography-web/art-form/16.jpg",
+        "full": "/assets/photography-web/art-form/16-full.jpg"
+      },
+      {
+        "file": "Art 17.jpg",
+        "width": 5657,
+        "height": 7071,
+        "thumb": "/assets/photography-web/art-form/17-t.jpg",
+        "src": "/assets/photography-web/art-form/17.jpg",
+        "full": "/assets/photography-web/art-form/17-full.jpg"
+      },
+      {
+        "file": "Art 18.jpg",
+        "width": 6171,
+        "height": 4114,
+        "thumb": "/assets/photography-web/art-form/18-t.jpg",
+        "src": "/assets/photography-web/art-form/18.jpg",
+        "full": "/assets/photography-web/art-form/18-full.jpg"
+      },
+      {
+        "file": "Art 19.jpg",
+        "width": 8884,
+        "height": 6336,
+        "thumb": "/assets/photography-web/art-form/19-t.jpg",
+        "src": "/assets/photography-web/art-form/19.jpg",
+        "full": "/assets/photography-web/art-form/19-full.jpg"
+      },
+      {
+        "file": "ARt 20.jpg",
+        "width": 8635,
+        "height": 5566,
+        "thumb": "/assets/photography-web/art-form/20-t.jpg",
+        "src": "/assets/photography-web/art-form/20.jpg",
+        "full": "/assets/photography-web/art-form/20-full.jpg"
+      }
+    ]
+  },
+  {
+    "folder": "Chettinad Collections",
+    "slug": "chettinad-collections",
+    "frames": [
+      {
+        "file": "Chettinad 1.jpg",
+        "width": 4676,
+        "height": 3121,
+        "thumb": "/assets/photography-web/chettinad-collections/01-t.jpg",
+        "src": "/assets/photography-web/chettinad-collections/01.jpg",
+        "full": "/assets/photography-web/chettinad-collections/01-full.jpg"
+      },
+      {
+        "file": "Chettinad 2.jpg",
+        "width": 1600,
+        "height": 2554,
+        "thumb": "/assets/photography-web/chettinad-collections/02-t.jpg",
+        "src": "/assets/photography-web/chettinad-collections/02.jpg",
+        "full": "/assets/photography-web/chettinad-collections/02-full.jpg"
+      },
+      {
+        "file": "Chettinad 3.jpg",
+        "width": 1766,
+        "height": 2560,
+        "thumb": "/assets/photography-web/chettinad-collections/03-t.jpg",
+        "src": "/assets/photography-web/chettinad-collections/03.jpg",
+        "full": "/assets/photography-web/chettinad-collections/03-full.jpg"
+      },
+      {
+        "file": "Chettinad 4.jpg",
+        "width": 3987,
+        "height": 4954,
+        "thumb": "/assets/photography-web/chettinad-collections/04-t.jpg",
+        "src": "/assets/photography-web/chettinad-collections/04.jpg",
+        "full": "/assets/photography-web/chettinad-collections/04-full.jpg"
+      },
+      {
+        "file": "Chettinad 5.jpg",
+        "width": 2311,
+        "height": 1674,
+        "thumb": "/assets/photography-web/chettinad-collections/05-t.jpg",
+        "src": "/assets/photography-web/chettinad-collections/05.jpg",
+        "full": "/assets/photography-web/chettinad-collections/05-full.jpg"
+      },
+      {
+        "file": "Chettinad 6.jpg",
+        "width": 6000,
+        "height": 3587,
+        "thumb": "/assets/photography-web/chettinad-collections/06-t.jpg",
+        "src": "/assets/photography-web/chettinad-collections/06.jpg",
+        "full": "/assets/photography-web/chettinad-collections/06-full.jpg"
+      },
+      {
+        "file": "Chettinad 7.jpg",
+        "width": 2560,
+        "height": 1707,
+        "thumb": "/assets/photography-web/chettinad-collections/07-t.jpg",
+        "src": "/assets/photography-web/chettinad-collections/07.jpg",
+        "full": "/assets/photography-web/chettinad-collections/07-full.jpg"
+      },
+      {
+        "file": "Chettinad 8.jpg",
+        "width": 2480,
+        "height": 1730,
+        "thumb": "/assets/photography-web/chettinad-collections/08-t.jpg",
+        "src": "/assets/photography-web/chettinad-collections/08.jpg",
+        "full": "/assets/photography-web/chettinad-collections/08-full.jpg"
+      },
+      {
+        "file": "Chettinad 9.jpg",
+        "width": 7952,
+        "height": 5304,
+        "thumb": "/assets/photography-web/chettinad-collections/09-t.jpg",
+        "src": "/assets/photography-web/chettinad-collections/09.jpg",
+        "full": "/assets/photography-web/chettinad-collections/09-full.jpg"
+      },
+      {
+        "file": "Chettinad 10_1.jpg",
+        "width": 3024,
+        "height": 3564,
+        "thumb": "/assets/photography-web/chettinad-collections/10-t.jpg",
+        "src": "/assets/photography-web/chettinad-collections/10.jpg",
+        "full": "/assets/photography-web/chettinad-collections/10-full.jpg"
+      },
+      {
+        "file": "Chettinad 10_2.jpg",
+        "width": 1456,
+        "height": 2089,
+        "thumb": "/assets/photography-web/chettinad-collections/11-t.jpg",
+        "src": "/assets/photography-web/chettinad-collections/11.jpg",
+        "full": "/assets/photography-web/chettinad-collections/11-full.jpg"
+      },
+      {
+        "file": "Chettinad 10_3.jpg",
+        "width": 1485,
+        "height": 1441,
+        "thumb": "/assets/photography-web/chettinad-collections/12-t.jpg",
+        "src": "/assets/photography-web/chettinad-collections/12.jpg",
+        "full": "/assets/photography-web/chettinad-collections/12-full.jpg"
+      },
+      {
+        "file": "Chettinad 11_1.jpg",
+        "width": 3427,
+        "height": 3742,
+        "thumb": "/assets/photography-web/chettinad-collections/13-t.jpg",
+        "src": "/assets/photography-web/chettinad-collections/13.jpg",
+        "full": "/assets/photography-web/chettinad-collections/13-full.jpg"
+      },
+      {
+        "file": "Chettinad 11_2.jpg",
+        "width": 2954,
+        "height": 4256,
+        "thumb": "/assets/photography-web/chettinad-collections/14-t.jpg",
+        "src": "/assets/photography-web/chettinad-collections/14.jpg",
+        "full": "/assets/photography-web/chettinad-collections/14-full.jpg"
+      },
+      {
+        "file": "Chettinad 12_1.jpg",
+        "width": 3996,
+        "height": 3996,
+        "thumb": "/assets/photography-web/chettinad-collections/15-t.jpg",
+        "src": "/assets/photography-web/chettinad-collections/15.jpg",
+        "full": "/assets/photography-web/chettinad-collections/15-full.jpg"
+      },
+      {
+        "file": "Chettinad 12_2.jpg",
+        "width": 3814,
+        "height": 3814,
+        "thumb": "/assets/photography-web/chettinad-collections/16-t.jpg",
+        "src": "/assets/photography-web/chettinad-collections/16.jpg",
+        "full": "/assets/photography-web/chettinad-collections/16-full.jpg"
+      },
+      {
+        "file": "Chettinad 12_3.jpg",
+        "width": 3968,
+        "height": 3967,
+        "thumb": "/assets/photography-web/chettinad-collections/17-t.jpg",
+        "src": "/assets/photography-web/chettinad-collections/17.jpg",
+        "full": "/assets/photography-web/chettinad-collections/17-full.jpg"
+      },
+      {
+        "file": "Chettinad 13.jpg",
+        "width": 4967,
+        "height": 3570,
+        "thumb": "/assets/photography-web/chettinad-collections/18-t.jpg",
+        "src": "/assets/photography-web/chettinad-collections/18.jpg",
+        "full": "/assets/photography-web/chettinad-collections/18-full.jpg"
+      },
+      {
+        "file": "Chettinad 14.jpg",
+        "width": 3939,
+        "height": 3939,
+        "thumb": "/assets/photography-web/chettinad-collections/19-t.jpg",
+        "src": "/assets/photography-web/chettinad-collections/19.jpg",
+        "full": "/assets/photography-web/chettinad-collections/19-full.jpg"
+      },
+      {
+        "file": "Chettinad 15.jpg",
+        "width": 7169,
+        "height": 4361,
+        "thumb": "/assets/photography-web/chettinad-collections/20-t.jpg",
+        "src": "/assets/photography-web/chettinad-collections/20.jpg",
+        "full": "/assets/photography-web/chettinad-collections/20-full.jpg"
+      }
+    ]
+  },
+  {
+    "folder": "Classical dancers",
+    "slug": "classical-dancers",
+    "frames": [
+      {
+        "file": "_1A10191-3-Edit.jpg",
+        "width": 4672,
+        "height": 7008,
+        "thumb": "/assets/photography-web/classical-dancers/01-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/01.jpg",
+        "full": "/assets/photography-web/classical-dancers/01-full.jpg"
+      },
+      {
+        "file": "_ANR0110.jpg",
+        "width": 6519,
+        "height": 3667,
+        "thumb": "/assets/photography-web/classical-dancers/02-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/02.jpg",
+        "full": "/assets/photography-web/classical-dancers/02-full.jpg"
+      },
+      {
+        "file": "_ANR8247 ver 02.jpg",
+        "width": 6605,
+        "height": 4598,
+        "thumb": "/assets/photography-web/classical-dancers/03-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/03.jpg",
+        "full": "/assets/photography-web/classical-dancers/03-full.jpg"
+      },
+      {
+        "file": "_ANR8292-Edit.jpg",
+        "width": 5513,
+        "height": 7952,
+        "thumb": "/assets/photography-web/classical-dancers/04-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/04.jpg",
+        "full": "/assets/photography-web/classical-dancers/04-full.jpg"
+      },
+      {
+        "file": "_ANR9410-Edit.jpg",
+        "width": 6997,
+        "height": 4667,
+        "thumb": "/assets/photography-web/classical-dancers/05-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/05.jpg",
+        "full": "/assets/photography-web/classical-dancers/05-full.jpg"
+      },
+      {
+        "file": "_ANR9704-Edit.jpg",
+        "width": 5000,
+        "height": 3335,
+        "thumb": "/assets/photography-web/classical-dancers/06-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/06.jpg",
+        "full": "/assets/photography-web/classical-dancers/06-full.jpg"
+      },
+      {
+        "file": "_ANR9728-Edit.jpg",
+        "width": 6418,
+        "height": 4122,
+        "thumb": "/assets/photography-web/classical-dancers/07-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/07.jpg",
+        "full": "/assets/photography-web/classical-dancers/07-full.jpg"
+      },
+      {
+        "file": "_AR_0069-Edit.jpg",
+        "width": 5845,
+        "height": 3897,
+        "thumb": "/assets/photography-web/classical-dancers/08-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/08.jpg",
+        "full": "/assets/photography-web/classical-dancers/08-full.jpg"
+      },
+      {
+        "file": "_AR_0108-Edit.jpg",
+        "width": 3777,
+        "height": 2518,
+        "thumb": "/assets/photography-web/classical-dancers/09-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/09.jpg",
+        "full": "/assets/photography-web/classical-dancers/09-full.jpg"
+      },
+      {
+        "file": "_AR_0143-Edit.jpg",
+        "width": 6000,
+        "height": 4000,
+        "thumb": "/assets/photography-web/classical-dancers/10-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/10.jpg",
+        "full": "/assets/photography-web/classical-dancers/10-full.jpg"
+      },
+      {
+        "file": "_AR_0218-Edit.jpg",
+        "width": 6000,
+        "height": 4000,
+        "thumb": "/assets/photography-web/classical-dancers/11-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/11.jpg",
+        "full": "/assets/photography-web/classical-dancers/11-full.jpg"
+      },
+      {
+        "file": "_AR_0328-Edit.jpg",
+        "width": 6000,
+        "height": 4000,
+        "thumb": "/assets/photography-web/classical-dancers/12-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/12.jpg",
+        "full": "/assets/photography-web/classical-dancers/12-full.jpg"
+      },
+      {
+        "file": "_AR_0430-Edit.jpg",
+        "width": 6000,
+        "height": 4000,
+        "thumb": "/assets/photography-web/classical-dancers/13-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/13.jpg",
+        "full": "/assets/photography-web/classical-dancers/13-full.jpg"
+      },
+      {
+        "file": "_AR_0460-Edit.jpg",
+        "width": 5428,
+        "height": 3619,
+        "thumb": "/assets/photography-web/classical-dancers/14-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/14.jpg",
+        "full": "/assets/photography-web/classical-dancers/14-full.jpg"
+      },
+      {
+        "file": "_AR_0533-Edit.jpg",
+        "width": 6000,
+        "height": 4000,
+        "thumb": "/assets/photography-web/classical-dancers/15-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/15.jpg",
+        "full": "/assets/photography-web/classical-dancers/15-full.jpg"
+      },
+      {
+        "file": "_AR_0552-Edit.jpg",
+        "width": 5113,
+        "height": 3409,
+        "thumb": "/assets/photography-web/classical-dancers/16-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/16.jpg",
+        "full": "/assets/photography-web/classical-dancers/16-full.jpg"
+      },
+      {
+        "file": "_AR_2096-Edit.jpg",
+        "width": 3678,
+        "height": 2452,
+        "thumb": "/assets/photography-web/classical-dancers/17-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/17.jpg",
+        "full": "/assets/photography-web/classical-dancers/17-full.jpg"
+      },
+      {
+        "file": "_AR_2190-Edit.jpg",
+        "width": 5772,
+        "height": 3848,
+        "thumb": "/assets/photography-web/classical-dancers/18-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/18.jpg",
+        "full": "/assets/photography-web/classical-dancers/18-full.jpg"
+      },
+      {
+        "file": "_AR_9009-Edit.jpg",
+        "width": 5872,
+        "height": 3915,
+        "thumb": "/assets/photography-web/classical-dancers/19-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/19.jpg",
+        "full": "/assets/photography-web/classical-dancers/19-full.jpg"
+      },
+      {
+        "file": "_DSC1756-Edit-Edit.JPG",
+        "width": 9504,
+        "height": 6336,
+        "thumb": "/assets/photography-web/classical-dancers/20-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/20.jpg",
+        "full": "/assets/photography-web/classical-dancers/20-full.jpg"
+      },
+      {
+        "file": "_DSC2332.jpg",
+        "width": 9504,
+        "height": 6336,
+        "thumb": "/assets/photography-web/classical-dancers/21-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/21.jpg",
+        "full": "/assets/photography-web/classical-dancers/21-full.jpg"
+      },
+      {
+        "file": "_DSC2608.jpg",
+        "width": 5640,
+        "height": 3760,
+        "thumb": "/assets/photography-web/classical-dancers/22-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/22.jpg",
+        "full": "/assets/photography-web/classical-dancers/22-full.jpg"
+      },
+      {
+        "file": "_DSC2611.jpg",
+        "width": 4000,
+        "height": 6000,
+        "thumb": "/assets/photography-web/classical-dancers/23-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/23.jpg",
+        "full": "/assets/photography-web/classical-dancers/23-full.jpg"
+      },
+      {
+        "file": "_GO_8665-Edit.jpg",
+        "width": 3801,
+        "height": 2534,
+        "thumb": "/assets/photography-web/classical-dancers/24-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/24.jpg",
+        "full": "/assets/photography-web/classical-dancers/24-full.jpg"
+      },
+      {
+        "file": "_GO_8821-Edit.jpg",
+        "width": 2446,
+        "height": 3651,
+        "thumb": "/assets/photography-web/classical-dancers/25-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/25.jpg",
+        "full": "/assets/photography-web/classical-dancers/25-full.jpg"
+      },
+      {
+        "file": "_GO_8869-Edit.jpg",
+        "width": 5917,
+        "height": 3945,
+        "thumb": "/assets/photography-web/classical-dancers/26-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/26.jpg",
+        "full": "/assets/photography-web/classical-dancers/26-full.jpg"
+      },
+      {
+        "file": "_GO_8882-Edit.jpg",
+        "width": 2442,
+        "height": 3665,
+        "thumb": "/assets/photography-web/classical-dancers/27-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/27.jpg",
+        "full": "/assets/photography-web/classical-dancers/27-full.jpg"
+      },
+      {
+        "file": "_GO_8936-Edit.jpg",
+        "width": 3606,
+        "height": 2404,
+        "thumb": "/assets/photography-web/classical-dancers/28-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/28.jpg",
+        "full": "/assets/photography-web/classical-dancers/28-full.jpg"
+      },
+      {
+        "file": "_NAK0282-Edit copy.jpg",
+        "width": 7952,
+        "height": 5304,
+        "thumb": "/assets/photography-web/classical-dancers/29-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/29.jpg",
+        "full": "/assets/photography-web/classical-dancers/29-full.jpg"
+      },
+      {
+        "file": "AI BW.jpg",
+        "width": 2730,
+        "height": 4096,
+        "thumb": "/assets/photography-web/classical-dancers/30-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/30.jpg",
+        "full": "/assets/photography-web/classical-dancers/30-full.jpg"
+      },
+      {
+        "file": "Amar Ramesh-3.jpg",
+        "width": 7952,
+        "height": 5304,
+        "thumb": "/assets/photography-web/classical-dancers/31-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/31.jpg",
+        "full": "/assets/photography-web/classical-dancers/31-full.jpg"
+      },
+      {
+        "file": "Amar Ramesh-9.jpg",
+        "width": 7885,
+        "height": 5259,
+        "thumb": "/assets/photography-web/classical-dancers/32-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/32.jpg",
+        "full": "/assets/photography-web/classical-dancers/32-full.jpg"
+      },
+      {
+        "file": "Bhavana_002.jpg",
+        "width": 3000,
+        "height": 1688,
+        "thumb": "/assets/photography-web/classical-dancers/33-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/33.jpg",
+        "full": "/assets/photography-web/classical-dancers/33-full.jpg"
+      },
+      {
+        "file": "Bhavana_003.jpg",
+        "width": 3000,
+        "height": 1366,
+        "thumb": "/assets/photography-web/classical-dancers/34-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/34.jpg",
+        "full": "/assets/photography-web/classical-dancers/34-full.jpg"
+      },
+      {
+        "file": "ckworkshop-8.jpg",
+        "width": 6980,
+        "height": 3926,
+        "thumb": "/assets/photography-web/classical-dancers/35-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/35.jpg",
+        "full": "/assets/photography-web/classical-dancers/35-full.jpg"
+      },
+      {
+        "file": "DSC00615-Edit.JPG",
+        "width": 2048,
+        "height": 1365,
+        "thumb": "/assets/photography-web/classical-dancers/36-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/36.jpg",
+        "full": "/assets/photography-web/classical-dancers/36-full.jpg"
+      },
+      {
+        "file": "DSC00744-Edit copy.JPG",
+        "width": 6047,
+        "height": 4031,
+        "thumb": "/assets/photography-web/classical-dancers/37-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/37.jpg",
+        "full": "/assets/photography-web/classical-dancers/37-full.jpg"
+      },
+      {
+        "file": "DSC00744-Edit.JPG",
+        "width": 2048,
+        "height": 1365,
+        "thumb": "/assets/photography-web/classical-dancers/38-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/38.jpg",
+        "full": "/assets/photography-web/classical-dancers/38-full.jpg"
+      },
+      {
+        "file": "DSC00767-Edit.JPG",
+        "width": 2048,
+        "height": 1365,
+        "thumb": "/assets/photography-web/classical-dancers/39-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/39.jpg",
+        "full": "/assets/photography-web/classical-dancers/39-full.jpg"
+      },
+      {
+        "file": "DSC01266-Edit.JPG",
+        "width": 9163,
+        "height": 5257,
+        "thumb": "/assets/photography-web/classical-dancers/40-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/40.jpg",
+        "full": "/assets/photography-web/classical-dancers/40-full.jpg"
+      },
+      {
+        "file": "DSC02089-Edit.JPG",
+        "width": 2048,
+        "height": 1365,
+        "thumb": "/assets/photography-web/classical-dancers/41-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/41.jpg",
+        "full": "/assets/photography-web/classical-dancers/41-full.jpg"
+      },
+      {
+        "file": "DSC02169-Edit.JPG",
+        "width": 2048,
+        "height": 1365,
+        "thumb": "/assets/photography-web/classical-dancers/42-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/42.jpg",
+        "full": "/assets/photography-web/classical-dancers/42-full.jpg"
+      },
+      {
+        "file": "DSC04402-2 copy.jpg",
+        "width": 5814,
+        "height": 3876,
+        "thumb": "/assets/photography-web/classical-dancers/43-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/43.jpg",
+        "full": "/assets/photography-web/classical-dancers/43-full.jpg"
+      },
+      {
+        "file": "GOK01799-Edit copy.jpg",
+        "width": 6000,
+        "height": 4000,
+        "thumb": "/assets/photography-web/classical-dancers/44-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/44.jpg",
+        "full": "/assets/photography-web/classical-dancers/44-full.jpg"
+      },
+      {
+        "file": "GOK01799-Edit.jpg",
+        "width": 6000,
+        "height": 4000,
+        "thumb": "/assets/photography-web/classical-dancers/45-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/45.jpg",
+        "full": "/assets/photography-web/classical-dancers/45-full.jpg"
+      },
+      {
+        "file": "GOK01847-Edit.jpg",
+        "width": 5970,
+        "height": 3980,
+        "thumb": "/assets/photography-web/classical-dancers/46-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/46.jpg",
+        "full": "/assets/photography-web/classical-dancers/46-full.jpg"
+      },
+      {
+        "file": "GOK01921-Edit-Edit.jpg",
+        "width": 5269,
+        "height": 3394,
+        "thumb": "/assets/photography-web/classical-dancers/47-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/47.jpg",
+        "full": "/assets/photography-web/classical-dancers/47-full.jpg"
+      },
+      {
+        "file": "LK_00327-Edit.jpg",
+        "width": 3936,
+        "height": 2624,
+        "thumb": "/assets/photography-web/classical-dancers/48-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/48.jpg",
+        "full": "/assets/photography-web/classical-dancers/48-full.jpg"
+      },
+      {
+        "file": "Natya2018 by Amar Ramesh-2.jpg",
+        "width": 2567,
+        "height": 3000,
+        "thumb": "/assets/photography-web/classical-dancers/49-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/49.jpg",
+        "full": "/assets/photography-web/classical-dancers/49-full.jpg"
+      },
+      {
+        "file": "Screenshot 2019-07-15 at 3.35.17 PM.png",
+        "width": 2048,
+        "height": 1368,
+        "thumb": "/assets/photography-web/classical-dancers/50-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/50.jpg",
+        "full": "/assets/photography-web/classical-dancers/50-full.jpg"
+      },
+      {
+        "file": "Screenshot 2019-07-15 at 4.04.26 PM.jpg",
+        "width": 4315,
+        "height": 2880,
+        "thumb": "/assets/photography-web/classical-dancers/51-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/51.jpg",
+        "full": "/assets/photography-web/classical-dancers/51-full.jpg"
+      },
+      {
+        "file": "Screenshot 2019-07-15 at 4.04.39 PM.png",
+        "width": 4764,
+        "height": 2880,
+        "thumb": "/assets/photography-web/classical-dancers/52-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/52.jpg",
+        "full": "/assets/photography-web/classical-dancers/52-full.jpg"
+      },
+      {
+        "file": "Shritha_001.jpg",
+        "width": 3000,
+        "height": 1803,
+        "thumb": "/assets/photography-web/classical-dancers/53-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/53.jpg",
+        "full": "/assets/photography-web/classical-dancers/53-full.jpg"
+      },
+      {
+        "file": "Sowjanya_004.jpg",
+        "width": 3000,
+        "height": 1911,
+        "thumb": "/assets/photography-web/classical-dancers/54-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/54.jpg",
+        "full": "/assets/photography-web/classical-dancers/54-full.jpg"
+      },
+      {
+        "file": "Vithya_004.jpg",
+        "width": 3000,
+        "height": 1755,
+        "thumb": "/assets/photography-web/classical-dancers/55-t.jpg",
+        "src": "/assets/photography-web/classical-dancers/55.jpg",
+        "full": "/assets/photography-web/classical-dancers/55-full.jpg"
+      }
+    ]
+  },
+  {
+    "folder": "Folk art set 2",
+    "slug": "folk-art-set-2",
+    "frames": [
+      {
+        "file": "20210707-Rohith_Aishwarya_Sangeet_A001-_DSC1377.jpg",
+        "width": 9504,
+        "height": 6336,
+        "thumb": "/assets/photography-web/folk-art-set-2/01-t.jpg",
+        "src": "/assets/photography-web/folk-art-set-2/01.jpg",
+        "full": "/assets/photography-web/folk-art-set-2/01-full.jpg"
+      },
+      {
+        "file": "20210708-Rohith_Aishwarya_Sangeet_A001-_DSC1546-Edit.jpg",
+        "width": 6336,
+        "height": 6336,
+        "thumb": "/assets/photography-web/folk-art-set-2/02-t.jpg",
+        "src": "/assets/photography-web/folk-art-set-2/02.jpg",
+        "full": "/assets/photography-web/folk-art-set-2/02-full.jpg"
+      },
+      {
+        "file": "20210708-Rohith_Aishwarya_Sangeet_A001-_DSC1617-Edit.jpg",
+        "width": 5670,
+        "height": 5670,
+        "thumb": "/assets/photography-web/folk-art-set-2/03-t.jpg",
+        "src": "/assets/photography-web/folk-art-set-2/03.jpg",
+        "full": "/assets/photography-web/folk-art-set-2/03-full.jpg"
+      },
+      {
+        "file": "20210708-Rohith_Aishwarya_Sangeet_A001-_DSC1628.jpg",
+        "width": 5949,
+        "height": 5949,
+        "thumb": "/assets/photography-web/folk-art-set-2/04-t.jpg",
+        "src": "/assets/photography-web/folk-art-set-2/04.jpg",
+        "full": "/assets/photography-web/folk-art-set-2/04-full.jpg"
+      },
+      {
+        "file": "20210709-Rohith_Aishwarya_Sangeet_A001-_DSC1833-Edit.jpg",
+        "width": 7402,
+        "height": 9252,
+        "thumb": "/assets/photography-web/folk-art-set-2/05-t.jpg",
+        "src": "/assets/photography-web/folk-art-set-2/05.jpg",
+        "full": "/assets/photography-web/folk-art-set-2/05-full.jpg"
+      },
+      {
+        "file": "20210709-Rohith_Aishwarya_Sangeet_A001-_DSC1853-Edit.jpg",
+        "width": 6336,
+        "height": 6336,
+        "thumb": "/assets/photography-web/folk-art-set-2/06-t.jpg",
+        "src": "/assets/photography-web/folk-art-set-2/06.jpg",
+        "full": "/assets/photography-web/folk-art-set-2/06-full.jpg"
+      },
+      {
+        "file": "20210709-Rohith_Aishwarya_Sangeet_A001-_DSC1887-Edit-Recovered.jpg",
+        "width": 6111,
+        "height": 6111,
+        "thumb": "/assets/photography-web/folk-art-set-2/07-t.jpg",
+        "src": "/assets/photography-web/folk-art-set-2/07.jpg",
+        "full": "/assets/photography-web/folk-art-set-2/07-full.jpg"
+      },
+      {
+        "file": "20210709-Rohith_Aishwarya_Sangeet_A001-_DSC1952-Edit.jpg",
+        "width": 6336,
+        "height": 6336,
+        "thumb": "/assets/photography-web/folk-art-set-2/08-t.jpg",
+        "src": "/assets/photography-web/folk-art-set-2/08.jpg",
+        "full": "/assets/photography-web/folk-art-set-2/08-full.jpg"
+      },
+      {
+        "file": "20210709-Rohith_Aishwarya_Sangeet_A001-_DSC1970.jpg",
+        "width": 6117,
+        "height": 6117,
+        "thumb": "/assets/photography-web/folk-art-set-2/09-t.jpg",
+        "src": "/assets/photography-web/folk-art-set-2/09.jpg",
+        "full": "/assets/photography-web/folk-art-set-2/09-full.jpg"
+      },
+      {
+        "file": "_1A10107-Edit 4.jpg",
+        "width": 6746,
+        "height": 4497,
+        "thumb": "/assets/photography-web/folk-art-set-2/10-t.jpg",
+        "src": "/assets/photography-web/folk-art-set-2/10.jpg",
+        "full": "/assets/photography-web/folk-art-set-2/10-full.jpg"
+      },
+      {
+        "file": "_1A10170-Edit.jpg",
+        "width": 6783,
+        "height": 4522,
+        "thumb": "/assets/photography-web/folk-art-set-2/11-t.jpg",
+        "src": "/assets/photography-web/folk-art-set-2/11.jpg",
+        "full": "/assets/photography-web/folk-art-set-2/11-full.jpg"
+      },
+      {
+        "file": "_1A10314.jpg",
+        "width": 7008,
+        "height": 4672,
+        "thumb": "/assets/photography-web/folk-art-set-2/12-t.jpg",
+        "src": "/assets/photography-web/folk-art-set-2/12.jpg",
+        "full": "/assets/photography-web/folk-art-set-2/12-full.jpg"
+      },
+      {
+        "file": "_1A10362-Edit.jpg",
+        "width": 5406,
+        "height": 7008,
+        "thumb": "/assets/photography-web/folk-art-set-2/13-t.jpg",
+        "src": "/assets/photography-web/folk-art-set-2/13.jpg",
+        "full": "/assets/photography-web/folk-art-set-2/13-full.jpg"
+      },
+      {
+        "file": "_1A10365-Edit.jpg",
+        "width": 5097,
+        "height": 5097,
+        "thumb": "/assets/photography-web/folk-art-set-2/14-t.jpg",
+        "src": "/assets/photography-web/folk-art-set-2/14.jpg",
+        "full": "/assets/photography-web/folk-art-set-2/14-full.jpg"
+      },
+      {
+        "file": "_1A10598-Edit.jpg",
+        "width": 4479,
+        "height": 6719,
+        "thumb": "/assets/photography-web/folk-art-set-2/15-t.jpg",
+        "src": "/assets/photography-web/folk-art-set-2/15.jpg",
+        "full": "/assets/photography-web/folk-art-set-2/15-full.jpg"
+      },
+      {
+        "file": "_1A10649-Edit-Edit.jpg",
+        "width": 6817,
+        "height": 4545,
+        "thumb": "/assets/photography-web/folk-art-set-2/16-t.jpg",
+        "src": "/assets/photography-web/folk-art-set-2/16.jpg",
+        "full": "/assets/photography-web/folk-art-set-2/16-full.jpg"
+      },
+      {
+        "file": "_ANR0248-Edit-Edit.jpg",
+        "width": 8569,
+        "height": 4820,
+        "thumb": "/assets/photography-web/folk-art-set-2/17-t.jpg",
+        "src": "/assets/photography-web/folk-art-set-2/17.jpg",
+        "full": "/assets/photography-web/folk-art-set-2/17-full.jpg"
+      },
+      {
+        "file": "_ANR8989-Edit.jpg",
+        "width": 7000,
+        "height": 3938,
+        "thumb": "/assets/photography-web/folk-art-set-2/18-t.jpg",
+        "src": "/assets/photography-web/folk-art-set-2/18.jpg",
+        "full": "/assets/photography-web/folk-art-set-2/18-full.jpg"
+      },
+      {
+        "file": "_ANR9196-Edit-2-Edit.jpg",
+        "width": 8003,
+        "height": 4502,
+        "thumb": "/assets/photography-web/folk-art-set-2/19-t.jpg",
+        "src": "/assets/photography-web/folk-art-set-2/19.jpg",
+        "full": "/assets/photography-web/folk-art-set-2/19-full.jpg"
+      },
+      {
+        "file": "_DSC1210.jpg",
+        "width": 7115,
+        "height": 8894,
+        "thumb": "/assets/photography-web/folk-art-set-2/20-t.jpg",
+        "src": "/assets/photography-web/folk-art-set-2/20.jpg",
+        "full": "/assets/photography-web/folk-art-set-2/20-full.jpg"
+      },
+      {
+        "file": "_DSC1227-Edit.JPG",
+        "width": 9504,
+        "height": 6336,
+        "thumb": "/assets/photography-web/folk-art-set-2/21-t.jpg",
+        "src": "/assets/photography-web/folk-art-set-2/21.jpg",
+        "full": "/assets/photography-web/folk-art-set-2/21-full.jpg"
+      },
+      {
+        "file": "_DSC1595-Edit.jpg",
+        "width": 6336,
+        "height": 6336,
+        "thumb": "/assets/photography-web/folk-art-set-2/22-t.jpg",
+        "src": "/assets/photography-web/folk-art-set-2/22.jpg",
+        "full": "/assets/photography-web/folk-art-set-2/22-full.jpg"
+      },
+      {
+        "file": "DSC05858.jpg",
+        "width": 9504,
+        "height": 6336,
+        "thumb": "/assets/photography-web/folk-art-set-2/23-t.jpg",
+        "src": "/assets/photography-web/folk-art-set-2/23.jpg",
+        "full": "/assets/photography-web/folk-art-set-2/23-full.jpg"
+      },
+      {
+        "file": "Therukoothu10.jpg",
+        "width": 3164,
+        "height": 3164,
+        "thumb": "/assets/photography-web/folk-art-set-2/24-t.jpg",
+        "src": "/assets/photography-web/folk-art-set-2/24.jpg",
+        "full": "/assets/photography-web/folk-art-set-2/24-full.jpg"
+      },
+      {
+        "file": "Therukoothu11.jpg",
+        "width": 5168,
+        "height": 3448,
+        "thumb": "/assets/photography-web/folk-art-set-2/25-t.jpg",
+        "src": "/assets/photography-web/folk-art-set-2/25.jpg",
+        "full": "/assets/photography-web/folk-art-set-2/25-full.jpg"
+      },
+      {
+        "file": "Therukoothu12.jpg",
+        "width": 5168,
+        "height": 3448,
+        "thumb": "/assets/photography-web/folk-art-set-2/26-t.jpg",
+        "src": "/assets/photography-web/folk-art-set-2/26.jpg",
+        "full": "/assets/photography-web/folk-art-set-2/26-full.jpg"
+      }
+    ]
+  },
+  {
+    "folder": "Musicians",
+    "slug": "musicians",
+    "frames": [
+      {
+        "file": "20220517_Isaignani Ilayaraja_Portraits_Amar Ramesh_07.jpg",
+        "width": 4096,
+        "height": 3072,
+        "thumb": "/assets/photography-web/musicians/01-t.jpg",
+        "src": "/assets/photography-web/musicians/01.jpg",
+        "full": "/assets/photography-web/musicians/01-full.jpg"
+      },
+      {
+        "file": "20220518_Isaignani Ilayaraja_Portraits_Amar Ramesh_10.jpg",
+        "width": 4243,
+        "height": 2675,
+        "thumb": "/assets/photography-web/musicians/02-t.jpg",
+        "src": "/assets/photography-web/musicians/02.jpg",
+        "full": "/assets/photography-web/musicians/02-full.jpg"
+      },
+      {
+        "file": "20220518_Isaignani Ilayaraja_Portraits_Amar Ramesh_18.jpg",
+        "width": 8280,
+        "height": 4672,
+        "thumb": "/assets/photography-web/musicians/03-t.jpg",
+        "src": "/assets/photography-web/musicians/03.jpg",
+        "full": "/assets/photography-web/musicians/03-full.jpg"
+      },
+      {
+        "file": "20220618_Isaignani Ilayaraja 02_Portraits_Amar Ramesh__004.jpg",
+        "width": 3610,
+        "height": 4512,
+        "thumb": "/assets/photography-web/musicians/04-t.jpg",
+        "src": "/assets/photography-web/musicians/04.jpg",
+        "full": "/assets/photography-web/musicians/04-full.jpg"
+      },
+      {
+        "file": "20220618_Isaignani Ilayaraja 02_Portraits_Amar Ramesh__009.jpg",
+        "width": 4617,
+        "height": 6925,
+        "thumb": "/assets/photography-web/musicians/05-t.jpg",
+        "src": "/assets/photography-web/musicians/05.jpg",
+        "full": "/assets/photography-web/musicians/05-full.jpg"
+      },
+      {
+        "file": "20220618_Isaignani Ilayaraja 02_Portraits_Amar Ramesh__010.jpg",
+        "width": 4672,
+        "height": 7008,
+        "thumb": "/assets/photography-web/musicians/06-t.jpg",
+        "src": "/assets/photography-web/musicians/06.jpg",
+        "full": "/assets/photography-web/musicians/06-full.jpg"
+      },
+      {
+        "file": "_AMA1942-Edit.jpg",
+        "width": 3504,
+        "height": 2632,
+        "thumb": "/assets/photography-web/musicians/07-t.jpg",
+        "src": "/assets/photography-web/musicians/07.jpg",
+        "full": "/assets/photography-web/musicians/07-full.jpg"
+      },
+      {
+        "file": "_AR_0969-Edit.jpg",
+        "width": 4000,
+        "height": 6000,
+        "thumb": "/assets/photography-web/musicians/08-t.jpg",
+        "src": "/assets/photography-web/musicians/08.jpg",
+        "full": "/assets/photography-web/musicians/08-full.jpg"
+      },
+      {
+        "file": "_AR_6315-Edit.jpg",
+        "width": 4482,
+        "height": 3223,
+        "thumb": "/assets/photography-web/musicians/09-t.jpg",
+        "src": "/assets/photography-web/musicians/09.jpg",
+        "full": "/assets/photography-web/musicians/09-full.jpg"
+      },
+      {
+        "file": "_AR_6335-Edit.jpg",
+        "width": 6000,
+        "height": 4000,
+        "thumb": "/assets/photography-web/musicians/10-t.jpg",
+        "src": "/assets/photography-web/musicians/10.jpg",
+        "full": "/assets/photography-web/musicians/10-full.jpg"
+      },
+      {
+        "file": "_DSC5970-Edit.jpg",
+        "width": 4000,
+        "height": 5000,
+        "thumb": "/assets/photography-web/musicians/11-t.jpg",
+        "src": "/assets/photography-web/musicians/11.jpg",
+        "full": "/assets/photography-web/musicians/11-full.jpg"
+      },
+      {
+        "file": "_DSC6180-Edit.jpg",
+        "width": 6000,
+        "height": 4000,
+        "thumb": "/assets/photography-web/musicians/12-t.jpg",
+        "src": "/assets/photography-web/musicians/12.jpg",
+        "full": "/assets/photography-web/musicians/12-full.jpg"
+      },
+      {
+        "file": "_DSC6263-Edit.jpg",
+        "width": 3937,
+        "height": 5478,
+        "thumb": "/assets/photography-web/musicians/13-t.jpg",
+        "src": "/assets/photography-web/musicians/13.jpg",
+        "full": "/assets/photography-web/musicians/13-full.jpg"
+      },
+      {
+        "file": "_NAK6133-Edit.jpg",
+        "width": 7952,
+        "height": 5304,
+        "thumb": "/assets/photography-web/musicians/14-t.jpg",
+        "src": "/assets/photography-web/musicians/14.jpg",
+        "full": "/assets/photography-web/musicians/14-full.jpg"
+      },
+      {
+        "file": "_NAK6166-Edit.jpg",
+        "width": 2048,
+        "height": 1366,
+        "thumb": "/assets/photography-web/musicians/15-t.jpg",
+        "src": "/assets/photography-web/musicians/15.jpg",
+        "full": "/assets/photography-web/musicians/15-full.jpg"
+      },
+      {
+        "file": "_SSP4622.jpg",
+        "width": 5626,
+        "height": 3751,
+        "thumb": "/assets/photography-web/musicians/16-t.jpg",
+        "src": "/assets/photography-web/musicians/16.jpg",
+        "full": "/assets/photography-web/musicians/16-full.jpg"
+      },
+      {
+        "file": "DSC01343-Edit-2.jpg",
+        "width": 5462,
+        "height": 3852,
+        "thumb": "/assets/photography-web/musicians/17-t.jpg",
+        "src": "/assets/photography-web/musicians/17.jpg",
+        "full": "/assets/photography-web/musicians/17-full.jpg"
+      },
+      {
+        "file": "DSC03199-Edit.jpg",
+        "width": 3936,
+        "height": 2632,
+        "thumb": "/assets/photography-web/musicians/18-t.jpg",
+        "src": "/assets/photography-web/musicians/18.jpg",
+        "full": "/assets/photography-web/musicians/18-full.jpg"
+      },
+      {
+        "file": "DSC04562-Edit-2.jpg",
+        "width": 7218,
+        "height": 8843,
+        "thumb": "/assets/photography-web/musicians/19-t.jpg",
+        "src": "/assets/photography-web/musicians/19.jpg",
+        "full": "/assets/photography-web/musicians/19-full.jpg"
+      },
+      {
+        "file": "DSC08449-Edit.jpg",
+        "width": 4000,
+        "height": 6000,
+        "thumb": "/assets/photography-web/musicians/20-t.jpg",
+        "src": "/assets/photography-web/musicians/20.jpg",
+        "full": "/assets/photography-web/musicians/20-full.jpg"
+      },
+      {
+        "file": "LK_02711-Edit.jpg",
+        "width": 5568,
+        "height": 3712,
+        "thumb": "/assets/photography-web/musicians/21-t.jpg",
+        "src": "/assets/photography-web/musicians/21.jpg",
+        "full": "/assets/photography-web/musicians/21-full.jpg"
+      },
+      {
+        "file": "LK_02751-Edit.jpg",
+        "width": 4000,
+        "height": 6000,
+        "thumb": "/assets/photography-web/musicians/22-t.jpg",
+        "src": "/assets/photography-web/musicians/22.jpg",
+        "full": "/assets/photography-web/musicians/22-full.jpg"
+      },
+      {
+        "file": "LK_02754-Edit.jpg",
+        "width": 4000,
+        "height": 6000,
+        "thumb": "/assets/photography-web/musicians/23-t.jpg",
+        "src": "/assets/photography-web/musicians/23.jpg",
+        "full": "/assets/photography-web/musicians/23-full.jpg"
+      },
+      {
+        "file": "LK_02873-Edit.jpg",
+        "width": 6000,
+        "height": 4000,
+        "thumb": "/assets/photography-web/musicians/24-t.jpg",
+        "src": "/assets/photography-web/musicians/24.jpg",
+        "full": "/assets/photography-web/musicians/24-full.jpg"
+      }
+    ]
+  },
+  {
+    "folder": "Nature",
+    "slug": "nature",
+    "frames": [
+      {
+        "file": "Nature 1.jpg",
+        "width": 3992,
+        "height": 2242,
+        "thumb": "/assets/photography-web/nature/01-t.jpg",
+        "src": "/assets/photography-web/nature/01.jpg",
+        "full": "/assets/photography-web/nature/01-full.jpg"
+      },
+      {
+        "file": "Nature 2.jpg",
+        "width": 3992,
+        "height": 2242,
+        "thumb": "/assets/photography-web/nature/02-t.jpg",
+        "src": "/assets/photography-web/nature/02.jpg",
+        "full": "/assets/photography-web/nature/02-full.jpg"
+      },
+      {
+        "file": "Nature 3.jpg",
+        "width": 3992,
+        "height": 2242,
+        "thumb": "/assets/photography-web/nature/03-t.jpg",
+        "src": "/assets/photography-web/nature/03.jpg",
+        "full": "/assets/photography-web/nature/03-full.jpg"
+      },
+      {
+        "file": "Nature 4.jpg",
+        "width": 3992,
+        "height": 2242,
+        "thumb": "/assets/photography-web/nature/04-t.jpg",
+        "src": "/assets/photography-web/nature/04.jpg",
+        "full": "/assets/photography-web/nature/04-full.jpg"
+      },
+      {
+        "file": "Nature 5.jpg",
+        "width": 5137,
+        "height": 3354,
+        "thumb": "/assets/photography-web/nature/05-t.jpg",
+        "src": "/assets/photography-web/nature/05.jpg",
+        "full": "/assets/photography-web/nature/05-full.jpg"
+      },
+      {
+        "file": "Nature 6.jpg",
+        "width": 3992,
+        "height": 2242,
+        "thumb": "/assets/photography-web/nature/06-t.jpg",
+        "src": "/assets/photography-web/nature/06.jpg",
+        "full": "/assets/photography-web/nature/06-full.jpg"
+      },
+      {
+        "file": "Nature 7.jpg",
+        "width": 3992,
+        "height": 2242,
+        "thumb": "/assets/photography-web/nature/07-t.jpg",
+        "src": "/assets/photography-web/nature/07.jpg",
+        "full": "/assets/photography-web/nature/07-full.jpg"
+      },
+      {
+        "file": "Nature 8.jpg",
+        "width": 3877,
+        "height": 2743,
+        "thumb": "/assets/photography-web/nature/08-t.jpg",
+        "src": "/assets/photography-web/nature/08.jpg",
+        "full": "/assets/photography-web/nature/08-full.jpg"
+      },
+      {
+        "file": "Nature 9.jpg",
+        "width": 3992,
+        "height": 2571,
+        "thumb": "/assets/photography-web/nature/09-t.jpg",
+        "src": "/assets/photography-web/nature/09.jpg",
+        "full": "/assets/photography-web/nature/09-full.jpg"
+      },
+      {
+        "file": "Nature 10.jpg",
+        "width": 3888,
+        "height": 2592,
+        "thumb": "/assets/photography-web/nature/10-t.jpg",
+        "src": "/assets/photography-web/nature/10.jpg",
+        "full": "/assets/photography-web/nature/10-full.jpg"
+      },
+      {
+        "file": "Nature 11.jpg",
+        "width": 1366,
+        "height": 2048,
+        "thumb": "/assets/photography-web/nature/11-t.jpg",
+        "src": "/assets/photography-web/nature/11.jpg",
+        "full": "/assets/photography-web/nature/11-full.jpg"
+      },
+      {
+        "file": "Nature 12.jpg",
+        "width": 6000,
+        "height": 3777,
+        "thumb": "/assets/photography-web/nature/12-t.jpg",
+        "src": "/assets/photography-web/nature/12.jpg",
+        "full": "/assets/photography-web/nature/12-full.jpg"
+      },
+      {
+        "file": "Nature 13.jpg",
+        "width": 3753,
+        "height": 2813,
+        "thumb": "/assets/photography-web/nature/13-t.jpg",
+        "src": "/assets/photography-web/nature/13.jpg",
+        "full": "/assets/photography-web/nature/13-full.jpg"
+      },
+      {
+        "file": "Nature 14.jpg",
+        "width": 3992,
+        "height": 2495,
+        "thumb": "/assets/photography-web/nature/14-t.jpg",
+        "src": "/assets/photography-web/nature/14.jpg",
+        "full": "/assets/photography-web/nature/14-full.jpg"
+      },
+      {
+        "file": "Nature 15.jpg",
+        "width": 5836,
+        "height": 3317,
+        "thumb": "/assets/photography-web/nature/15-t.jpg",
+        "src": "/assets/photography-web/nature/15.jpg",
+        "full": "/assets/photography-web/nature/15-full.jpg"
+      }
+    ]
+  },
+  {
+    "folder": "Studio A",
+    "slug": "studio-a",
+    "frames": [
+      {
+        "file": "1A501879-Edit 02.jpg",
+        "width": 5801,
+        "height": 3867,
+        "thumb": "/assets/photography-web/studio-a/01-t.jpg",
+        "src": "/assets/photography-web/studio-a/01.jpg",
+        "full": "/assets/photography-web/studio-a/01-full.jpg"
+      },
+      {
+        "file": "1A502164-Edit.jpg",
+        "width": 3600,
+        "height": 4553,
+        "thumb": "/assets/photography-web/studio-a/02-t.jpg",
+        "src": "/assets/photography-web/studio-a/02.jpg",
+        "full": "/assets/photography-web/studio-a/02-full.jpg"
+      },
+      {
+        "file": "018_20250308_Swathi  Alex_Couple Shoot__DSC01404_455.jpg",
+        "width": 6959,
+        "height": 5488,
+        "thumb": "/assets/photography-web/studio-a/03-t.jpg",
+        "src": "/assets/photography-web/studio-a/03.jpg",
+        "full": "/assets/photography-web/studio-a/03-full.jpg"
+      },
+      {
+        "file": "035_20260404_Sriram Nivedha_Sangeet__DSC01825_354.jpg",
+        "width": 3597,
+        "height": 5395,
+        "thumb": "/assets/photography-web/studio-a/04-t.jpg",
+        "src": "/assets/photography-web/studio-a/04.jpg",
+        "full": "/assets/photography-web/studio-a/04-full.jpg"
+      },
+      {
+        "file": "037_20250308_Swathi  Alex_Couple Shoot__DSC01600_1019.jpg",
+        "width": 6106,
+        "height": 9159,
+        "thumb": "/assets/photography-web/studio-a/05-t.jpg",
+        "src": "/assets/photography-web/studio-a/05.jpg",
+        "full": "/assets/photography-web/studio-a/05-full.jpg"
+      },
+      {
+        "file": "050_20250308_Swathi  Alex_Couple Shoot__DSC01762_1417.jpg",
+        "width": 5898,
+        "height": 3932,
+        "thumb": "/assets/photography-web/studio-a/06-t.jpg",
+        "src": "/assets/photography-web/studio-a/06.jpg",
+        "full": "/assets/photography-web/studio-a/06-full.jpg"
+      },
+      {
+        "file": "053_20250308_Swathi  Alex_Couple Shoot__B_504596_1695.jpg",
+        "width": 8424,
+        "height": 5616,
+        "thumb": "/assets/photography-web/studio-a/07-t.jpg",
+        "src": "/assets/photography-web/studio-a/07.jpg",
+        "full": "/assets/photography-web/studio-a/07-full.jpg"
+      },
+      {
+        "file": "20160703_NishanthMalavika_A001_Outdoor_158-Edit-Edit-2-Edit-Edit.jpg",
+        "width": 3748,
+        "height": 2350,
+        "thumb": "/assets/photography-web/studio-a/08-t.jpg",
+        "src": "/assets/photography-web/studio-a/08.jpg",
+        "full": "/assets/photography-web/studio-a/08-full.jpg"
+      },
+      {
+        "file": "20161208-Macsha-Aabidah-Mehendi-a001-20161208-Macsha-Aabidah-Mehendi-a001-DSC00853 (1).jpg",
+        "width": 4000,
+        "height": 2669,
+        "thumb": "/assets/photography-web/studio-a/09-t.jpg",
+        "src": "/assets/photography-web/studio-a/09.jpg",
+        "full": "/assets/photography-web/studio-a/09-full.jpg"
+      },
+      {
+        "file": "20171125_Koushik Mounika_Wedding_B001_171.jpg",
+        "width": 2560,
+        "height": 1707,
+        "thumb": "/assets/photography-web/studio-a/10-t.jpg",
+        "src": "/assets/photography-web/studio-a/10.jpg",
+        "full": "/assets/photography-web/studio-a/10-full.jpg"
+      },
+      {
+        "file": "20171126-Koushik Mounika-A001-016 01.jpg",
+        "width": 5782,
+        "height": 3855,
+        "thumb": "/assets/photography-web/studio-a/11-t.jpg",
+        "src": "/assets/photography-web/studio-a/11.jpg",
+        "full": "/assets/photography-web/studio-a/11-full.jpg"
+      },
+      {
+        "file": "20180304_Venkat Rishika_A001_Wedding_039.jpg",
+        "width": 2048,
+        "height": 1365,
+        "thumb": "/assets/photography-web/studio-a/12-t.jpg",
+        "src": "/assets/photography-web/studio-a/12.jpg",
+        "full": "/assets/photography-web/studio-a/12-full.jpg"
+      },
+      {
+        "file": "20180304_Venkat Rishika_A001_Wedding_289.jpg",
+        "width": 2048,
+        "height": 1352,
+        "thumb": "/assets/photography-web/studio-a/13-t.jpg",
+        "src": "/assets/photography-web/studio-a/13.jpg",
+        "full": "/assets/photography-web/studio-a/13-full.jpg"
+      },
+      {
+        "file": "20180324_Anas Rumaiza_A001_Reception_053 copy.jpg",
+        "width": 1366,
+        "height": 2048,
+        "thumb": "/assets/photography-web/studio-a/14-t.jpg",
+        "src": "/assets/photography-web/studio-a/14.jpg",
+        "full": "/assets/photography-web/studio-a/14-full.jpg"
+      },
+      {
+        "file": "20181211_Adithya Ashmitha_Reception_B002_1111.jpg",
+        "width": 5098,
+        "height": 3805,
+        "thumb": "/assets/photography-web/studio-a/15-t.jpg",
+        "src": "/assets/photography-web/studio-a/15.jpg",
+        "full": "/assets/photography-web/studio-a/15-full.jpg"
+      },
+      {
+        "file": "20190211_Vishagan Soundarya_wedding_A005_652.jpg",
+        "width": 5728,
+        "height": 3819,
+        "thumb": "/assets/photography-web/studio-a/16-t.jpg",
+        "src": "/assets/photography-web/studio-a/16.jpg",
+        "full": "/assets/photography-web/studio-a/16-full.jpg"
+      },
+      {
+        "file": "20190211_Vishagan Soundarya_wedding_A005_1032.jpg",
+        "width": 5491,
+        "height": 3730,
+        "thumb": "/assets/photography-web/studio-a/17-t.jpg",
+        "src": "/assets/photography-web/studio-a/17.jpg",
+        "full": "/assets/photography-web/studio-a/17-full.jpg"
+      },
+      {
+        "file": "20191124_Chandana Abhimanyu_Reception_A001_020.jpg",
+        "width": 6000,
+        "height": 4000,
+        "thumb": "/assets/photography-web/studio-a/18-t.jpg",
+        "src": "/assets/photography-web/studio-a/18.jpg",
+        "full": "/assets/photography-web/studio-a/18-full.jpg"
+      },
+      {
+        "file": "20200208_Ram Varsha_B005_Pool Party_183.jpg",
+        "width": 5358,
+        "height": 3572,
+        "thumb": "/assets/photography-web/studio-a/19-t.jpg",
+        "src": "/assets/photography-web/studio-a/19.jpg",
+        "full": "/assets/photography-web/studio-a/19-full.jpg"
+      },
+      {
+        "file": "20201125_Akhilesh Hyndava_Bharaat_B002_1433.jpg",
+        "width": 7633,
+        "height": 5091,
+        "thumb": "/assets/photography-web/studio-a/20-t.jpg",
+        "src": "/assets/photography-web/studio-a/20.jpg",
+        "full": "/assets/photography-web/studio-a/20-full.jpg"
+      },
+      {
+        "file": "20201203-Sahithi_Srikar_Pellikoduku_A005_863.jpg",
+        "width": 6000,
+        "height": 4000,
+        "thumb": "/assets/photography-web/studio-a/21-t.jpg",
+        "src": "/assets/photography-web/studio-a/21.jpg",
+        "full": "/assets/photography-web/studio-a/21-full.jpg"
+      },
+      {
+        "file": "20210224_Divya_Prashanth_Sangeet_B005_266.jpg",
+        "width": 5770,
+        "height": 3847,
+        "thumb": "/assets/photography-web/studio-a/22-t.jpg",
+        "src": "/assets/photography-web/studio-a/22.jpg",
+        "full": "/assets/photography-web/studio-a/22-full.jpg"
+      },
+      {
+        "file": "20210813_Ravali_Vikas_Wedding_A006_318.jpg",
+        "width": 4058,
+        "height": 2705,
+        "thumb": "/assets/photography-web/studio-a/23-t.jpg",
+        "src": "/assets/photography-web/studio-a/23.jpg",
+        "full": "/assets/photography-web/studio-a/23-full.jpg"
+      },
+      {
+        "file": "20210911_Ganesh_Anjana_Reception_B005_348.jpg",
+        "width": 5608,
+        "height": 3739,
+        "thumb": "/assets/photography-web/studio-a/24-t.jpg",
+        "src": "/assets/photography-web/studio-a/24.jpg",
+        "full": "/assets/photography-web/studio-a/24-full.jpg"
+      },
+      {
+        "file": "20211113_Tarunya Sankeerth_Sangeet_Drone_007.jpg",
+        "width": 5472,
+        "height": 3648,
+        "thumb": "/assets/photography-web/studio-a/25-t.jpg",
+        "src": "/assets/photography-web/studio-a/25.jpg",
+        "full": "/assets/photography-web/studio-a/25-full.jpg"
+      },
+      {
+        "file": "20211114_Tarunya Sankeerth_The Memory Journal_A001_028.jpg",
+        "width": 5452,
+        "height": 3635,
+        "thumb": "/assets/photography-web/studio-a/26-t.jpg",
+        "src": "/assets/photography-web/studio-a/26.jpg",
+        "full": "/assets/photography-web/studio-a/26-full.jpg"
+      },
+      {
+        "file": "20211210_Srikanth Priyanka_Wedding_A005_038.jpg",
+        "width": 5096,
+        "height": 3397,
+        "thumb": "/assets/photography-web/studio-a/27-t.jpg",
+        "src": "/assets/photography-web/studio-a/27.jpg",
+        "full": "/assets/photography-web/studio-a/27-full.jpg"
+      },
+      {
+        "file": "20211210_Srikanth Priyanka_Wedding_A005_134.jpg",
+        "width": 5410,
+        "height": 3607,
+        "thumb": "/assets/photography-web/studio-a/28-t.jpg",
+        "src": "/assets/photography-web/studio-a/28.jpg",
+        "full": "/assets/photography-web/studio-a/28-full.jpg"
+      },
+      {
+        "file": "20211224_Nikitha_Abhinay_Wedding_A005_030.jpg",
+        "width": 5798,
+        "height": 3865,
+        "thumb": "/assets/photography-web/studio-a/29-t.jpg",
+        "src": "/assets/photography-web/studio-a/29.jpg",
+        "full": "/assets/photography-web/studio-a/29-full.jpg"
+      },
+      {
+        "file": "20211226_Advaitha_Nilay_Wedding_B005_040.jpg",
+        "width": 3748,
+        "height": 2499,
+        "thumb": "/assets/photography-web/studio-a/30-t.jpg",
+        "src": "/assets/photography-web/studio-a/30.jpg",
+        "full": "/assets/photography-web/studio-a/30-full.jpg"
+      },
+      {
+        "file": "20220123_Varshini_Chris_Wedding_A005_050.jpg",
+        "width": 5506,
+        "height": 3671,
+        "thumb": "/assets/photography-web/studio-a/31-t.jpg",
+        "src": "/assets/photography-web/studio-a/31.jpg",
+        "full": "/assets/photography-web/studio-a/31-full.jpg"
+      },
+      {
+        "file": "20220306_Praveen_Roopa_Couple_Shoot_043.jpg",
+        "width": 5464,
+        "height": 3640,
+        "thumb": "/assets/photography-web/studio-a/32-t.jpg",
+        "src": "/assets/photography-web/studio-a/32.jpg",
+        "full": "/assets/photography-web/studio-a/32-full.jpg"
+      },
+      {
+        "file": "20220326_RASMIANISH_WEDDING_A006_5340.jpg",
+        "width": 5284,
+        "height": 3523,
+        "thumb": "/assets/photography-web/studio-a/33-t.jpg",
+        "src": "/assets/photography-web/studio-a/33.jpg",
+        "full": "/assets/photography-web/studio-a/33-full.jpg"
+      },
+      {
+        "file": "20220401_Akshitha Prasad_Outdoor_A005_33.jpg",
+        "width": 9031,
+        "height": 6021,
+        "thumb": "/assets/photography-web/studio-a/34-t.jpg",
+        "src": "/assets/photography-web/studio-a/34.jpg",
+        "full": "/assets/photography-web/studio-a/34-full.jpg"
+      },
+      {
+        "file": "20220511_Ishita_Vasprad_Wedding_B005_162.jpg",
+        "width": 5335,
+        "height": 3557,
+        "thumb": "/assets/photography-web/studio-a/35-t.jpg",
+        "src": "/assets/photography-web/studio-a/35.jpg",
+        "full": "/assets/photography-web/studio-a/35-full.jpg"
+      },
+      {
+        "file": "20221111_Jay  Linda_Wedding_Maldives_2A51160-Recovered_101.jpg",
+        "width": 4368,
+        "height": 2914,
+        "thumb": "/assets/photography-web/studio-a/36-t.jpg",
+        "src": "/assets/photography-web/studio-a/36.jpg",
+        "full": "/assets/photography-web/studio-a/36-full.jpg"
+      },
+      {
+        "file": "20221111_Jay  Linda_Wedding_Maldives_2A51700_277.jpg",
+        "width": 4910,
+        "height": 3276,
+        "thumb": "/assets/photography-web/studio-a/37-t.jpg",
+        "src": "/assets/photography-web/studio-a/37.jpg",
+        "full": "/assets/photography-web/studio-a/37-full.jpg"
+      },
+      {
+        "file": "20221111_Jay Linda_Wedding_Maldives_2A51771_301.jpg",
+        "width": 4626,
+        "height": 3086,
+        "thumb": "/assets/photography-web/studio-a/38-t.jpg",
+        "src": "/assets/photography-web/studio-a/38.jpg",
+        "full": "/assets/photography-web/studio-a/38-full.jpg"
+      },
+      {
+        "file": "20221208_Divya_Ravinder_Wedding__1B55269_1628.JPG",
+        "width": 6000,
+        "height": 4000,
+        "thumb": "/assets/photography-web/studio-a/39-t.jpg",
+        "src": "/assets/photography-web/studio-a/39.jpg",
+        "full": "/assets/photography-web/studio-a/39-full.jpg"
+      },
+      {
+        "file": "20221210_Akhil_Gauthami_Sangeet__2A52214_269.JPG",
+        "width": 7952,
+        "height": 5304,
+        "thumb": "/assets/photography-web/studio-a/40-t.jpg",
+        "src": "/assets/photography-web/studio-a/40.jpg",
+        "full": "/assets/photography-web/studio-a/40-full.jpg"
+      },
+      {
+        "file": "20230112_Nitin_Bernardita_Sikh_Wedding_1B56971_100.JPG",
+        "width": 4967,
+        "height": 3311,
+        "thumb": "/assets/photography-web/studio-a/41-t.jpg",
+        "src": "/assets/photography-web/studio-a/41.jpg",
+        "full": "/assets/photography-web/studio-a/41-full.jpg"
+      },
+      {
+        "file": "20230126_Siddharth_Samhita_Wedding_1A16105_162.jpg",
+        "width": 2901,
+        "height": 3626,
+        "thumb": "/assets/photography-web/studio-a/42-t.jpg",
+        "src": "/assets/photography-web/studio-a/42.jpg",
+        "full": "/assets/photography-web/studio-a/42-full.jpg"
+      },
+      {
+        "file": "20230523_Edward Vera_Studio A_1A508994_10.jpg",
+        "width": 3352,
+        "height": 2235,
+        "thumb": "/assets/photography-web/studio-a/43-t.jpg",
+        "src": "/assets/photography-web/studio-a/43.jpg",
+        "full": "/assets/photography-web/studio-a/43-full.jpg"
+      },
+      {
+        "file": "20230525_Edward Vera_Studio A_1A501051_26.jpg",
+        "width": 3851,
+        "height": 2567,
+        "thumb": "/assets/photography-web/studio-a/44-t.jpg",
+        "src": "/assets/photography-web/studio-a/44.jpg",
+        "full": "/assets/photography-web/studio-a/44-full.jpg"
+      },
+      {
+        "file": "20230527_Amit Pragna_Studio A_1A502111_01.jpg",
+        "width": 3769,
+        "height": 5653,
+        "thumb": "/assets/photography-web/studio-a/45-t.jpg",
+        "src": "/assets/photography-web/studio-a/45.jpg",
+        "full": "/assets/photography-web/studio-a/45-full.jpg"
+      },
+      {
+        "file": "20230629_Lasya__Shrey_Engagement_A006_198-Edit.jpg",
+        "width": 7590,
+        "height": 6072,
+        "thumb": "/assets/photography-web/studio-a/46-t.jpg",
+        "src": "/assets/photography-web/studio-a/46.jpg",
+        "full": "/assets/photography-web/studio-a/46-full.jpg"
+      },
+      {
+        "file": "20240209_Prasanna  Barath_Sangeet_1A501503-450.jpg",
+        "width": 4000,
+        "height": 6000,
+        "thumb": "/assets/photography-web/studio-a/47-t.jpg",
+        "src": "/assets/photography-web/studio-a/47.jpg",
+        "full": "/assets/photography-web/studio-a/47-full.jpg"
+      },
+      {
+        "file": "20240215_Surya Amirtha_Wedding__DSC1949_52.jpg",
+        "width": 5533,
+        "height": 3689,
+        "thumb": "/assets/photography-web/studio-a/48-t.jpg",
+        "src": "/assets/photography-web/studio-a/48.jpg",
+        "full": "/assets/photography-web/studio-a/48-full.jpg"
+      },
+      {
+        "file": "20240319_Soumya Khaleel_Engagement_DSC07452_532.jpg",
+        "width": 7836,
+        "height": 5224,
+        "thumb": "/assets/photography-web/studio-a/49-t.jpg",
+        "src": "/assets/photography-web/studio-a/49.jpg",
+        "full": "/assets/photography-web/studio-a/49-full.jpg"
+      },
+      {
+        "file": "20240321_Soumya Khaleel_Wedding__AMA3793_069.jpg",
+        "width": 5328,
+        "height": 4000,
+        "thumb": "/assets/photography-web/studio-a/50-t.jpg",
+        "src": "/assets/photography-web/studio-a/50.jpg",
+        "full": "/assets/photography-web/studio-a/50-full.jpg"
+      },
+      {
+        "file": "20240321_Soumya Khaleel_Wedding__GA_0010_1694.jpg",
+        "width": 6000,
+        "height": 4000,
+        "thumb": "/assets/photography-web/studio-a/51-t.jpg",
+        "src": "/assets/photography-web/studio-a/51.jpg",
+        "full": "/assets/photography-web/studio-a/51-full.jpg"
+      },
+      {
+        "file": "20240321_Soumya__Khaleel_Wedding_NAA2149_1291-Edit.jpg",
+        "width": 5698,
+        "height": 4940,
+        "thumb": "/assets/photography-web/studio-a/52-t.jpg",
+        "src": "/assets/photography-web/studio-a/52.jpg",
+        "full": "/assets/photography-web/studio-a/52-full.jpg"
+      },
+      {
+        "file": "20240913_Shwetha_Niranjan_Mehandi__2A47699_865-Edit.jpg",
+        "width": 4658,
+        "height": 3105,
+        "thumb": "/assets/photography-web/studio-a/53-t.jpg",
+        "src": "/assets/photography-web/studio-a/53.jpg",
+        "full": "/assets/photography-web/studio-a/53-full.jpg"
+      },
+      {
+        "file": "20241107_Teja  Sai Sanjana_Pellikodukku_1A66260_1537.jpg",
+        "width": 6989,
+        "height": 5591,
+        "thumb": "/assets/photography-web/studio-a/54-t.jpg",
+        "src": "/assets/photography-web/studio-a/54.jpg",
+        "full": "/assets/photography-web/studio-a/54-full.jpg"
+      },
+      {
+        "file": "20241107_Teja  Sai Sanjana_Pellikodukku_1A66530_1966.jpg",
+        "width": 6999,
+        "height": 5599,
+        "thumb": "/assets/photography-web/studio-a/55-t.jpg",
+        "src": "/assets/photography-web/studio-a/55.jpg",
+        "full": "/assets/photography-web/studio-a/55-full.jpg"
+      },
+      {
+        "file": "20241109_Teja  Sai Sanjana_Wedding_1A40555_2938-520.jpg",
+        "width": 7952,
+        "height": 5304,
+        "thumb": "/assets/photography-web/studio-a/56-t.jpg",
+        "src": "/assets/photography-web/studio-a/56.jpg",
+        "full": "/assets/photography-web/studio-a/56-full.jpg"
+      },
+      {
+        "file": "20241208_Ditya  Siddarth_Couple shoot_A006_060.jpg",
+        "width": 9156,
+        "height": 6104,
+        "thumb": "/assets/photography-web/studio-a/57-t.jpg",
+        "src": "/assets/photography-web/studio-a/57.jpg",
+        "full": "/assets/photography-web/studio-a/57-full.jpg"
+      },
+      {
+        "file": "20241208_Ditya Siddarth_Couple shoot_1A503158_067.jpg",
+        "width": 3822,
+        "height": 5799,
+        "thumb": "/assets/photography-web/studio-a/58-t.jpg",
+        "src": "/assets/photography-web/studio-a/58.jpg",
+        "full": "/assets/photography-web/studio-a/58-full.jpg"
+      },
+      {
+        "file": "20241209_Ditya Siddarth_Sangeet1A104455_6500-627.jpg",
+        "width": 6656,
+        "height": 4437,
+        "thumb": "/assets/photography-web/studio-a/59-t.jpg",
+        "src": "/assets/photography-web/studio-a/59.jpg",
+        "full": "/assets/photography-web/studio-a/59-full.jpg"
+      },
+      {
+        "file": "20241211_Ditya  Siddarth_Pellikuthuru  Pellikoduku__2A41653_1451-121 copy.jpg",
+        "width": 6024,
+        "height": 3824,
+        "thumb": "/assets/photography-web/studio-a/60-t.jpg",
+        "src": "/assets/photography-web/studio-a/60.jpg",
+        "full": "/assets/photography-web/studio-a/60-full.jpg"
+      },
+      {
+        "file": "_1A10013-Edit copy 2.jpg",
+        "width": 4987,
+        "height": 4987,
+        "thumb": "/assets/photography-web/studio-a/61-t.jpg",
+        "src": "/assets/photography-web/studio-a/61.jpg",
+        "full": "/assets/photography-web/studio-a/61-full.jpg"
+      },
+      {
+        "file": "_1A11324.jpg",
+        "width": 7008,
+        "height": 4672,
+        "thumb": "/assets/photography-web/studio-a/62-t.jpg",
+        "src": "/assets/photography-web/studio-a/62.jpg",
+        "full": "/assets/photography-web/studio-a/62-full.jpg"
+      },
+      {
+        "file": "_1A12723-Edit.jpg",
+        "width": 7000,
+        "height": 5316,
+        "thumb": "/assets/photography-web/studio-a/63-t.jpg",
+        "src": "/assets/photography-web/studio-a/63.jpg",
+        "full": "/assets/photography-web/studio-a/63-full.jpg"
+      },
+      {
+        "file": "_1A17770.jpg",
+        "width": 7008,
+        "height": 4672,
+        "thumb": "/assets/photography-web/studio-a/64-t.jpg",
+        "src": "/assets/photography-web/studio-a/64.jpg",
+        "full": "/assets/photography-web/studio-a/64-full.jpg"
+      },
+      {
+        "file": "_DSC3092.jpg",
+        "width": 2048,
+        "height": 1366,
+        "thumb": "/assets/photography-web/studio-a/65-t.jpg",
+        "src": "/assets/photography-web/studio-a/65.jpg",
+        "full": "/assets/photography-web/studio-a/65-full.jpg"
+      },
+      {
+        "file": "_GA_0010-2.jpg",
+        "width": 6000,
+        "height": 4000,
+        "thumb": "/assets/photography-web/studio-a/66-t.jpg",
+        "src": "/assets/photography-web/studio-a/66.jpg",
+        "full": "/assets/photography-web/studio-a/66-full.jpg"
+      },
+      {
+        "file": "_NAA7843.jpg",
+        "width": 2249,
+        "height": 1500,
+        "thumb": "/assets/photography-web/studio-a/67-t.jpg",
+        "src": "/assets/photography-web/studio-a/67.jpg",
+        "full": "/assets/photography-web/studio-a/67-full.jpg"
+      },
+      {
+        "file": "AN-142.jpg",
+        "width": 2503,
+        "height": 1669,
+        "thumb": "/assets/photography-web/studio-a/68-t.jpg",
+        "src": "/assets/photography-web/studio-a/68.jpg",
+        "full": "/assets/photography-web/studio-a/68-full.jpg"
+      },
+      {
+        "file": "AS-137.jpg",
+        "width": 2048,
+        "height": 1555,
+        "thumb": "/assets/photography-web/studio-a/69-t.jpg",
+        "src": "/assets/photography-web/studio-a/69.jpg",
+        "full": "/assets/photography-web/studio-a/69-full.jpg"
+      },
+      {
+        "file": "AT-49.jpg",
+        "width": 2048,
+        "height": 1365,
+        "thumb": "/assets/photography-web/studio-a/70-t.jpg",
+        "src": "/assets/photography-web/studio-a/70.jpg",
+        "full": "/assets/photography-web/studio-a/70-full.jpg"
+      },
+      {
+        "file": "AT-150.jpg",
+        "width": 2048,
+        "height": 1365,
+        "thumb": "/assets/photography-web/studio-a/71-t.jpg",
+        "src": "/assets/photography-web/studio-a/71.jpg",
+        "full": "/assets/photography-web/studio-a/71-full.jpg"
+      },
+      {
+        "file": "AT-154.jpg",
+        "width": 1751,
+        "height": 2048,
+        "thumb": "/assets/photography-web/studio-a/72-t.jpg",
+        "src": "/assets/photography-web/studio-a/72.jpg",
+        "full": "/assets/photography-web/studio-a/72-full.jpg"
+      },
+      {
+        "file": "AT-196.jpg",
+        "width": 2048,
+        "height": 1365,
+        "thumb": "/assets/photography-web/studio-a/73-t.jpg",
+        "src": "/assets/photography-web/studio-a/73.jpg",
+        "full": "/assets/photography-web/studio-a/73-full.jpg"
+      },
+      {
+        "file": "DJI_0175-Edit.jpg",
+        "width": 4571,
+        "height": 3045,
+        "thumb": "/assets/photography-web/studio-a/74-t.jpg",
+        "src": "/assets/photography-web/studio-a/74.jpg",
+        "full": "/assets/photography-web/studio-a/74-full.jpg"
+      },
+      {
+        "file": "DS-093.jpg",
+        "width": 2560,
+        "height": 1707,
+        "thumb": "/assets/photography-web/studio-a/75-t.jpg",
+        "src": "/assets/photography-web/studio-a/75.jpg",
+        "full": "/assets/photography-web/studio-a/75-full.jpg"
+      },
+      {
+        "file": "DSC00295-Edit.jpg",
+        "width": 3072,
+        "height": 4513,
+        "thumb": "/assets/photography-web/studio-a/76-t.jpg",
+        "src": "/assets/photography-web/studio-a/76.jpg",
+        "full": "/assets/photography-web/studio-a/76-full.jpg"
+      },
+      {
+        "file": "DSC00973.jpg",
+        "width": 3072,
+        "height": 4608,
+        "thumb": "/assets/photography-web/studio-a/77-t.jpg",
+        "src": "/assets/photography-web/studio-a/77.jpg",
+        "full": "/assets/photography-web/studio-a/77-full.jpg"
+      },
+      {
+        "file": "DSC04888-Edit.jpg",
+        "width": 6000,
+        "height": 4000,
+        "thumb": "/assets/photography-web/studio-a/78-t.jpg",
+        "src": "/assets/photography-web/studio-a/78.jpg",
+        "full": "/assets/photography-web/studio-a/78-full.jpg"
+      },
+      {
+        "file": "DSC05825-Edit.jpg",
+        "width": 5687,
+        "height": 3199,
+        "thumb": "/assets/photography-web/studio-a/79-t.jpg",
+        "src": "/assets/photography-web/studio-a/79.jpg",
+        "full": "/assets/photography-web/studio-a/79-full.jpg"
+      },
+      {
+        "file": "DSC08744.jpg",
+        "width": 9504,
+        "height": 6336,
+        "thumb": "/assets/photography-web/studio-a/80-t.jpg",
+        "src": "/assets/photography-web/studio-a/80.jpg",
+        "full": "/assets/photography-web/studio-a/80-full.jpg"
+      },
+      {
+        "file": "DSC09674.jpg",
+        "width": 9504,
+        "height": 6336,
+        "thumb": "/assets/photography-web/studio-a/81-t.jpg",
+        "src": "/assets/photography-web/studio-a/81.jpg",
+        "full": "/assets/photography-web/studio-a/81-full.jpg"
+      },
+      {
+        "file": "DSC09815-Edit.jpg",
+        "width": 9504,
+        "height": 6336,
+        "thumb": "/assets/photography-web/studio-a/82-t.jpg",
+        "src": "/assets/photography-web/studio-a/82.jpg",
+        "full": "/assets/photography-web/studio-a/82-full.jpg"
+      },
+      {
+        "file": "DSC09971-Edit.jpg",
+        "width": 4608,
+        "height": 3072,
+        "thumb": "/assets/photography-web/studio-a/83-t.jpg",
+        "src": "/assets/photography-web/studio-a/83.jpg",
+        "full": "/assets/photography-web/studio-a/83-full.jpg"
+      },
+      {
+        "file": "Eduard 13.jpg",
+        "width": 4000,
+        "height": 5000,
+        "thumb": "/assets/photography-web/studio-a/84-t.jpg",
+        "src": "/assets/photography-web/studio-a/84.jpg",
+        "full": "/assets/photography-web/studio-a/84-full.jpg"
+      },
+      {
+        "file": "KV-55-1.jpg",
+        "width": 5000,
+        "height": 3710,
+        "thumb": "/assets/photography-web/studio-a/85-t.jpg",
+        "src": "/assets/photography-web/studio-a/85.jpg",
+        "full": "/assets/photography-web/studio-a/85-full.jpg"
+      },
+      {
+        "file": "KV-55.jpg",
+        "width": 5000,
+        "height": 3710,
+        "thumb": "/assets/photography-web/studio-a/86-t.jpg",
+        "src": "/assets/photography-web/studio-a/86.jpg",
+        "full": "/assets/photography-web/studio-a/86-full.jpg"
+      },
+      {
+        "file": "KV-76.jpg",
+        "width": 5000,
+        "height": 3333,
+        "thumb": "/assets/photography-web/studio-a/87-t.jpg",
+        "src": "/assets/photography-web/studio-a/87.jpg",
+        "full": "/assets/photography-web/studio-a/87-full.jpg"
+      },
+      {
+        "file": "LK_06322.jpg",
+        "width": 2048,
+        "height": 1366,
+        "thumb": "/assets/photography-web/studio-a/88-t.jpg",
+        "src": "/assets/photography-web/studio-a/88.jpg",
+        "full": "/assets/photography-web/studio-a/88-full.jpg"
+      },
+      {
+        "file": "LK_07728-Edit.jpg",
+        "width": 5680,
+        "height": 3787,
+        "thumb": "/assets/photography-web/studio-a/89-t.jpg",
+        "src": "/assets/photography-web/studio-a/89.jpg",
+        "full": "/assets/photography-web/studio-a/89-full.jpg"
+      },
+      {
+        "file": "LK_08616.jpg",
+        "width": 2048,
+        "height": 1366,
+        "thumb": "/assets/photography-web/studio-a/90-t.jpg",
+        "src": "/assets/photography-web/studio-a/90.jpg",
+        "full": "/assets/photography-web/studio-a/90-full.jpg"
+      },
+      {
+        "file": "Paperboat -2.jpg",
+        "width": 2000,
+        "height": 1333,
+        "thumb": "/assets/photography-web/studio-a/91-t.jpg",
+        "src": "/assets/photography-web/studio-a/91.jpg",
+        "full": "/assets/photography-web/studio-a/91-full.jpg"
+      },
+      {
+        "file": "Paperboat -6.jpg",
+        "width": 2000,
+        "height": 1333,
+        "thumb": "/assets/photography-web/studio-a/92-t.jpg",
+        "src": "/assets/photography-web/studio-a/92.jpg",
+        "full": "/assets/photography-web/studio-a/92-full.jpg"
+      },
+      {
+        "file": "Paperboat -8.jpg",
+        "width": 2000,
+        "height": 1334,
+        "thumb": "/assets/photography-web/studio-a/93-t.jpg",
+        "src": "/assets/photography-web/studio-a/93.jpg",
+        "full": "/assets/photography-web/studio-a/93-full.jpg"
+      },
+      {
+        "file": "Paperboat -9.jpg",
+        "width": 2000,
+        "height": 1333,
+        "thumb": "/assets/photography-web/studio-a/94-t.jpg",
+        "src": "/assets/photography-web/studio-a/94.jpg",
+        "full": "/assets/photography-web/studio-a/94-full.jpg"
+      },
+      {
+        "file": "Paperboat -10.jpg",
+        "width": 2000,
+        "height": 1334,
+        "thumb": "/assets/photography-web/studio-a/95-t.jpg",
+        "src": "/assets/photography-web/studio-a/95.jpg",
+        "full": "/assets/photography-web/studio-a/95-full.jpg"
+      },
+      {
+        "file": "SA-22.jpg",
+        "width": 2048,
+        "height": 1366,
+        "thumb": "/assets/photography-web/studio-a/96-t.jpg",
+        "src": "/assets/photography-web/studio-a/96.jpg",
+        "full": "/assets/photography-web/studio-a/96-full.jpg"
+      },
+      {
+        "file": "SC-105.jpg",
+        "width": 4500,
+        "height": 3000,
+        "thumb": "/assets/photography-web/studio-a/97-t.jpg",
+        "src": "/assets/photography-web/studio-a/97.jpg",
+        "full": "/assets/photography-web/studio-a/97-full.jpg"
+      },
+      {
+        "file": "SK-11.jpg",
+        "width": 2048,
+        "height": 1365,
+        "thumb": "/assets/photography-web/studio-a/98-t.jpg",
+        "src": "/assets/photography-web/studio-a/98.jpg",
+        "full": "/assets/photography-web/studio-a/98-full.jpg"
+      },
+      {
+        "file": "SK-29.jpg",
+        "width": 5000,
+        "height": 3334,
+        "thumb": "/assets/photography-web/studio-a/99-t.jpg",
+        "src": "/assets/photography-web/studio-a/99.jpg",
+        "full": "/assets/photography-web/studio-a/99-full.jpg"
+      },
+      {
+        "file": "SK-30.jpg",
+        "width": 5000,
+        "height": 3334,
+        "thumb": "/assets/photography-web/studio-a/100-t.jpg",
+        "src": "/assets/photography-web/studio-a/100.jpg",
+        "full": "/assets/photography-web/studio-a/100-full.jpg"
+      },
+      {
+        "file": "SK-76.jpg",
+        "width": 2048,
+        "height": 1365,
+        "thumb": "/assets/photography-web/studio-a/101-t.jpg",
+        "src": "/assets/photography-web/studio-a/101.jpg",
+        "full": "/assets/photography-web/studio-a/101-full.jpg"
+      },
+      {
+        "file": "SK-78.jpg",
+        "width": 2048,
+        "height": 1365,
+        "thumb": "/assets/photography-web/studio-a/102-t.jpg",
+        "src": "/assets/photography-web/studio-a/102.jpg",
+        "full": "/assets/photography-web/studio-a/102-full.jpg"
+      },
+      {
+        "file": "SK-112.jpg",
+        "width": 2048,
+        "height": 1536,
+        "thumb": "/assets/photography-web/studio-a/103-t.jpg",
+        "src": "/assets/photography-web/studio-a/103.jpg",
+        "full": "/assets/photography-web/studio-a/103-full.jpg"
+      },
+      {
+        "file": "SK-182.jpg",
+        "width": 2048,
+        "height": 1538,
+        "thumb": "/assets/photography-web/studio-a/104-t.jpg",
+        "src": "/assets/photography-web/studio-a/104.jpg",
+        "full": "/assets/photography-web/studio-a/104-full.jpg"
+      },
+      {
+        "file": "SK-220.jpg",
+        "width": 2048,
+        "height": 1538,
+        "thumb": "/assets/photography-web/studio-a/105-t.jpg",
+        "src": "/assets/photography-web/studio-a/105.jpg",
+        "full": "/assets/photography-web/studio-a/105-full.jpg"
+      },
+      {
+        "file": "Sony-5.jpg",
+        "width": 3238,
+        "height": 2160,
+        "thumb": "/assets/photography-web/studio-a/106-t.jpg",
+        "src": "/assets/photography-web/studio-a/106.jpg",
+        "full": "/assets/photography-web/studio-a/106-full.jpg"
+      },
+      {
+        "file": "Sony-19.jpg",
+        "width": 3240,
+        "height": 2160,
+        "thumb": "/assets/photography-web/studio-a/107-t.jpg",
+        "src": "/assets/photography-web/studio-a/107.jpg",
+        "full": "/assets/photography-web/studio-a/107-full.jpg"
+      },
+      {
+        "file": "Story.jpg",
+        "width": 1080,
+        "height": 1920,
+        "thumb": "/assets/photography-web/studio-a/108-t.jpg",
+        "src": "/assets/photography-web/studio-a/108.jpg",
+        "full": "/assets/photography-web/studio-a/108-full.jpg"
+      },
+      {
+        "file": "SV-77.jpg",
+        "width": 2048,
+        "height": 1365,
+        "thumb": "/assets/photography-web/studio-a/109-t.jpg",
+        "src": "/assets/photography-web/studio-a/109.jpg",
+        "full": "/assets/photography-web/studio-a/109-full.jpg"
+      },
+      {
+        "file": "TS-045.jpg",
+        "width": 1608,
+        "height": 2411,
+        "thumb": "/assets/photography-web/studio-a/110-t.jpg",
+        "src": "/assets/photography-web/studio-a/110.jpg",
+        "full": "/assets/photography-web/studio-a/110-full.jpg"
+      },
+      {
+        "file": "TS-048.jpg",
+        "width": 2515,
+        "height": 1677,
+        "thumb": "/assets/photography-web/studio-a/111-t.jpg",
+        "src": "/assets/photography-web/studio-a/111.jpg",
+        "full": "/assets/photography-web/studio-a/111-full.jpg"
+      },
+      {
+        "file": "TS-062.jpg",
+        "width": 4000,
+        "height": 2667,
+        "thumb": "/assets/photography-web/studio-a/112-t.jpg",
+        "src": "/assets/photography-web/studio-a/112.jpg",
+        "full": "/assets/photography-web/studio-a/112-full.jpg"
+      },
+      {
+        "file": "TS-108.jpg",
+        "width": 4000,
+        "height": 2667,
+        "thumb": "/assets/photography-web/studio-a/113-t.jpg",
+        "src": "/assets/photography-web/studio-a/113.jpg",
+        "full": "/assets/photography-web/studio-a/113-full.jpg"
+      },
+      {
+        "file": "TS_1.jpg",
+        "width": 4000,
+        "height": 5000,
+        "thumb": "/assets/photography-web/studio-a/114-t.jpg",
+        "src": "/assets/photography-web/studio-a/114.jpg",
+        "full": "/assets/photography-web/studio-a/114-full.jpg"
+      },
+      {
+        "file": "TS_8.jpg",
+        "width": 4000,
+        "height": 5000,
+        "thumb": "/assets/photography-web/studio-a/115-t.jpg",
+        "src": "/assets/photography-web/studio-a/115.jpg",
+        "full": "/assets/photography-web/studio-a/115-full.jpg"
+      },
+      {
+        "file": "Uthra Nikhil_Outdoor_LK22.jpg",
+        "width": 7367,
+        "height": 5183,
+        "thumb": "/assets/photography-web/studio-a/116-t.jpg",
+        "src": "/assets/photography-web/studio-a/116.jpg",
+        "full": "/assets/photography-web/studio-a/116-full.jpg"
+      },
+      {
+        "file": "VD 1.jpg",
+        "width": 4000,
+        "height": 5000,
+        "thumb": "/assets/photography-web/studio-a/117-t.jpg",
+        "src": "/assets/photography-web/studio-a/117.jpg",
+        "full": "/assets/photography-web/studio-a/117-full.jpg"
+      },
+      {
+        "file": "VD 3.jpg",
+        "width": 4000,
+        "height": 5000,
+        "thumb": "/assets/photography-web/studio-a/118-t.jpg",
+        "src": "/assets/photography-web/studio-a/118.jpg",
+        "full": "/assets/photography-web/studio-a/118-full.jpg"
+      },
+      {
+        "file": "VD 4.jpg",
+        "width": 4000,
+        "height": 5000,
+        "thumb": "/assets/photography-web/studio-a/119-t.jpg",
+        "src": "/assets/photography-web/studio-a/119.jpg",
+        "full": "/assets/photography-web/studio-a/119-full.jpg"
+      }
+    ]
+  },
+  {
+    "folder": "Temples",
+    "slug": "temples",
+    "frames": [
+      {
+        "file": "20160924-Discover-Tamilnadu-a001-DSC06863.jpg",
+        "width": 5221,
+        "height": 7827,
+        "thumb": "/assets/photography-web/temples/01-t.jpg",
+        "src": "/assets/photography-web/temples/01.jpg",
+        "full": "/assets/photography-web/temples/01-full.jpg"
+      },
+      {
+        "file": "20160925-Discover-Tamilnadu-a001-DSC00789.jpg",
+        "width": 7952,
+        "height": 4472,
+        "thumb": "/assets/photography-web/temples/02-t.jpg",
+        "src": "/assets/photography-web/temples/02.jpg",
+        "full": "/assets/photography-web/temples/02-full.jpg"
+      },
+      {
+        "file": "20160925-Discover-Tamilnadu-a001-DSC00908-Edit.jpg",
+        "width": 7639,
+        "height": 5095,
+        "thumb": "/assets/photography-web/temples/03-t.jpg",
+        "src": "/assets/photography-web/temples/03.jpg",
+        "full": "/assets/photography-web/temples/03-full.jpg"
+      },
+      {
+        "file": "20160925-Discover-Tamilnadu-a001-DSC00966.jpg",
+        "width": 7952,
+        "height": 4472,
+        "thumb": "/assets/photography-web/temples/04-t.jpg",
+        "src": "/assets/photography-web/temples/04.jpg",
+        "full": "/assets/photography-web/temples/04-full.jpg"
+      },
+      {
+        "file": "20160925-Discover-Tamilnadu-a001-DSC01032-Edit.jpg",
+        "width": 7580,
+        "height": 5056,
+        "thumb": "/assets/photography-web/temples/05-t.jpg",
+        "src": "/assets/photography-web/temples/05.jpg",
+        "full": "/assets/photography-web/temples/05-full.jpg"
+      },
+      {
+        "file": "20160925-Discover-Tamilnadu-a001-DSC01063-Edit.jpg",
+        "width": 7952,
+        "height": 4472,
+        "thumb": "/assets/photography-web/temples/06-t.jpg",
+        "src": "/assets/photography-web/temples/06.jpg",
+        "full": "/assets/photography-web/temples/06-full.jpg"
+      },
+      {
+        "file": "20160925-Discover-Tamilnadu-a001-DSC01103-Edit.jpg",
+        "width": 5304,
+        "height": 7952,
+        "thumb": "/assets/photography-web/temples/07-t.jpg",
+        "src": "/assets/photography-web/temples/07.jpg",
+        "full": "/assets/photography-web/temples/07-full.jpg"
+      },
+      {
+        "file": "20160925-Discover-Tamilnadu-a001-DSC01120.jpg",
+        "width": 7729,
+        "height": 5123,
+        "thumb": "/assets/photography-web/temples/08-t.jpg",
+        "src": "/assets/photography-web/temples/08.jpg",
+        "full": "/assets/photography-web/temples/08-full.jpg"
+      },
+      {
+        "file": "20160925-Discover-Tamilnadu-a001-DSC01150-Edit.jpg",
+        "width": 3883,
+        "height": 6247,
+        "thumb": "/assets/photography-web/temples/09-t.jpg",
+        "src": "/assets/photography-web/temples/09.jpg",
+        "full": "/assets/photography-web/temples/09-full.jpg"
+      },
+      {
+        "file": "20160925-Discover-Tamilnadu-a001-DSC01152-Edit.jpg",
+        "width": 5151,
+        "height": 7722,
+        "thumb": "/assets/photography-web/temples/10-t.jpg",
+        "src": "/assets/photography-web/temples/10.jpg",
+        "full": "/assets/photography-web/temples/10-full.jpg"
+      },
+      {
+        "file": "_DSC0053.jpg",
+        "width": 5168,
+        "height": 3448,
+        "thumb": "/assets/photography-web/temples/11-t.jpg",
+        "src": "/assets/photography-web/temples/11.jpg",
+        "full": "/assets/photography-web/temples/11-full.jpg"
+      },
+      {
+        "file": "_DSC0374-Edit.jpg",
+        "width": 7952,
+        "height": 5304,
+        "thumb": "/assets/photography-web/temples/12-t.jpg",
+        "src": "/assets/photography-web/temples/12.jpg",
+        "full": "/assets/photography-web/temples/12-full.jpg"
+      },
+      {
+        "file": "_DSC0386-Edit.jpg",
+        "width": 7952,
+        "height": 5304,
+        "thumb": "/assets/photography-web/temples/13-t.jpg",
+        "src": "/assets/photography-web/temples/13.jpg",
+        "full": "/assets/photography-web/temples/13-full.jpg"
+      },
+      {
+        "file": "DSC00012.jpg",
+        "width": 4672,
+        "height": 3117,
+        "thumb": "/assets/photography-web/temples/14-t.jpg",
+        "src": "/assets/photography-web/temples/14.jpg",
+        "full": "/assets/photography-web/temples/14-full.jpg"
+      },
+      {
+        "file": "DSC04713-HDR.jpg",
+        "width": 9472,
+        "height": 6315,
+        "thumb": "/assets/photography-web/temples/15-t.jpg",
+        "src": "/assets/photography-web/temples/15.jpg",
+        "full": "/assets/photography-web/temples/15-full.jpg"
+      },
+      {
+        "file": "DSC04863-Edit.jpg",
+        "width": 5722,
+        "height": 3815,
+        "thumb": "/assets/photography-web/temples/16-t.jpg",
+        "src": "/assets/photography-web/temples/16.jpg",
+        "full": "/assets/photography-web/temples/16-full.jpg"
+      },
+      {
+        "file": "DSC_6296.jpg",
+        "width": 6826,
+        "height": 4551,
+        "thumb": "/assets/photography-web/temples/17-t.jpg",
+        "src": "/assets/photography-web/temples/17.jpg",
+        "full": "/assets/photography-web/temples/17-full.jpg"
+      },
+      {
+        "file": "KK001-Stones  Stories-Golden Bliss.jpg",
+        "width": 5817,
+        "height": 3878,
+        "thumb": "/assets/photography-web/temples/18-t.jpg",
+        "src": "/assets/photography-web/temples/18.jpg",
+        "full": "/assets/photography-web/temples/18-full.jpg"
+      },
+      {
+        "file": "KK002-Stones  Stories-Golden bask of Dakshinamurthy.jpg",
+        "width": 5769,
+        "height": 3214,
+        "thumb": "/assets/photography-web/temples/19-t.jpg",
+        "src": "/assets/photography-web/temples/19.jpg",
+        "full": "/assets/photography-web/temples/19-full.jpg"
+      },
+      {
+        "file": "KK003-Stones  Stories-Leaves of thought.jpg",
+        "width": 6000,
+        "height": 4000,
+        "thumb": "/assets/photography-web/temples/20-t.jpg",
+        "src": "/assets/photography-web/temples/20.jpg",
+        "full": "/assets/photography-web/temples/20-full.jpg"
+      },
+      {
+        "file": "KK004-Stones  Stories-From the far.jpg",
+        "width": 5995,
+        "height": 3992,
+        "thumb": "/assets/photography-web/temples/21-t.jpg",
+        "src": "/assets/photography-web/temples/21.jpg",
+        "full": "/assets/photography-web/temples/21-full.jpg"
+      },
+      {
+        "file": "KK007-Stones  Stories-Hues of heritage.jpg",
+        "width": 6000,
+        "height": 2643,
+        "thumb": "/assets/photography-web/temples/22-t.jpg",
+        "src": "/assets/photography-web/temples/22.jpg",
+        "full": "/assets/photography-web/temples/22-full.jpg"
+      },
+      {
+        "file": "KK013-Stones  Stories-The Splendid Vimana.psd.jpg",
+        "width": 5988,
+        "height": 3992,
+        "thumb": "/assets/photography-web/temples/23-t.jpg",
+        "src": "/assets/photography-web/temples/23.jpg",
+        "full": "/assets/photography-web/temples/23-full.jpg"
+      },
+      {
+        "file": "KK014-Stones  Stories-Hidden trove.jpg",
+        "width": 5241,
+        "height": 3494,
+        "thumb": "/assets/photography-web/temples/24-t.jpg",
+        "src": "/assets/photography-web/temples/24.jpg",
+        "full": "/assets/photography-web/temples/24-full.jpg"
+      },
+      {
+        "file": "KK026-Stones  Stories-Language of wisdom.jpg",
+        "width": 5882,
+        "height": 3921,
+        "thumb": "/assets/photography-web/temples/25-t.jpg",
+        "src": "/assets/photography-web/temples/25.jpg",
+        "full": "/assets/photography-web/temples/25-full.jpg"
+      },
+      {
+        "file": "KK030-Stones  Stories-Adoring Nandi.jpg",
+        "width": 5852,
+        "height": 3900,
+        "thumb": "/assets/photography-web/temples/26-t.jpg",
+        "src": "/assets/photography-web/temples/26.jpg",
+        "full": "/assets/photography-web/temples/26-full.jpg"
+      },
+      {
+        "file": "KK036-Stones  Stories-world within the world.jpg",
+        "width": 5063,
+        "height": 3376,
+        "thumb": "/assets/photography-web/temples/27-t.jpg",
+        "src": "/assets/photography-web/temples/27.jpg",
+        "full": "/assets/photography-web/temples/27-full.jpg"
+      },
+      {
+        "file": "KK037-Stones  Stories-Endless Sunset-2.jpg",
+        "width": 5993,
+        "height": 3995,
+        "thumb": "/assets/photography-web/temples/28-t.jpg",
+        "src": "/assets/photography-web/temples/28.jpg",
+        "full": "/assets/photography-web/temples/28-full.jpg"
+      },
+      {
+        "file": "Temple 1.jpg",
+        "width": 3992,
+        "height": 2798,
+        "thumb": "/assets/photography-web/temples/29-t.jpg",
+        "src": "/assets/photography-web/temples/29.jpg",
+        "full": "/assets/photography-web/temples/29-full.jpg"
+      },
+      {
+        "file": "Temple 2.jpg",
+        "width": 11219,
+        "height": 8620,
+        "thumb": "/assets/photography-web/temples/30-t.jpg",
+        "src": "/assets/photography-web/temples/30.jpg",
+        "full": "/assets/photography-web/temples/30-full.jpg"
+      },
+      {
+        "file": "Temple 3.jpg",
+        "width": 8501,
+        "height": 5667,
+        "thumb": "/assets/photography-web/temples/31-t.jpg",
+        "src": "/assets/photography-web/temples/31.jpg",
+        "full": "/assets/photography-web/temples/31-full.jpg"
+      },
+      {
+        "file": "Temple 4.jpg",
+        "width": 6797,
+        "height": 4533,
+        "thumb": "/assets/photography-web/temples/32-t.jpg",
+        "src": "/assets/photography-web/temples/32.jpg",
+        "full": "/assets/photography-web/temples/32-full.jpg"
+      },
+      {
+        "file": "Temple 5.jpg",
+        "width": 7639,
+        "height": 5095,
+        "thumb": "/assets/photography-web/temples/33-t.jpg",
+        "src": "/assets/photography-web/temples/33.jpg",
+        "full": "/assets/photography-web/temples/33-full.jpg"
+      },
+      {
+        "file": "Temple 6.jpg",
+        "width": 7580,
+        "height": 5056,
+        "thumb": "/assets/photography-web/temples/34-t.jpg",
+        "src": "/assets/photography-web/temples/34.jpg",
+        "full": "/assets/photography-web/temples/34-full.jpg"
+      },
+      {
+        "file": "Temple 7.jpg",
+        "width": 7952,
+        "height": 4472,
+        "thumb": "/assets/photography-web/temples/35-t.jpg",
+        "src": "/assets/photography-web/temples/35.jpg",
+        "full": "/assets/photography-web/temples/35-full.jpg"
+      },
+      {
+        "file": "Temple 8.jpg",
+        "width": 3402,
+        "height": 6310,
+        "thumb": "/assets/photography-web/temples/36-t.jpg",
+        "src": "/assets/photography-web/temples/36.jpg",
+        "full": "/assets/photography-web/temples/36-full.jpg"
+      },
+      {
+        "file": "Temple 9.jpg",
+        "width": 2847,
+        "height": 3379,
+        "thumb": "/assets/photography-web/temples/37-t.jpg",
+        "src": "/assets/photography-web/temples/37.jpg",
+        "full": "/assets/photography-web/temples/37-full.jpg"
+      },
+      {
+        "file": "Temple 10.jpg",
+        "width": 5629,
+        "height": 3837,
+        "thumb": "/assets/photography-web/temples/38-t.jpg",
+        "src": "/assets/photography-web/temples/38.jpg",
+        "full": "/assets/photography-web/temples/38-full.jpg"
+      },
+      {
+        "file": "Temple 11.jpg",
+        "width": 5988,
+        "height": 3992,
+        "thumb": "/assets/photography-web/temples/39-t.jpg",
+        "src": "/assets/photography-web/temples/39.jpg",
+        "full": "/assets/photography-web/temples/39-full.jpg"
+      },
+      {
+        "file": "Temple 12.jpg",
+        "width": 4861,
+        "height": 3464,
+        "thumb": "/assets/photography-web/temples/40-t.jpg",
+        "src": "/assets/photography-web/temples/40.jpg",
+        "full": "/assets/photography-web/temples/40-full.jpg"
+      },
+      {
+        "file": "Temple 13.jpg",
+        "width": 6000,
+        "height": 3600,
+        "thumb": "/assets/photography-web/temples/41-t.jpg",
+        "src": "/assets/photography-web/temples/41.jpg",
+        "full": "/assets/photography-web/temples/41-full.jpg"
+      },
+      {
+        "file": "Temple 14.jpg",
+        "width": 5990,
+        "height": 3594,
+        "thumb": "/assets/photography-web/temples/42-t.jpg",
+        "src": "/assets/photography-web/temples/42.jpg",
+        "full": "/assets/photography-web/temples/42-full.jpg"
+      },
+      {
+        "file": "Temple 15.jpg",
+        "width": 3000,
+        "height": 1207,
+        "thumb": "/assets/photography-web/temples/43-t.jpg",
+        "src": "/assets/photography-web/temples/43.jpg",
+        "full": "/assets/photography-web/temples/43-full.jpg"
+      },
+      {
+        "file": "Temple 16.jpg",
+        "width": 5817,
+        "height": 3490,
+        "thumb": "/assets/photography-web/temples/44-t.jpg",
+        "src": "/assets/photography-web/temples/44.jpg",
+        "full": "/assets/photography-web/temples/44-full.jpg"
+      },
+      {
+        "file": "Temple 17.jpg",
+        "width": 4179,
+        "height": 2637,
+        "thumb": "/assets/photography-web/temples/45-t.jpg",
+        "src": "/assets/photography-web/temples/45.jpg",
+        "full": "/assets/photography-web/temples/45-full.jpg"
+      },
+      {
+        "file": "Temple 18.jpg",
+        "width": 1996,
+        "height": 3000,
+        "thumb": "/assets/photography-web/temples/46-t.jpg",
+        "src": "/assets/photography-web/temples/46.jpg",
+        "full": "/assets/photography-web/temples/46-full.jpg"
+      },
+      {
+        "file": "Temple 19.jpg",
+        "width": 9504,
+        "height": 6336,
+        "thumb": "/assets/photography-web/temples/47-t.jpg",
+        "src": "/assets/photography-web/temples/47.jpg",
+        "full": "/assets/photography-web/temples/47-full.jpg"
+      },
+      {
+        "file": "Temple 20.jpg",
+        "width": 6032,
+        "height": 4021,
+        "thumb": "/assets/photography-web/temples/48-t.jpg",
+        "src": "/assets/photography-web/temples/48.jpg",
+        "full": "/assets/photography-web/temples/48-full.jpg"
+      }
+    ]
+  },
+  {
+    "folder": "Travel",
+    "slug": "travel",
+    "frames": [
+      {
+        "file": "Traevl 7.jpg",
+        "width": 3848,
+        "height": 5772,
+        "thumb": "/assets/photography-web/travel/01-t.jpg",
+        "src": "/assets/photography-web/travel/01.jpg",
+        "full": "/assets/photography-web/travel/01-full.jpg"
+      },
+      {
+        "file": "Travel 1.jpg",
+        "width": 3888,
+        "height": 2592,
+        "thumb": "/assets/photography-web/travel/02-t.jpg",
+        "src": "/assets/photography-web/travel/02.jpg",
+        "full": "/assets/photography-web/travel/02-full.jpg"
+      },
+      {
+        "file": "Travel 2.jpg",
+        "width": 3969,
+        "height": 2977,
+        "thumb": "/assets/photography-web/travel/03-t.jpg",
+        "src": "/assets/photography-web/travel/03.jpg",
+        "full": "/assets/photography-web/travel/03-full.jpg"
+      },
+      {
+        "file": "Travel 3.jpg",
+        "width": 4032,
+        "height": 3024,
+        "thumb": "/assets/photography-web/travel/04-t.jpg",
+        "src": "/assets/photography-web/travel/04.jpg",
+        "full": "/assets/photography-web/travel/04-full.jpg"
+      },
+      {
+        "file": "Travel 4.jpg",
+        "width": 3220,
+        "height": 2242,
+        "thumb": "/assets/photography-web/travel/05-t.jpg",
+        "src": "/assets/photography-web/travel/05.jpg",
+        "full": "/assets/photography-web/travel/05-full.jpg"
+      },
+      {
+        "file": "Travel 5.jpg",
+        "width": 5799,
+        "height": 3866,
+        "thumb": "/assets/photography-web/travel/06-t.jpg",
+        "src": "/assets/photography-web/travel/06.jpg",
+        "full": "/assets/photography-web/travel/06-full.jpg"
+      },
+      {
+        "file": "Travel 6.jpg",
+        "width": 3853,
+        "height": 5779,
+        "thumb": "/assets/photography-web/travel/07-t.jpg",
+        "src": "/assets/photography-web/travel/07.jpg",
+        "full": "/assets/photography-web/travel/07-full.jpg"
+      },
+      {
+        "file": "Travel 8.jpg",
+        "width": 5270,
+        "height": 3045,
+        "thumb": "/assets/photography-web/travel/08-t.jpg",
+        "src": "/assets/photography-web/travel/08.jpg",
+        "full": "/assets/photography-web/travel/08-full.jpg"
+      },
+      {
+        "file": "Travel 9.jpg",
+        "width": 5464,
+        "height": 3640,
+        "thumb": "/assets/photography-web/travel/09-t.jpg",
+        "src": "/assets/photography-web/travel/09.jpg",
+        "full": "/assets/photography-web/travel/09-full.jpg"
+      },
+      {
+        "file": "Travel 10.jpg",
+        "width": 5364,
+        "height": 3573,
+        "thumb": "/assets/photography-web/travel/10-t.jpg",
+        "src": "/assets/photography-web/travel/10.jpg",
+        "full": "/assets/photography-web/travel/10-full.jpg"
+      },
+      {
+        "file": "Travel 11.jpg",
+        "width": 4924,
+        "height": 3421,
+        "thumb": "/assets/photography-web/travel/11-t.jpg",
+        "src": "/assets/photography-web/travel/11.jpg",
+        "full": "/assets/photography-web/travel/11-full.jpg"
+      },
+      {
+        "file": "Travel 12.jpg",
+        "width": 5464,
+        "height": 3640,
+        "thumb": "/assets/photography-web/travel/12-t.jpg",
+        "src": "/assets/photography-web/travel/12.jpg",
+        "full": "/assets/photography-web/travel/12-full.jpg"
+      },
+      {
+        "file": "Travel 13.jpg",
+        "width": 2356,
+        "height": 3456,
+        "thumb": "/assets/photography-web/travel/13-t.jpg",
+        "src": "/assets/photography-web/travel/13.jpg",
+        "full": "/assets/photography-web/travel/13-full.jpg"
+      },
+      {
+        "file": "Travel 14.jpg",
+        "width": 5496,
+        "height": 3664,
+        "thumb": "/assets/photography-web/travel/14-t.jpg",
+        "src": "/assets/photography-web/travel/14.jpg",
+        "full": "/assets/photography-web/travel/14-full.jpg"
+      },
+      {
+        "file": "Travel 15.jpg",
+        "width": 4000,
+        "height": 3000,
+        "thumb": "/assets/photography-web/travel/15-t.jpg",
+        "src": "/assets/photography-web/travel/15.jpg",
+        "full": "/assets/photography-web/travel/15-full.jpg"
+      },
+      {
+        "file": "Travel 16.jpg",
+        "width": 7952,
+        "height": 5304,
+        "thumb": "/assets/photography-web/travel/16-t.jpg",
+        "src": "/assets/photography-web/travel/16.jpg",
+        "full": "/assets/photography-web/travel/16-full.jpg"
+      },
+      {
+        "file": "Travel 17.jpg",
+        "width": 4360,
+        "height": 2972,
+        "thumb": "/assets/photography-web/travel/17-t.jpg",
+        "src": "/assets/photography-web/travel/17.jpg",
+        "full": "/assets/photography-web/travel/17-full.jpg"
+      },
+      {
+        "file": "Travel 18.jpg",
+        "width": 1366,
+        "height": 2048,
+        "thumb": "/assets/photography-web/travel/18-t.jpg",
+        "src": "/assets/photography-web/travel/18.jpg",
+        "full": "/assets/photography-web/travel/18-full.jpg"
+      },
+      {
+        "file": "Travel 19.jpg",
+        "width": 2488,
+        "height": 1660,
+        "thumb": "/assets/photography-web/travel/19-t.jpg",
+        "src": "/assets/photography-web/travel/19.jpg",
+        "full": "/assets/photography-web/travel/19-full.jpg"
+      },
+      {
+        "file": "Travel 20.jpg",
+        "width": 3867,
+        "height": 2578,
+        "thumb": "/assets/photography-web/travel/20-t.jpg",
+        "src": "/assets/photography-web/travel/20.jpg",
+        "full": "/assets/photography-web/travel/20-full.jpg"
+      }
+    ]
+  },
+  {
+    "folder": "Wild Life",
+    "slug": "wild-life",
+    "frames": [
+      {
+        "file": "Wildlife 1.jpg",
+        "width": 3992,
+        "height": 2242,
+        "thumb": "/assets/photography-web/wild-life/01-t.jpg",
+        "src": "/assets/photography-web/wild-life/01.jpg",
+        "full": "/assets/photography-web/wild-life/01-full.jpg"
+      },
+      {
+        "file": "Wildlife 2.jpg",
+        "width": 3992,
+        "height": 2242,
+        "thumb": "/assets/photography-web/wild-life/02-t.jpg",
+        "src": "/assets/photography-web/wild-life/02.jpg",
+        "full": "/assets/photography-web/wild-life/02-full.jpg"
+      },
+      {
+        "file": "Wildlife 3.jpg",
+        "width": 1798,
+        "height": 2462,
+        "thumb": "/assets/photography-web/wild-life/03-t.jpg",
+        "src": "/assets/photography-web/wild-life/03.jpg",
+        "full": "/assets/photography-web/wild-life/03-full.jpg"
+      },
+      {
+        "file": "Wildlife 4.jpg",
+        "width": 4053,
+        "height": 2280,
+        "thumb": "/assets/photography-web/wild-life/04-t.jpg",
+        "src": "/assets/photography-web/wild-life/04.jpg",
+        "full": "/assets/photography-web/wild-life/04-full.jpg"
+      },
+      {
+        "file": "Wildlife 5.jpg",
+        "width": 5165,
+        "height": 2902,
+        "thumb": "/assets/photography-web/wild-life/05-t.jpg",
+        "src": "/assets/photography-web/wild-life/05.jpg",
+        "full": "/assets/photography-web/wild-life/05-full.jpg"
+      },
+      {
+        "file": "Wildlife 6.jpg",
+        "width": 3291,
+        "height": 1849,
+        "thumb": "/assets/photography-web/wild-life/06-t.jpg",
+        "src": "/assets/photography-web/wild-life/06.jpg",
+        "full": "/assets/photography-web/wild-life/06-full.jpg"
+      },
+      {
+        "file": "Wildlife 7.jpg",
+        "width": 5464,
+        "height": 3070,
+        "thumb": "/assets/photography-web/wild-life/07-t.jpg",
+        "src": "/assets/photography-web/wild-life/07.jpg",
+        "full": "/assets/photography-web/wild-life/07-full.jpg"
+      },
+      {
+        "file": "Wildlife 8.jpg",
+        "width": 5109,
+        "height": 2992,
+        "thumb": "/assets/photography-web/wild-life/08-t.jpg",
+        "src": "/assets/photography-web/wild-life/08.jpg",
+        "full": "/assets/photography-web/wild-life/08-full.jpg"
+      },
+      {
+        "file": "Wildlife 9.jpg",
+        "width": 5464,
+        "height": 3070,
+        "thumb": "/assets/photography-web/wild-life/09-t.jpg",
+        "src": "/assets/photography-web/wild-life/09.jpg",
+        "full": "/assets/photography-web/wild-life/09-full.jpg"
+      },
+      {
+        "file": "Wildlife 10.jpg",
+        "width": 6000,
+        "height": 4000,
+        "thumb": "/assets/photography-web/wild-life/10-t.jpg",
+        "src": "/assets/photography-web/wild-life/10.jpg",
+        "full": "/assets/photography-web/wild-life/10-full.jpg"
+      }
+    ]
+  }
+]

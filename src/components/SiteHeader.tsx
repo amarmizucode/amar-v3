@@ -1,23 +1,59 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { CtaPill } from "@/components/CtaPill";
 
+/*
+ * Root-relative rather than bare hashes: the header renders on the
+ * /photography routes too, where a plain `#works` would resolve against the
+ * current page and go nowhere. SmoothScroll only intercepts `href^="#"`, so
+ * these fall through to normal navigation off the home page and still scroll
+ * smoothly once on it.
+ */
 const NAV = [
-  { label: "Works", href: "#works" },
-  { label: "Books", href: "#ventures" },
-  { label: "Initiatives", href: "#ventures" },
-  { label: "About", href: "#about" },
+  { label: "Works", href: "/#works" },
+  { label: "Photography", href: "/photography" },
+  { label: "Books", href: "/#ventures" },
+  { label: "About", href: "/#about" },
 ];
 
 export function SiteHeader() {
-  const [open, setOpen] = useState(false);
+  const pathname = usePathname();
 
-  // Lock the page behind the mobile sheet.
+  /*
+   * A link that leaves the page would otherwise leave the sheet open behind
+   * the route transition. Rather than closing it from an effect — which
+   * paints the sheet open on the new route for one commit before tearing it
+   * down — the open state stores the pathname it was opened at, and `open` is
+   * derived from it. Any navigation makes that stale, so the sheet renders
+   * closed on the new route with no second render.
+   */
+  const [openedAt, setOpenedAt] = useState<string | null>(null);
+  const open = openedAt === pathname;
+  const setOpen = useCallback(
+    (next: boolean | ((current: boolean) => boolean)) => {
+      setOpenedAt((current) => {
+        const wasOpen = current === pathname;
+        const wantOpen = typeof next === "function" ? next(wasOpen) : next;
+        return wantOpen ? pathname : null;
+      });
+    },
+    [pathname],
+  );
+
+  /*
+   * Lock the page behind the sheet. The gallery routes already pin
+   * `documentElement` to `overflow: hidden`, so this touches `body` only and
+   * restores the previous value rather than clearing it outright.
+   */
   useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
+    if (!open) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = previous;
     };
   }, [open]);
 
@@ -29,24 +65,14 @@ export function SiteHeader() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [open]);
+  }, [open, setOpen]);
 
   return (
     <header
-      className={`navbar_wrap fixed inset-x-0 top-0 z-[999] w-full${open ? " is--open" : ""}`}
+      className="navbar_wrap fixed inset-x-0 top-0 z-[999] w-full"
       style={{ paddingBlock: "var(--site-margin)" }}
     >
-      {/* Progressive blur: four stacked backdrop layers, each blurring twice
-          as much as the last and masked to a shorter band, so the content
-          scrolling under the header dissolves rather than meeting a hard edge. */}
-      <div className="navbar-blur" aria-hidden>
-        <span />
-        <span />
-        <span />
-        <span />
-      </div>
-
-      <div className="navbar_contain shell grid-12 items-center bg-transparent">
+      <div className="navbar_contain shell relative z-20 grid-12 items-center bg-transparent">
         {/* Wordmark: columns 1-5. */}
         <div
           className="navbar_left_contain col-span-6 flex items-center justify-start md:col-span-5"
@@ -54,13 +80,13 @@ export function SiteHeader() {
         >
           {/* The clip each reveal slides out of. */}
           <span className="inline-flex overflow-hidden">
-            <a
-              href="#top"
+            <Link
+              href="/"
               aria-label="Return to home"
               className="navbar_home relative flex items-center justify-center text-[15px] font-semibold uppercase tracking-[-0.01em]"
             >
               Amar Ramesh
-            </a>
+            </Link>
           </span>
         </div>
 
@@ -95,15 +121,19 @@ export function SiteHeader() {
           style={{ columnGap: "var(--nav-space-2)" }}
         >
           <div className="navbar_cta_contain hidden overflow-hidden md:block">
-            <CtaPill label="Get in Touch" />
+            <CtaPill label="Get in Touch" href="/#contact" />
           </div>
 
+          {/* The label animates Menu -> Close, so it is both the opener and
+              the closer. `-mr` pulls the enlarged tap area back to the grid
+              line so the text still aligns with the edge. */}
           <button
             type="button"
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
+            aria-controls="mobile-menu"
             aria-label={open ? "Close menu" : "Open menu"}
-            className="navbar_menu_btn relative flex items-center justify-center overflow-hidden text-[15px] font-medium tracking-[-0.03em] md:hidden"
+            className="navbar_menu_btn relative -mr-[var(--nav-space-1)] flex min-h-[44px] items-center justify-center overflow-hidden text-[15px] font-medium tracking-[-0.03em] md:hidden"
             style={{ padding: "0.25rem var(--nav-space-1)" }}
           >
             <span className="menu-toggle-track">
@@ -117,9 +147,21 @@ export function SiteHeader() {
       </div>
 
       {open && (
-        <div className="fixed inset-0 z-40 bg-background pt-[calc(var(--site-margin)*2+2rem)] md:hidden">
+        /*
+         * The sheet and the bar are siblings inside the same fixed header, and
+         * the header paints no background of its own — so the sheet must cover
+         * the page (z-10) while the bar sits above it (z-20), keeping the
+         * wordmark and the toggle that closes it clickable.
+         */
+        <div
+          id="mobile-menu"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Menu"
+          className="fixed inset-0 z-10 flex flex-col bg-background pt-[calc(var(--site-margin)*2+2rem)] md:hidden"
+        >
           <nav
-            className="flex flex-col"
+            className="flex flex-col overflow-y-auto"
             style={{ paddingInline: "var(--site-margin)" }}
           >
             {NAV.map((item) => (
@@ -127,16 +169,22 @@ export function SiteHeader() {
                 key={item.label}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className="display text-[13vw] leading-[1.05]"
+                className="display py-1 text-[13vw] leading-[1.05]"
               >
                 {item.label}
               </a>
             ))}
 
-            <CtaPill label="Get in Touch" className="mt-8 self-start" onClick={() => setOpen(false)} />
+            <CtaPill
+              label="Get in Touch"
+              href="/#contact"
+              className="mt-8 self-start"
+              onClick={() => setOpen(false)}
+            />
           </nav>
         </div>
       )}
+
     </header>
   );
 }

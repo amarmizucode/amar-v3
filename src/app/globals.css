@@ -489,6 +489,10 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .pg-side,
+  .pg-side_text,
+  .pg-side_aside_bg,
+  .pg-side_icon,
   .nav-link::before,
   .menu-toggle-track > span,
   .btn-pill,
@@ -1220,6 +1224,25 @@ body[data-theme] {
 }
 
 /*
+ * On a phone the `- 12px` optical pull leaves the pills only 4px off the
+ * corner — visually stuck to the edge, and on the gallery routes close enough
+ * to the next-gallery button (pinned to the same right edge) to be an awkward
+ * reach. Inset them properly and clear the home indicator.
+ */
+@media (width <= 768px) {
+  .app-aside {
+    right: calc(var(--grid-margin) - 4px);
+    bottom: calc(var(--grid-margin) + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Stacked vertically, so a little more air keeps the two separately
+     tappable. */
+  .app-aside .options {
+    gap: 12px;
+  }
+}
+
+/*
  * Hidden while the preloader covers the page, then eased in once it lifts —
  * the reference's own treatment (1s ease, 0.75s delay, so the controls arrive
  * after the hero has begun its intro rather than competing with it).
@@ -1247,8 +1270,8 @@ body.cover-is-visible .app-aside .option {
   height: 48px;
   border-radius: 24px;
   background-color: var(--color--foreground--5);
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(4px);
+  backdrop-filter: blur(4px);
 }
 
 .app-aside .option:hover {
@@ -1708,83 +1731,930 @@ body[data-theme="00"] .app-aside .option.theme .icon-container { transition-dela
 }
 
 /* ---------------------------------------------------------------------------
- * Header scrim — progressive blur
+ * Header
  *
- * The floating controls in .app-aside sit on a flat backdrop-filter. The
- * header needs the same treatment but must not end on a hard edge, so a
- * single blur is split into stacked layers: each layer blurs twice as much
- * as the one below it and is masked to a band that starts lower down. The
- * eye reads the sum as one blur ramping from strong at the top to nothing at
- * the bottom, with no seam.
+ * No scrim: the header sits directly over the page with nothing painted behind
+ * it — no blur, no tint. Content scrolls under the nav at full contrast rather
+ * than fading out as it reaches the top.
  * ------------------------------------------------------------------------ */
-.navbar_wrap {
-  /* How far past the header's own box the scrim keeps going. The ramp needs
-   * room below the nav text to finish, otherwise it reads as an edge sitting
-   * right under the links. */
-  --navbar-blur-trail: clamp(3rem, 1.5rem + 6vw, 7rem);
+
+/*
+ * ---------------------------------------------------------------------------
+ * Photography filmstrip — a port of iamrossmason.com's HomeCarousel, rule for
+ * rule (its scoped CSS is reproduced here; the breakpoint is its 650px).
+ *
+ * Every slide is a fixed seventh of the row. JS translates each slide along
+ * the strip and assigns one of `is-left` / `is-big` / `is-right`; those set
+ * custom properties that the two transforms below read, multiplied by `--diff`
+ * on the wrapper. JS writes `--diff` every frame as 1 - lag/1000px, so the
+ * strip flattens in proportion to how fast it is moving. The 1s expo
+ * transitions on the transforms are what ease the growth when the centre
+ * changes; `is-not-visible` marks slides that just wrapped, which must jump.
+ *
+ * The reference sizes everything in a root rem of vw/150; the same values are
+ * written here directly in vw.
+ * ---------------------------------------------------------------------------
+ */
+.pcar-wrap {
+  --diff: 1;
+  /* 17.5rem in the reference: the band above the strip that holds the captions. */
+  padding-top: 11.667vw;
 }
 
-.navbar_wrap::before {
-  content: "";
-  position: absolute;
-  inset: calc(var(--site-margin) * -1) 0 calc(var(--navbar-blur-trail) * -1) 0;
-  z-index: -1;
+/*
+ * The strip is draggable as well as scrollable. `grab` advertises it, and
+ * `touch-action: pan-y` lets the browser keep vertical gestures (so a phone can
+ * still scroll the page) while the horizontal axis belongs to the drag.
+ */
+@media (hover: hover) and (pointer: fine) {
+  .pcar-wrap {
+    cursor: grab;
+  }
+
+  .pcar-wrap.is-grabbing {
+    cursor: grabbing;
+  }
+
+  /* Without this the pointer keeps the grabbing cursor only over the gaps —
+     the slides' own `cursor: pointer` would win everywhere else. */
+  .pcar-wrap.is-grabbing .pcar-content {
+    cursor: grabbing;
+  }
+}
+
+.pcar-slide {
+  --width: 100%;
+  min-width: var(--width);
+  max-width: var(--width);
+}
+
+/* Caption block: sits directly above its slide (`bottom: 100%`). */
+.pcar-text {
+  padding-bottom: 0.667vw;
+}
+
+@media (width >= 650px) {
+  .pcar-wrap {
+    touch-action: none;
+  }
+  .pcar-slide {
+    --width: 14.28571%;
+    --x: 0%;
+    --scale: 0;
+    --x-output: calc(var(--x) * var(--diff));
+    --x-text-output: calc(var(--x-text) * var(--diff));
+    --scale-output: calc(1 + var(--scale) * var(--diff));
+  }
+  .pcar-slide.is-left {
+    --x: -50%;
+    --x-text: -50%;
+    --scale: 0;
+  }
+  .pcar-slide.is-right {
+    --x: 50%;
+    --x-text: 50%;
+    --scale: 0;
+  }
+  .pcar-slide.is-big {
+    --x: 0% !important;
+    --x-text: -50%;
+    --scale: 1 !important;
+  }
+  .pcar-slide.is-not-visible {
+    --x: 0%;
+    --x-text: 0%;
+    --scale: 0;
+  }
+  .pcar-text {
+    transition: transform 1s cubic-bezier(0.19, 1, 0.22, 1);
+    transform: translate3d(var(--x-text-output), 0, 0);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .pcar-slide:hover .pcar-text {
+      transform: translate3d(var(--x-text-output), -0.75rem, 0);
+    }
+  }
+  .is-not-visible .pcar-text {
+    transition: none;
+  }
+  .pcar-scale {
+    transition: transform 1s cubic-bezier(0.19, 1, 0.22, 1);
+    transform: translate3d(var(--x-output), 0, 0) scale(var(--scale-output));
+  }
+  .is-not-visible .pcar-scale {
+    transition: none;
+  }
+}
+
+/*
+ * Below 650px the strip is a native snap row, as the reference's small mode:
+ * one slide and a sliver of the next per screen, swiped natively, centred in
+ * the space between the fixed header and the wordmark.
+ */
+@media (width < 650px) {
+  /*
+   * `overflow-x: auto` also clips on the y axis, and the captions hang above
+   * each slide — so the row reserves their height as padding. Overflow clips
+   * at the padding box, which leaves that band visible.
+   */
+  .pcar-slides {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--site-margin);
+    scrollbar-width: none;
+    padding-top: 4rem;
+    padding-inline: var(--site-margin);
+    column-gap: 0.75rem;
+  }
+  .pcar-slides::-webkit-scrollbar {
+    display: none;
+  }
+  .pcar-slide {
+    --width: 72%;
+    scroll-snap-align: start;
+  }
+  .pcar-wrap {
+    /* Clear the fixed header, then centre the row in what is left above the wordmark. */
+    padding-top: calc(var(--site-margin) * 2 + 2.5rem);
+    padding-bottom: 12rem;
+    align-items: center;
+  }
+  /* The floating app controls own both bottom corners on a phone, so the
+     wordmark sits above them rather than under them. */
+  .pcar-wordmark {
+    bottom: calc(var(--site-margin) + 7.5rem);
+  }
+  .pcar-text {
+    padding-bottom: 0.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pcar-text,
+  .pcar-scale {
+    transition: none;
+  }
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * Gallery canvas — a port of gunespeksen.com's grid and large gallery, rule
+ * for rule, on the site's palette. See GalleryCanvas.tsx for the engine.
+ *
+ * `.pg-vp` is the fixed viewport, `.pg-cv` the 3×3-tiled canvas it drags
+ * around, `.pg-it` a tile. A click marks one tile `.active` and puts the
+ * viewport in `.expanding`, which collapses every other tile; `.collapsing`
+ * reverses it on close. The viewer is `.pg-lg` with a stack of `.pg-lg-card`s
+ * (`cur` / `prev` / `entering` are its three positions), and `.pg-hero` is
+ * the element that flies between a tile and the card.
+ * ---------------------------------------------------------------------------
+ */
+/*
+ * The gallery name, alone behind the frames.
+ *
+ * Fixed and centred on both axes with flex rather than a translate, so the
+ * word stays optically centred whatever its length. z-index sits below .pg-vp
+ * (5) so the photographs drift over it, and it takes no pointer events — the
+ * canvas must stay draggable through the type.
+ */
+.pg-stage {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   pointer-events: none;
-  /* Only --100 and --0 are defined per theme stop, so the tint is a fade
-   * between those two rather than a mid-opacity stop. */
-  background: linear-gradient(
-    to bottom,
-    var(--color--background--100) 0%,
-    var(--color--background--100) 18%,
-    var(--color--background--0) 100%
-  );
-  opacity: 0.7;
+  user-select: none;
+  overflow: hidden;
+  padding: var(--site-margin);
+  transition: opacity 0.5s ease;
 }
 
-.navbar_wrap .navbar-blur {
-  position: absolute;
-  inset: calc(var(--site-margin) * -1) 0 calc(var(--navbar-blur-trail) * -1) 0;
-  z-index: -1;
+.pg-title-text {
+  font-size: clamp(3rem, 15vw, 18rem);
+  font-weight: 600;
+  text-transform: uppercase;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  white-space: nowrap;
+  /* Low contrast so the frames stay the subject; it reads as a watermark. */
+  color: var(--color--foreground--10);
+}
+
+/* Viewer open: pull the word back so the card owns the stage. */
+.pg-root[data-mode="large"] .pg-stage {
+  opacity: 0.25;
+}
+
+/*
+ * Sibling galleries, one card pinned to each edge and vertically centred.
+ * Filled rather than frosted so they read as solid cards over the frames.
+ */
+.pg-sides {
+  position: fixed;
+  inset-inline: var(--site-margin);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 260;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  /* The DOM runs next-then-previous, which is the stacking order the phone
+   * layout wants. Here the row is reversed instead, so previous still sits on
+   * the left edge and next on the right. */
+  flex-direction: row-reverse;
+  /* The strip spans the viewport; only the cards themselves take the pointer,
+   * so the canvas stays draggable in the gap between them. */
   pointer-events: none;
 }
 
-.navbar_wrap .navbar-blur > span {
+/*
+ * Built on the CTA pill (`.btn-pill`): same fill, same radius, same two-part
+ * hover — the label slides up to a duplicate drawn by its own text-shadow,
+ * while the arrow pair travels diagonally through the square aside. The
+ * variables and timings are lifted from it so the two stay in step.
+ */
+.pg-side {
+  --active-ease: cubic-bezier(0.48, 1.68, 0.64, 1);
+  --active-speed: 0.35s;
+  --btn-slide: 0.65s cubic-bezier(0.16, 1, 0.35, 1);
+
+  pointer-events: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  max-width: min(320px, 34vw);
+  gap: var(--nav-space-1);
+  padding: 0.25em 0.25em 0.25em var(--nav-space-1);
+  border-radius: var(--nav-radius);
+  background: var(--palette-foreground);
+  color: var(--palette-background);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  text-decoration: none;
+  overflow: clip;
+  transition:
+    transform var(--active-speed) var(--active-ease),
+    opacity var(--active-speed) cubic-bezier(0.16, 1, 0.35, 1);
+}
+
+/* The previous card leads with its arrow, so the padding mirrors. */
+.pg-side-prev {
+  padding: 0.25em var(--nav-space-1) 0.25em 0.25em;
+}
+
+.pg-side:hover {
+  opacity: 0.9;
+}
+
+.pg-side:active {
+  transform: scale(0.95);
+}
+
+/* Clips the label's travel, exactly as the CTA pill's container does. */
+.pg-side_text_contain {
+  overflow: clip;
+  min-width: 0;
+}
+
+/* The shadow copy is the second label — it must match the card background.
+ * This element must not clip: `overflow: hidden` (which `text-overflow:
+ * ellipsis` would require) cuts off the shadow 1.2em below, and the hover
+ * then slides the label up into an empty card. */
+.pg-side_text {
+  display: block;
+  line-height: 1;
+  white-space: nowrap;
+  text-shadow: 0 1.2em 0 var(--palette-background);
+  transition: transform var(--btn-slide);
+}
+
+.pg-side:hover .pg-side_text {
+  transform: translateY(-1.2em);
+}
+
+.pg-side_aside {
+  position: relative;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  width: 1.5em;
+  height: 100%;
+  border-radius: var(--nav-radius);
+  overflow: hidden;
+}
+
+.pg-side_aside_bg {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--nav-radius);
+  background: var(--palette-muted);
+  transition: transform var(--btn-slide);
+}
+
+.pg-side:hover .pg-side_aside_bg {
+  transform: scale(0.8);
+}
+
+.pg-side_icon {
+  position: relative;
+  z-index: 1;
+  width: 1em;
+  color: var(--palette-background);
+  transition: transform var(--btn-slide);
+}
+
+/* Next travels up and to the right, as the CTA does; previous mirrors it, so
+ * each arrow leaves and re-enters on the side it points to. */
+.pg-side-next .pg-side_icon.is-absolute {
+  position: absolute;
+  transform: translate(-100%, 100%);
+}
+
+.pg-side-next:hover .pg-side_icon {
+  transform: translate(100%, -100%);
+}
+
+.pg-side-prev .pg-side_icon.is-absolute {
+  position: absolute;
+  transform: translate(100%, 100%);
+}
+
+.pg-side-prev:hover .pg-side_icon {
+  transform: translate(-100%, -100%);
+}
+
+.pg-side:hover .pg-side_icon.is-absolute {
+  transform: translate(0%);
+}
+
+/* Viewer open: the side cards would sit over the photograph, so they go. */
+.pg-root[data-mode="large"] .pg-sides {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+/*
+ * Heading and state line, centred along the bottom edge.
+ */
+.pg-hud {
+  position: fixed;
+  bottom: var(--site-margin);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 260;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  pointer-events: none;
+  text-align: center;
+}
+
+.pg-hud a,
+.pg-hud button {
+  pointer-events: auto;
+}
+
+.pg-hud-title {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  color: var(--color--foreground--50);
+}
+
+.pg-vp {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  z-index: 5;
+  cursor: grab;
+  opacity: 0;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  transition:
+    opacity 0.5s ease 0.15s,
+    scale 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.pg-vp.is-vis {
+  opacity: 1;
+}
+.pg-vp.is-pressed {
+  scale: 0.975;
+}
+body.pg-dragging .pg-vp {
+  cursor: grabbing;
+}
+.pg-cv {
+  position: absolute;
+  will-change: transform;
+}
+.pg-it {
+  position: absolute;
+  overflow: hidden;
+  background: var(--palette-chip);
+  cursor: pointer;
+  will-change: transform, opacity;
+}
+.pg-it.hov {
+  transition: opacity 0.3s ease;
+}
+.pg-it.hov:hover {
+  z-index: 10;
+}
+.pg-vp.expanding .pg-it {
+  transition:
+    transform 0.75s cubic-bezier(0.86, 0, 0.07, 1),
+    opacity 0.5s ease-in 0.1s !important;
+}
+.pg-vp.expanding .pg-it:not(.active) {
+  transform: scale(0.18) !important;
+  opacity: 0 !important;
+}
+.pg-vp.collapsing .pg-it {
+  transform: translate(0, 0) scale(1) !important;
+  opacity: 1 !important;
+  transition:
+    opacity 0.4s ease,
+    transform 0.75s cubic-bezier(0.86, 0, 0.07, 1) !important;
+}
+.pg-it img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  filter: brightness(0.9);
+  transition: filter 0.35s ease;
+}
+.pg-it.hov:hover img {
+  filter: brightness(1);
+}
+/* Soft vignette so the endless field reads as a stage. */
+.pg-vig {
+  position: fixed;
+  inset: 0;
+  z-index: 6;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 45%, var(--color--foreground--10) 100%);
+}
+
+/*
+ * Chrome around the canvas: meta on the left, links on the right. Tiles pass
+ * beneath both, so each sits on a frosted panel — the reference's dark stage
+ * dims its images enough to skip this; a light one does not.
+ */
+/* The nav sits inside .pg-hud, which is placed and made click-through there;
+ * only the links' own hit areas are restored. */
+.pg-nav a,
+.pg-nav button {
+  pointer-events: auto;
+}
+/* Viewer state: the page links give way to the viewer's controls. */
+.pg-root[data-mode="large"] .pg-nav-links,
+.pg-root:not([data-mode="large"]) .pg-nav-viewer {
+  opacity: 0;
+  pointer-events: none;
+}
+.pg-nav-links,
+.pg-nav-viewer {
+  transition: opacity 0.4s ease;
+}
+.pg-count {
+  overflow: hidden;
+}
+
+/* Viewer. */
+.pg-lg {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: var(--palette-background);
+  opacity: 0;
+  visibility: hidden;
+  overflow: hidden;
+  transition:
+    opacity 0.5s ease,
+    visibility 0.5s;
+}
+.pg-lg.on {
+  opacity: 1;
+  visibility: visible;
+}
+.pg-lg-stack {
   position: absolute;
   inset: 0;
 }
-
-/* Each stop: blur strength, and the band of the scrim it covers. The masks
- * overlap so neighbouring layers cross-fade instead of banding. */
-.navbar_wrap .navbar-blur > span:nth-child(1) {
-  -webkit-backdrop-filter: blur(1px);
-  backdrop-filter: blur(1px);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 62%, transparent 100%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 62%, transparent 100%);
+.pg-lg-card {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  overflow: hidden;
+  will-change: transform, opacity;
+  background: var(--palette-chip) center / cover no-repeat;
+  box-shadow:
+    0 24px 80px rgb(0 0 0 / 0.22),
+    0 6px 20px rgb(0 0 0 / 0.12);
+  transition:
+    transform 0.6s cubic-bezier(0.23, 1, 0.32, 1),
+    opacity 0.5s ease;
+}
+/*
+ * Zoom. The open frame magnifies on pinch (touch and trackpad), ctrl/⌘+wheel,
+ * or a double click/tap; GSAP writes the transform, so the card's own
+ * transition is suspended while zoomed or the gesture would ease behind the
+ * finger. `touch-action: none` on the stack keeps the browser's native
+ * page-zoom off the gesture so the handler sees every move.
+ */
+/*
+ * Zoomed, GSAP owns the card's transform, writing translate/scale inline every
+ * frame — so the class's own transition is switched off or the image would
+ * ease along behind the finger instead of tracking it.
+ */
+.pg-root.is-zoomed .pg-lg-card.cur {
+  transition: none;
+  cursor: grab;
+  /* The image is the subject now; the drop shadow would read as a border
+     around a detail. */
+  box-shadow: none;
 }
 
-.navbar_wrap .navbar-blur > span:nth-child(2) {
-  -webkit-backdrop-filter: blur(2px);
-  backdrop-filter: blur(2px);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 46%, transparent 84%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 46%, transparent 84%);
+.pg-root.is-zoomed .pg-lg-card.cur:active {
+  cursor: grabbing;
 }
 
-.navbar_wrap .navbar-blur > span:nth-child(3) {
-  -webkit-backdrop-filter: blur(4px);
-  backdrop-filter: blur(4px);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 30%, transparent 66%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 30%, transparent 66%);
+/* A tap or click toggles the zoom, so hint which way it goes. */
+.pg-lg-card.cur {
+  cursor: zoom-in;
 }
 
-.navbar_wrap .navbar-blur > span:nth-child(4) {
-  -webkit-backdrop-filter: blur(8px);
-  backdrop-filter: blur(8px);
-  -webkit-mask-image: linear-gradient(to bottom, #000 0%, #000 14%, transparent 48%);
-  mask-image: linear-gradient(to bottom, #000 0%, #000 14%, transparent 48%);
-}
-
-/* The mobile sheet paints its own background — the scrim would double up. */
-.navbar_wrap.is--open::before,
-.navbar_wrap.is--open .navbar-blur {
+/*
+ * Zoomed, everything but the image goes: the header, the floating theme and
+ * grid controls, the gallery chrome and the sibling cards below the viewer,
+ * and the non-current frames in the stack. Visibility rather than display so
+ * each fades rather than snapping out, and so nothing reflows on the way back.
+ */
+/*
+ * The viewer's top bar — the site header's stand-in while a frame is open.
+ *
+ * It repeats the header's own box exactly: fixed to the top, `padding-block:
+ * var(--site-margin)`, and the same `shell` + `grid-12` inside, so the gallery
+ * name lands on the wordmark's baseline and column, and Close lands on the
+ * menu button. Type sizes are copied from those two elements rather than from
+ * the gallery chrome's 13px, so nothing shifts as the header fades out.
+ *
+ * Above .pg-lg (200) so it sits over the photograph, and only shown with the
+ * viewer.
+ */
+.pg-bar {
+  position: fixed;
+  inset: 0;
+  z-index: 265;
+  /* A column so the header row sits at the top and the counter at the foot,
+   * both inside one padded box that matches the header's own inset. */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding-block: var(--site-margin);
+  pointer-events: none;
   opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.3s ease,
+    visibility 0s linear 0.3s;
+}
+
+body.pg-viewing .pg-bar {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 0.3s ease 0.1s,
+    visibility 0s;
+}
+
+.pg-bar_close_btn {
+  pointer-events: auto;
+  cursor: pointer;
+  transition: opacity 0.25s ease;
+}
+
+.pg-bar_close_btn:hover {
+  opacity: 0.6;
+}
+
+/* The counter is a tabular readout that changes per frame; fixed digits keep
+ * it from jittering as it counts. */
+/* Centred along the bottom edge, clear of the photograph. Tabular digits so
+ * the readout does not jitter as it counts. */
+.pg-bar_count {
+  align-self: center;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--color--foreground--50);
+}
+
+/* A long gallery name ("[02] Classical Dancers") has only four columns on a
+ * phone, so it ellipses rather than pushing the counter off centre. */
+.pg-bar_title {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pg-bar_title,
+.pg-bar_count,
+.pg-bar_close {
+  /* The bar is click-through except for its button; without this the title
+     would swallow taps meant for the photograph behind it. */
+  pointer-events: none;
+}
+
+/*
+ * A frame is open: the gallery's bottom HUD carries the same frame counter
+ * that .pg-bar now shows at the top, so it would read as duplicated chrome
+ * over the photograph. It gives way to the bar at every width.
+ */
+body.pg-viewing .pg-hud {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition:
+    opacity 0.3s ease,
+    visibility 0s linear 0.3s;
+}
+
+/*
+ * A frame is open: the site header would sit over the photograph, and its
+ * links lead away from a view the user is still inside. Hidden until the
+ * viewer closes.
+ */
+body.pg-viewing header {
+  opacity: 0;
+  pointer-events: none;
+  /* Opacity alone would leave the links in the tab order, so a keyboard could
+   * focus an invisible nav; visibility takes it out of the tree once the fade
+   * has finished. */
+  visibility: hidden;
+  transition:
+    opacity 0.3s ease,
+    visibility 0s linear 0.3s;
+}
+
+body:has(.pg-root.is-zoomed) header,
+body:has(.pg-root.is-zoomed) .app-aside {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/*
+ * Zoomed, the photograph is alone: the viewer's own bar goes with the rest of
+ * the chrome. `body.pg-viewing .pg-bar` above turns the bar on for the open
+ * frame and matches this rule's specificity exactly, so the two are separated
+ * by an added `body` here rather than left to source order.
+ */
+body .pg-root.is-zoomed .pg-bar,
+.pg-root.is-zoomed .pg-hud,
+.pg-root.is-zoomed .pg-sides,
+.pg-root.is-zoomed .pg-stage,
+.pg-root.is-zoomed .pg-vig {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+/* The stack's other cards would sit at the edges of a magnified frame. */
+.pg-root.is-zoomed .pg-lg-card:not(.cur) {
+  opacity: 0;
+}
+
+/* The gesture surface. `touch-action: none` has to sit on the whole viewer —
+ * on the stack alone the browser still claimed a pinch that began over the
+ * card, since the card is the element under the finger. */
+.pg-lg,
+.pg-lg-stack,
+.pg-lg-card {
+  touch-action: none;
+}
+
+.pg-lg-card img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.pg-lg-card.cur {
+  transform: translate(-50%, -50%) scale(1);
+  opacity: 1;
+  z-index: 3;
+}
+.pg-lg-card.prev {
+  transform: translate(-50%, -160%) scale(1);
+  opacity: 0;
+  z-index: 4;
+}
+.pg-lg-card.entering {
+  transform: translate(-50%, 60%) scale(0.9);
+  opacity: 0;
+  z-index: 1;
+}
+.pg-hero {
+  position: fixed;
+  z-index: 210;
+  overflow: hidden;
+  will-change: transform;
+  transform-origin: center;
+}
+.pg-hero img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (width <= 768px) {
+  /*
+   * On a phone the cards drop their labels and become icon buttons pinned to
+   * the left and right edges, vertically centred — the gallery names would
+   * crowd the frames at this width, and the arrows alone carry the meaning.
+   * Each Link keeps its accessible name from the aria-label on the element.
+   */
+  .pg-sides {
+    /* Back to a row across the viewport; `row-reverse` from the base rule
+       still puts previous on the left, next on the right. */
+    justify-content: space-between;
+  }
+
+  .pg-side {
+    /* Sized to the touch target, with the label removed. The rounded-square
+       corner is the CTA pill's own --nav-radius, so the icon button matches
+       the buttons on the web layout rather than becoming a circle. */
+    width: 44px;
+    min-width: 44px;
+    height: 44px;
+    max-width: none;
+    padding: 0;
+    border-radius: var(--nav-radius);
+    gap: 0;
+  }
+
+  /* The mirrored padding only mattered while there was a label to sit beside. */
+  .pg-side-prev {
+    padding: 0;
+  }
+
+  .pg-side_text_contain {
+    display: none;
+  }
+
+  /* The aside is the CTA's square icon plate, inset so the button's own fill
+     still shows as a border around it — the same relationship the pill has
+     between its background and the plate. */
+  .pg-side_aside {
+    width: calc(100% - 8px);
+    height: calc(100% - 8px);
+    margin: 4px;
+    border-radius: calc(var(--nav-radius) - 2px);
+  }
+
+  /* Without a label there is nothing to travel toward, and the button clips
+     the diagonal — so the second copy is dropped and the arrow sits still. */
+  .pg-side_icon.is-absolute {
+    display: none;
+  }
+
+  .pg-side-next:hover .pg-side_icon,
+  .pg-side-prev:hover .pg-side_icon {
+    transform: none;
+  }
+
+  .pg-side_icon {
+    width: 0.9rem;
+  }
+
+  /*
+   * A two-word gallery name ("Classical Dancers", "Folk Art") cannot hold one
+   * line at this size on a phone — `nowrap` would push it off both edges. Let
+   * it break per word and centre the lines, and pull the leading in so the
+   * stacked words still read as one block.
+   */
+  .pg-title-text {
+    /* Centred on both axes it would sit right behind the arrow buttons, which
+       are pinned at 50% of the same viewport box. Anchor its top edge a little
+       below their bottom edge instead: 50% + half the 44px button + a gap. The
+       stage is `inset: 0`, so its 50% is the same line the buttons use. */
+    position: absolute;
+    top: calc(50% + 22px + 0.75rem);
+    left: 50%;
+    transform: translateX(-50%);
+    width: calc(100% - 2 * var(--site-margin));
+    white-space: normal;
+    text-align: center;
+    text-wrap: balance;
+    line-height: 0.85;
+    /* Sized so the longest single word ("CLASSICAL", "MUSICIANS" — 9 glyphs)
+       fits inside the margins at ~90% of the available width on every phone
+       size, rather than being clipped by the stage's overflow. */
+    font-size: clamp(2.25rem, 16vw, 8rem);
+  }
+
+  /* Sits on the same base line as the floating theme/grid pills (.app-aside),
+     which are pinned at --grid-margin plus the home indicator on a phone — so
+     the heading, "All photography" and the pills share one bottom edge. */
+  .pg-hud {
+    bottom: calc(var(--grid-margin) + env(safe-area-inset-bottom, 0px));
+  }
+
+  .pg-nav {
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pg-vp,
+  .pg-it,
+  .pg-lg,
+  .pg-lg-card {
+    transition: none !important;
+  }
+}
+
+/* The preloader has already played this visit (flag set before paint in the
+   root layout); keep its cover off-screen until hydration removes it. */
+html.preloaded .preloader {
+  display: none;
+}
+
+/*
+ * Route curtain: twelve strips on the page grid, so the wipe reads as the
+ * site's own columns. Each middle strip is one column plus its gutter; the
+ * outer two take the margins (and whatever is beyond --grid-max), so the set
+ * always tiles the viewport with its seams on the column lines. Neighbours
+ * overlap by a pixel so sub-pixel rounding never opens a hairline between
+ * them while they move.
+ */
+.pt-curtain {
+  position: fixed;
+  inset: 0;
+  z-index: 900;
+  pointer-events: none;
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr)
+    repeat(10, calc(var(--grid-column) + var(--grid-gutter)))
+    minmax(0, 1fr);
+}
+.pt-strip {
+  display: block;
+  margin-inline: -0.5px;
+  background: var(--palette-foreground);
+  will-change: transform;
+}
+
+/*
+ * Follow the grid overlay's guide ladder (12 / 6 / 3 / 2 at 1020 / 760 /
+ * 500px): fewer, wider strips, each spanning 2, 4 or 6 columns, with the
+ * seams still on column lines. Surplus strips are hidden.
+ */
+@media (width <= 1020px) {
+  .pt-curtain {
+    grid-template-columns:
+      minmax(0, 1fr)
+      repeat(4, calc(2 * (var(--grid-column) + var(--grid-gutter))))
+      minmax(0, 1fr);
+  }
+  .pt-strip:nth-child(n + 7) {
+    display: none;
+  }
+}
+@media (width <= 760px) {
+  .pt-curtain {
+    grid-template-columns:
+      minmax(0, 1fr)
+      calc(4 * (var(--grid-column) + var(--grid-gutter)))
+      minmax(0, 1fr);
+  }
+  .pt-strip:nth-child(n + 4) {
+    display: none;
+  }
+}
+@media (width <= 500px) {
+  .pt-curtain {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .pt-strip:nth-child(n + 3) {
+    display: none;
+  }
 }

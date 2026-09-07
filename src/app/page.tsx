@@ -1,10 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import Image from "next/image";
-import { SiteHeader } from "@/components/SiteHeader";
 import { Hero } from "@/components/Hero";
-import { Preloader } from "@/components/Preloader";
+import { usePageReady } from "@/components/PageTransition";
 import { HighlightText } from "@/components/HighlightText";
 import { Services } from "@/components/Services";
 import { Testimonials } from "@/components/Testimonials";
@@ -17,7 +15,8 @@ import { CornerArrow, RightArrow } from "@/components/Arrows";
 import { ClosingCta } from "@/components/ClosingCta";
 import { CtaPill } from "@/components/CtaPill";
 import { Logomark } from "@/components/Logomark";
-import { AI_SERVICES, AiIcon, aiHref } from "@/components/AiIcons";
+import { SectionLabel } from "@/components/SectionLabel";
+import { SiteFooter } from "@/components/SiteFooter";
 import { MEDIA } from "@/lib/media";
 
 const WORKS = [
@@ -120,7 +119,6 @@ const FAQS = [
   },
 ];
 
-const NAV_FOOTER = ["Works", "Books", "Initiatives", "About", "Contact"];
 const TESTIMONIALS = [
   {
     quote:
@@ -180,27 +178,16 @@ const TESTIMONIALS = [
   },
 ];
 
-/*
- * Footer socials. Facebook and Linkedin are confirmed; the Instagram handle is
- * still a placeholder awaiting the real profile URL.
- */
-const SOCIALS = [
-  { label: "Instagram", href: "https://www.instagram.com/amarramesh/" },
-  { label: "Linkedin", href: "https://in.linkedin.com/in/amarramesh" },
-  { label: "Facebook", href: "https://www.facebook.com/amarramesh.me/" },
-];
 
 export default function Home() {
-  // The preloader gates the hero intro, exactly as the reference sequences it.
-  const [introReady, setIntroReady] = useState(false);
+  // The preloader (first load) or the route curtain gates the hero intro.
+  // Fixed UI — header, preloader, curtain — lives in the root layout, outside
+  // the smooth wrapper: ScrollSmoother transforms #smooth-content, which would
+  // break `position: fixed`.
+  const introReady = usePageReady();
 
   return (
     <>
-      {/* Fixed-position UI lives outside the smooth wrapper — ScrollSmoother
-          transforms #smooth-content, which would break `position: fixed`. */}
-      <Preloader onDone={() => setIntroReady(true)} />
-      <SiteHeader />
-
       <SmoothScroll>
       <main className="flex-1">
         {/* ── Hero ───────────────────────────────────────────────── */}
@@ -515,138 +502,8 @@ export default function Home() {
            --site-margin rather than the page shell, top row split 6 / 5 of
            12 columns at a 1rem gutter, nav rows full-width on a dotted
            rule. See the footer section in globals.css. */}
-      <footer className="footer_wrap_main relative">
-        <div className="footer_wrap">
-          <div className="footer_top">
-            {/* 6 columns: eyebrow above the nav list. */}
-            <div className="footer_eyebrow">
-              <SectionLabel>Navigation</SectionLabel>
-
-              <nav>
-                <ul className="footer_nav_ul">
-                  {NAV_FOOTER.map((item) => (
-                    <li key={item} className="footer_nav_li">
-                      <a
-                        href={`#${item.toLowerCase()}`}
-                        className="footer_nav_text footer_hover_row"
-                      >
-                        <span className="footer_hover_label">{item}</span>
-                        <span aria-hidden className="footer_nav_arrow">
-                          <RightArrow className="inline-arrow" />
-                        </span>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </nav>
-            </div>
-
-            {/* 5 columns, offset by one. Holds three flex:1 sibling
-                blocks that wrap: details and socials share the first line,
-                the AI chips wrap onto a second beneath the details. */}
-            <div className="footer_aside_contain">
-              <div className="footer_aside_details">
-                <p className="footer_top_text">(Personal details)</p>
-
-                <div className="footer_middle_wrap">
-                  <a
-                    href="mailto:hello@amarramesh.com"
-                    className="footer_email footer_hover_row is-inline-row flex w-fit items-center gap-[0.3em] self-start"
-                  >
-                    <span className="footer_hover_label">⮡ hello@amarramesh.com</span>
-                    <span className="footer_hover_marker flex items-center">
-                      <CornerArrow className="inline-arrow" />
-                    </span>
-                  </a>
-                  <p className="footer_address text-muted">
-                    Based in Chennai, India and Working Worldwide.
-                  </p>
-                </div>
-              </div>
-
-              <div className="footer_aside_details">
-                <p className="footer_top_text">(Socials)</p>
-                <ul className="footer_socials_ul">
-                  {SOCIALS.map((social) => (
-                    <li
-                      key={social.label}
-                      className="footer_socials_li footer_hover_row is-inline-row"
-                    >
-                      <a
-                        href={social.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="footer_lead flex items-center gap-[0.3em]"
-                      >
-                        <span className="footer_hover_label">{social.label}</span>
-                        <span className="footer_hover_marker flex items-center">
-                          <CornerArrow className="inline-arrow" />
-                        </span>
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="footer_aside_details">
-                <p className="footer_top_text">(Ask AI About Me)</p>
-{/* 2.5em squares on their own font size, laid out at space--1. The
-                    glyph fills the chip edge-to-edge, as the reference sets it. */}
-                <div className="footer_middle_wrap is-ai text-[16px]">
-                  {AI_SERVICES.map((service) => (
-                    <a
-                      key={service.name}
-                      href={aiHref(service.name)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title={`Ask ${service.label} about Amar Ramesh`}
-                      className="footer_ai_link"
-                    >
-                      <span className="sr-only">
-                        Ask {service.label} about Amar Ramesh
-                      </span>
-                      <AiIcon name={service.name} className="h-full w-full" />
-                    </a>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Bottom bar, section-space--main below the top row. */}
-          <div className="footer_bottom">
-            <div className="grid-12 border-t border-rule py-6 text-[15px]">
-              <span className="col-span-12 md:col-span-4">Chennai, IN</span>
-              <a
-                href="#top"
-                className="link-wipe col-span-6 md:col-start-6 md:col-span-3 justify-self-start"
-              >
-                Back to top ↑
-              </a>
-              <span className="col-span-6 md:col-start-10 md:col-span-3 justify-self-end md:justify-self-start">
-                © 2026, AMAR RAMESH
-              </span>
-            </div>
-
-            <div className="grid-12">
-              <span className="display optical-A col-span-12 md:col-span-5">Amar</span>
-              <span className="display optical-R col-span-12 md:col-start-6 md:col-span-7">
-                Ramesh
-              </span>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
       </SmoothScroll>
     </>
-  );
-}
-
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <p className="flex items-center gap-3 text-[17px] font-semibold tracking-[-0.03em]">
-      <span aria-hidden className="size-2 shrink-0 rounded-full bg-foreground" />
-      {children}
-    </p>
   );
 }
