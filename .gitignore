@@ -41,3 +41,10 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# Photography lives in the Cloudflare R2 bucket, not the repo.
+# Web derivatives are served from there (see src/lib/assetUrl.ts); the camera
+# originals are archived outside version control. `scripts/gen-photography.py`
+# rebuilds the derivatives from originals if they are restored locally.
+/public/assets/photography/
+/public/assets/photography-web/
