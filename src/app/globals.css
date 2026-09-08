@@ -2162,7 +2162,9 @@ body.pg-dragging .pg-vp {
 .pg-it {
   position: absolute;
   overflow: hidden;
-  background: var(--palette-chip);
+  /* No placeholder fill: an unloaded tile shows the page through rather than
+     a grey block, so the grid fills in without flashing its own scaffolding. */
+  background: transparent;
   cursor: pointer;
   will-change: transform, opacity;
 }
@@ -2261,7 +2263,10 @@ body.pg-dragging .pg-vp {
   top: 50%;
   overflow: hidden;
   will-change: transform, opacity;
-  background: var(--palette-chip) center / cover no-repeat;
+  /* The frame's own thumbnail is set here inline as the low-res stand-in
+     while the full copy decodes; with no colour behind it, a card that has
+     not loaded yet is invisible rather than a grey rectangle. */
+  background: transparent center / cover no-repeat;
   box-shadow:
     0 24px 80px rgb(0 0 0 / 0.22),
     0 6px 20px rgb(0 0 0 / 0.12);
@@ -2621,6 +2626,34 @@ html.preloaded .preloader {
   margin-inline: -0.5px;
   background: var(--palette-foreground);
   will-change: transform;
+}
+
+/*
+ * The preloader reuses the curtain's strip grid so the first load clears the
+ * page on the same column lines a route change does. These come after
+ * `.pt-curtain`/`.pt-strip` deliberately: same specificity, so source order
+ * is what lets them override the curtain's fixed positioning and colour.
+ */
+.preloader-curtain {
+  position: absolute;
+  z-index: 0;
+  /* The cover blocks the page while the counter runs, unlike the curtain. */
+  pointer-events: auto;
+}
+
+/*
+ * Strips are the cover's ground, not the curtain's foreground: they hide the
+ * page behind the page's own background colour. Painting each strip rather
+ * than the root is what lets them retract one at a time.
+ */
+.preloader-strip {
+  background: var(--palette-background);
+}
+
+/* Over the strips, and inert — the strips do the covering. */
+.preloader_content {
+  z-index: 1;
+  pointer-events: none;
 }
 
 /*

@@ -13,6 +13,7 @@ import {
 import { usePathname, useRouter } from "next/navigation";
 import { gsap, DUR } from "@/lib/gsap";
 import { Preloader } from "@/components/Preloader";
+import { preloadRoute } from "@/lib/preloadRoute";
 
 const ReadyContext = createContext(false);
 
@@ -25,6 +26,19 @@ export const usePageReady = () => useContext(ReadyContext);
 
 /** If the route has not mounted by then, lift the curtain anyway. */
 const STUCK_MS = 4000;
+
+/**
+ * How long the curtain will wait on the next route's images before revealing
+ * anyway.
+ *
+ * The strips take ~0.5s to close and the fetch starts as they begin, so the
+ * transition already absorbs most of this; only the remainder is a real wait.
+ * Measured against the bucket, a gallery's opening thumbs land in roughly a
+ * second over a warm connection, so this is set just past that — far enough
+ * to be useful, short enough that a slow network shortens the wait rather
+ * than stalling behind a covered page.
+ */
+const PRELOAD_MS = 1200;
 
 /**
  * The curtain is up to twelve strips on the page grid, one per column; CSS
@@ -58,6 +72,9 @@ export function PageTransition({ children }: { children: ReactNode }) {
   const pendingHref = useRef<string | null>(null);
   const lastPath = useRef(pathname);
   const stuckTimer = useRef(0);
+  /* The in-flight image warm for the route being navigated to, so the reveal
+   * can wait on it. Already resolved (or absent) means reveal immediately. */
+  const warming = useRef<Promise<void> | null>(null);
 
   // Only the strips the current breakpoint shows; the stagger spreads the
   // same sweep time over however many there are.
@@ -74,7 +91,7 @@ export function PageTransition({ children }: { children: ReactNode }) {
     gsap.set(curtain.current, { autoAlpha: 1 });
   }, []);
 
-  const reveal = useCallback((hash?: string) => {
+  const runReveal = useCallback((hash?: string) => {
     if (!curtain.current) return;
     window.clearTimeout(stuckTimer.current);
     window.scrollTo(0, 0);
@@ -100,12 +117,37 @@ export function PageTransition({ children }: { children: ReactNode }) {
       });
   }, []);
 
+  /*
+   * Reveal once the next page's images are warm. `preloadRoute` caps its own
+   * wait, so this can only ever hold the curtain for that budget — and the
+   * stuck timer is still armed underneath as the final guarantee.
+   */
+  const reveal = useCallback(
+    (hash?: string) => {
+      const pending = warming.current;
+      warming.current = null;
+      if (!pending) {
+        runReveal(hash);
+        return;
+      }
+      pending.then(() => runReveal(hash));
+    },
+    [runReveal],
+  );
+
   const navigate = useCallback(
     (href: string) => {
       if (busy.current) return;
       busy.current = true;
       pendingHref.current = href;
       setReady(false);
+      // Start fetching the destination's images now rather than after the
+      // strips land, so the wipe and the network run concurrently.
+      warming.current = preloadRoute(
+        new URL(href, window.location.href).pathname,
+        PRELOAD_MS,
+      );
+
       const els = strips();
       gsap
         .timeline()
@@ -114,10 +156,15 @@ export function PageTransition({ children }: { children: ReactNode }) {
         .to(els, { scaleY: 1, duration: 0.5, ease: "ease-menu", stagger: stagger(els.length) })
         .add(() => {
           router.push(href);
-          stuckTimer.current = window.setTimeout(() => reveal(), STUCK_MS);
+          // The last-resort lift bypasses the image wait: whatever has not
+          // arrived by now is not worth holding a covered page for.
+          stuckTimer.current = window.setTimeout(() => {
+            warming.current = null;
+            runReveal();
+          }, STUCK_MS);
         });
     },
-    [router, reveal],
+    [router, runReveal],
   );
 
   // The route changed: lift the curtain off the new page.

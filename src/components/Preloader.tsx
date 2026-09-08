@@ -8,9 +8,23 @@ import { gsap, DUR } from "@/lib/gsap";
 const SEEN_KEY = "amar:preloaded";
 
 /**
- * Counts 0 -> 100 behind a full-bleed cover, then lifts the cover and fires
- * `onDone` so the page intro can start. Uses ease-preloader from the
- * reference set.
+ * The cover is the same twelve strips the route curtain uses, so the first
+ * load and every navigation afterwards clear the page the same way. Kept in
+ * step with STRIPS/SWEEP in PageTransition.
+ */
+const STRIPS = 12;
+/** Total spread of the stagger across the strips, left to right. */
+const SWEEP = 0.385;
+
+/**
+ * Counts 0 -> 100 behind a full-bleed cover, then clears the cover and fires
+ * `onDone` so the page intro can start.
+ *
+ * The cover is built from the route curtain's markup and CSS — twelve strips
+ * on the page grid — and it leaves the way the curtain does: each strip
+ * retracts upward, staggered left to right, so the site's columns are what
+ * uncover the page. The counter fades just ahead of them, since it sits on
+ * the strips rather than on a panel of its own.
  *
  * Plays once per visit: after it has run, every later mount (a navigation or
  * a reload in the same tab) skips straight to `onDone`.
@@ -18,6 +32,7 @@ const SEEN_KEY = "amar:preloaded";
 export function Preloader({ onDone }: { onDone: () => void }) {
   const root = useRef<HTMLDivElement>(null);
   const counter = useRef<HTMLSpanElement>(null);
+  const content = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
@@ -41,6 +56,13 @@ export function Preloader({ onDone }: { onDone: () => void }) {
       // controls, and it is cleared as the cover starts to clear.
       document.body.classList.add("cover-is-visible");
 
+      // Only the strips this breakpoint shows, so the stagger spreads the
+      // same sweep over however many are on screen.
+      const strips = gsap.utils
+        .toArray<HTMLElement>(".preloader-strip", root.current)
+        .filter((el) => getComputedStyle(el).display !== "none");
+      const stagger = strips.length > 1 ? SWEEP / (strips.length - 1) : 0;
+
       const count = { value: 0 };
 
       gsap
@@ -55,20 +77,29 @@ export function Preloader({ onDone }: { onDone: () => void }) {
             }
           },
         })
+        // The wordmark and counter ride on the strips, so they go first —
+        // otherwise they would be clipped mid-retract.
         .to(
-          root.current,
+          content.current,
+          { autoAlpha: 0, duration: DUR.fast, ease: "ease-transition" },
+          "+=0.15",
+        )
+        // Retract upward, left to right: the route curtain's exact exit.
+        .to(
+          strips,
           {
-            autoAlpha: 0,
+            scaleY: 0,
             duration: DUR.normal,
             ease: "ease-transition",
+            stagger,
             // Release the hero as the cover begins to clear, so its intro
-            // plays through the fade rather than waiting for it to finish.
+            // plays through the sweep rather than waiting for it to finish.
             onStart: () => {
               document.body.classList.remove("cover-is-visible");
               onDone();
             },
           },
-          "+=0.15",
+          "<0.05",
         )
         .set(root.current, { display: "none" });
     },
@@ -76,11 +107,27 @@ export function Preloader({ onDone }: { onDone: () => void }) {
   );
 
   return (
-    <div
-      ref={root}
-      className="preloader fixed inset-0 z-[100] flex items-end justify-between bg-background px-[var(--grid-margin)] pb-8"
-    >
-      <div className="preloader_content flex w-full items-end justify-between">
+    <div ref={root} className="preloader fixed inset-0 z-[100]">
+      {/*
+       * The strips reuse the curtain's grid so the seams land on the same
+       * column lines, at every breakpoint, as a route transition's do.
+       * `transformOrigin` is set here rather than in the timeline so the very
+       * first frame is already anchored to the top edge.
+       */}
+      <div className="preloader-curtain pt-curtain" aria-hidden>
+        {Array.from({ length: STRIPS }, (_, i) => (
+          <span
+            key={i}
+            className="pt-strip preloader-strip"
+            style={{ transformOrigin: "50% 0%" }}
+          />
+        ))}
+      </div>
+
+      <div
+        ref={content}
+        className="preloader_content absolute inset-0 flex items-end justify-between px-[var(--grid-margin)] pb-8"
+      >
         {/* Wordmark left, set exactly as the header renders it. Both items
             sit flush on the container's bottom edge. */}
         <span className="text-[15px] font-semibold uppercase leading-none tracking-[-0.01em]">
