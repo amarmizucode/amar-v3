@@ -6,6 +6,8 @@
  * cropped, compressed URL; swap a value for a local `/assets/...` path as
  * each real image lands.
  */
+import { assetUrl } from "./assetUrl";
+
 const photo = (id: string, w: number, h: number) =>
   `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&h=${h}&q=80`;
 
@@ -32,7 +34,7 @@ export const MEDIA = {
 
   // Closing CTA backdrop — the reference's `cta_home_visual`. Uses the same
   // local portrait as the About section rather than a stock photo.
-  ctaBg: "/assets/amar-ramesh.jpg",
+  ctaBg: assetUrl("/assets/amar-ramesh.jpg"),
 
   // People.
 

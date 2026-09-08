@@ -9,6 +9,7 @@
  * removing photos; edit the copy here.
  */
 import manifest from "./photography.manifest.json";
+import { assetUrl } from "./assetUrl";
 
 export type Frame = {
   /** 480px long edge: the gallery canvas tiles. */
@@ -144,9 +145,12 @@ const COPY: Array<{
 const byFolder = new Map<string, ManifestGallery>(manifest.map((g) => [g.slug, g]));
 
 const toFrame = (f: ManifestGallery["frames"][number]): Frame => ({
-  thumb: f.thumb,
-  src: f.src,
-  full: f.full,
+  // The manifest holds root-relative paths; `assetUrl` points them at the R2
+  // bucket when NEXT_PUBLIC_IMAGE_BASE_URL is set, and leaves them on
+  // `public/` when it is not.
+  thumb: assetUrl(f.thumb),
+  src: assetUrl(f.src),
+  full: assetUrl(f.full),
   width: f.width,
   height: f.height,
   ratio: `${f.width} / ${f.height}`,
