@@ -1,4 +1,6 @@
 import { GALLERIES } from "@/lib/photography";
+import { FILMS, thumbUrl } from "@/lib/documentary";
+import { BOOKS } from "@/lib/books";
 
 /**
  * Warm the images a route opens on, while the curtain is down.
@@ -50,6 +52,19 @@ function imagesFor(pathname: string): string[] {
   // The index: the carousel's covers, starting from the first slide.
   if (/^\/photography\/?$/.test(pathname)) {
     return GALLERIES.slice(0, INDEX_LEAD).map((g) => g.cover);
+  }
+
+  // The bookshelf: whichever spine is hovered swells open to its cover.
+  // These are local `public/` files, but warming them still means the first
+  // hover reveals a decoded image rather than a decode stall.
+  if (/^\/books\/?$/.test(pathname)) {
+    return BOOKS.slice(0, INDEX_LEAD).map((b) => b.cover);
+  }
+
+  // The documentary cinema opens on the first film's still; the one after it
+  // is the likeliest next frame. The rest warm from the page's own idle sweep.
+  if (/^\/documentary\/?$/.test(pathname)) {
+    return FILMS.slice(0, 2).map((f) => thumbUrl(f.id));
   }
 
   return [];

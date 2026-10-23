@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { RightArrow } from "@/components/Arrows";
 import { gsap, CustomEase } from "@/lib/gsap";
 import { usePageReady } from "@/components/PageTransition";
+import { usePrintRequest } from "@/components/PrintRequest";
 import type { Frame, Gallery } from "@/lib/photography";
 
 /**
@@ -42,6 +43,13 @@ export function GalleryCanvas({
   /* The same readout as `count`, shown in the viewer's own top bar. */
   const barCount = useRef<HTMLSpanElement>(null);
   const closeBtn = useRef<HTMLButtonElement>(null);
+
+  /* The frame open in the viewer, mirrored out of the effect below so the
+   * "Request a print" toggle can follow it. Deliberately not reset on close:
+   * the bar fades out as a whole, and emptying the button mid-fade would make
+   * its chrome jump. The next open overwrites it before the bar returns. */
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
+  const prints = usePrintRequest();
 
   // The entrance waits for the page to be on show (preloader / route curtain).
   const ready = usePageReady();
@@ -354,6 +362,7 @@ export function GalleryCanvas({
     const openLarge = (idx: number, clicked: HTMLElement) => {
       mode = "large";
       lgIdx = idx;
+      setOpenIdx(idx);
       stackEl.innerHTML = "";
       rootEl.dataset.mode = "large";
       // The header sits in the root layout, outside .pg-root, so the open
@@ -571,6 +580,7 @@ export function GalleryCanvas({
         requestAnimationFrame(() => requestAnimationFrame(() => nc.classList.replace("prev", "cur")));
         lgIdx = pi;
       }
+      setOpenIdx(lgIdx);
       setCount(true, dir);
       window.setTimeout(() => {
         stackEl.querySelectorAll(".pg-lg-card.prev,.pg-lg-card.entering").forEach((c) => {
@@ -966,6 +976,24 @@ export function GalleryCanvas({
     };
   }, [gallery]);
 
+  /* The viewer's print-request toggle. The id is the frame's position in the
+   * gallery — the same `slug#index` the drawer and the email key off. */
+  const openFrame = openIdx === null ? null : gallery.frames[openIdx];
+  const inRequests = openIdx !== null && prints.has(`${gallery.slug}#${openIdx}`);
+  const toggleOpenFrame = () => {
+    if (openIdx === null || !openFrame) return;
+    prints.toggle({
+      id: `${gallery.slug}#${openIdx}`,
+      gallery: gallery.title,
+      index: gallery.index,
+      slug: gallery.slug,
+      frame: openIdx + 1,
+      file: openFrame.file,
+      thumb: openFrame.thumb,
+      ref: openFrame.src,
+    });
+  };
+
   return (
     <div ref={root} className="pg-root" data-mode="gallery">
       {/* Behind the frames: the gallery name alone, centred on both axes. */}
@@ -1075,12 +1103,25 @@ export function GalleryCanvas({
           </div>
         </div>
 
-        {/* The frame counter, centred along the bottom edge on every width —
-            clear of the photograph rather than sitting in the bar with the
-            title and Close. */}
-        <p className="pg-bar_count text-[15px] font-medium tracking-[-0.03em]">
-          <span ref={barCount} className="inline-block" />
-        </p>
+        {/* The frame counter with the print-request toggle beneath it, centred
+            along the bottom edge on every width — clear of the photograph
+            rather than sitting in the bar with the title and Close. */}
+        <div className="pg-bar_foot">
+          <p className="pg-bar_count text-[15px] font-medium tracking-[-0.03em]">
+            <span ref={barCount} className="inline-block" />
+          </p>
+          {openFrame && (
+            <button
+              type="button"
+              className="pg-bar_print text-[13px] font-medium uppercase tracking-[0.04em]"
+              aria-pressed={inRequests}
+              title={inRequests ? "Remove from print requests" : "Add to print requests"}
+              onClick={toggleOpenFrame}
+            >
+              {inRequests ? "✓ Saved for print" : "Request a print"}
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Viewer. */}

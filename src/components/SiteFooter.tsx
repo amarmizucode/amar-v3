@@ -2,15 +2,15 @@ import { CornerArrow, RightArrow } from "@/components/Arrows";
 import { SectionLabel } from "@/components/SectionLabel";
 import { AI_SERVICES, AiIcon, aiHref } from "@/components/AiIcons";
 
-const NAV_FOOTER = ["Works", "Photography", "Books", "Initiatives", "About", "Contact"];
+const NAV_FOOTER = ["Documentary", "Photography", "Books", "Initiatives", "About", "Contact"];
 
 /** Where each footer nav item points. Most are home-page anchors. */
 const NAV_HREF: Record<string, string> = {
-  Works: "/#works",
+  Documentary: "/documentary",
   Photography: "/photography",
-  Books: "/#ventures",
+  Books: "/books",
   Initiatives: "/#ventures",
-  About: "/#about",
+  About: "/about",
   Contact: "/#contact",
 };
 

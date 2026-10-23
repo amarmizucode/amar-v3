@@ -14,7 +14,9 @@ import { opticalClass } from "@/lib/optical";
  * `mix-blend-mode: difference`, so the type inverts wherever it crosses the
  * photograph — the effect that makes the pattern read.
  */
-export function Services({ items }: { items: string[] }) {
+export type ServiceItem = { label: string; href?: string };
+
+export function Services({ items }: { items: ServiceItem[] }) {
   const root = useRef<HTMLDivElement>(null);
 
   useGSAP(
@@ -85,35 +87,41 @@ export function Services({ items }: { items: string[] }) {
   return (
     <div ref={root}>
       <div className="flex flex-col gap-0 md:gap-1">
-        {items.map((item, i) => (
-          <div
-            key={`${item}-${i}`}
-            data-content-trigger
-            className="services_home_service_item relative cursor-pointer"
-          >
-            {/* Sits against the row's right edge, revealed on hover. */}
-            <div
-              data-content-image
-              className="services_home_service_image pointer-events-none absolute right-0 top-1/2 z-0 hidden aspect-[4/5] w-[9rem] -translate-y-1/2 overflow-hidden md:block"
+        {items.map(({ label, href }, i) => {
+          // A plain anchor, so the route curtain's document-level click
+          // handler picks it up like the header links.
+          const Row = href ? "a" : "div";
+          return (
+            <Row
+              key={`${label}-${i}`}
+              href={href}
+              data-content-trigger
+              className="services_home_service_item relative block cursor-pointer"
             >
-              <img
-                src={MEDIA.services[i % MEDIA.services.length]}
-                alt=""
-                className="absolute inset-0 h-full w-full object-cover"
-              />
-            </div>
+              {/* Sits against the row's right edge, revealed on hover. */}
+              <div
+                data-content-image
+                className="services_home_service_image pointer-events-none absolute right-0 top-1/2 z-0 hidden aspect-[4/5] w-[9rem] -translate-y-1/2 overflow-hidden md:block"
+              >
+                <img
+                  src={MEDIA.services[i % MEDIA.services.length]}
+                  alt=""
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+              </div>
 
-            {/* Type sits above its image; the image is inset from the left
-                so the heading stays legible where they overlap. */}
-            <h3
-              className={`services_home_heading display relative z-[1] !normal-case ${opticalClass(
-                item,
-              )}`}
-            >
-              {item}
-            </h3>
-          </div>
-        ))}
+              {/* Type sits above its image; the image is inset from the left
+                  so the heading stays legible where they overlap. */}
+              <h3
+                className={`services_home_heading display relative z-[1] !normal-case ${opticalClass(
+                  label,
+                )}`}
+              >
+                {label}
+              </h3>
+            </Row>
+          );
+        })}
       </div>
     </div>
   );

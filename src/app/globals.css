@@ -2357,16 +2357,57 @@ body.pg-viewing .pg-bar {
   opacity: 0.6;
 }
 
+/* The bar's foot: the frame counter with the print-request toggle beside it,
+ * centred along the bottom edge. One row, not a stack — a portrait card runs
+ * to 78vh, and a stacked foot would climb onto the photograph. */
+.pg-bar_foot {
+  align-self: center;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
 /* The counter is a tabular readout that changes per frame; fixed digits keep
  * it from jittering as it counts. */
-/* Centred along the bottom edge, clear of the photograph. Tabular digits so
- * the readout does not jitter as it counts. */
 .pg-bar_count {
-  align-self: center;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
   color: var(--color--foreground--50);
+}
+
+/* "Request a print", a toggle: outlined at rest, filled once the frame is in
+ * the request list — the same rest/active relationship the CTA pills have. */
+.pg-bar_print {
+  pointer-events: auto;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0.3em 1.2em;
+  border: 1px solid var(--color--foreground--25);
+  border-radius: var(--nav-radius);
+  color: var(--palette-foreground);
+  background: transparent;
+  transition:
+    background-color 0.25s ease,
+    border-color 0.25s ease,
+    color 0.25s ease,
+    opacity 0.25s ease;
+}
+
+.pg-bar_print:hover {
+  border-color: var(--color--foreground--50);
+}
+
+.pg-bar_print[aria-pressed="true"] {
+  background: var(--palette-foreground);
+  border-color: var(--palette-foreground);
+  color: var(--palette-background);
+}
+
+.pg-bar_print[aria-pressed="true"]:hover {
+  opacity: 0.85;
 }
 
 /* A long gallery name ("[02] Classical Dancers") has only four columns on a
@@ -2596,6 +2637,419 @@ body .pg-root.is-zoomed .pg-bar,
   }
 }
 
+/*
+ * ---------------------------------------------------------------------------
+ * Books shelf — /books. See BooksIndex.tsx for the engine.
+ *
+ * The shelf is a flex row of fixed-height volumes; React moves `is-open`
+ * between them (hover / focus / initial) and these width transitions carry
+ * the motion, the way the filmstrip's `is-big` does. `.bk-lg` is the detail
+ * viewer, with a `.bk-bar` standing in for the hidden site header and the
+ * photography viewer's `.pg-side` pills pinned along the bottom.
+ * ---------------------------------------------------------------------------
+ */
+.bk-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The active book's line, in the band between the header and the shelf. */
+.bk-cap {
+  position: absolute;
+  inset-inline: 0;
+  top: calc(var(--site-margin) * 2 + 2.5rem);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  pointer-events: none;
+}
+
+.bk-shelf {
+  --bk-h: min(56svh, 540px);
+  --bk-spine: clamp(3rem, 4.4vw, 4.75rem);
+  display: flex;
+  align-items: flex-end;
+  gap: clamp(6px, 0.6vw, 10px);
+  /* Rides a little low so the open volume hangs toward the wordmark, the way
+     the filmstrip's active slide hangs over it. */
+  margin-top: clamp(3rem, 9svh, 6rem);
+  /* The intro slides the volumes up out of this box; the padding keeps a
+     volume's focus ring inside the clip. */
+  overflow: hidden;
+  padding: 6px;
+}
+
+.bk-vol {
+  flex: none;
+  width: var(--bk-spine);
+  height: var(--bk-h);
+  transition: width 1s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.bk-vol.is-open {
+  width: min(calc(var(--bk-h) * 0.78), 38vw);
+}
+
+.bk-vol_btn {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: var(--nav-radius);
+  background: var(--color--foreground--5);
+  cursor: pointer;
+  appearance: none;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+}
+
+.bk-vol_btn:focus-visible {
+  outline: 2px solid var(--palette-foreground);
+  outline-offset: 2px;
+}
+
+/* Spine type reads top-to-bottom, as on a standing book. */
+.bk-spine_label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.9em;
+  writing-mode: vertical-rl;
+  padding-block: 1.1rem;
+  font-size: clamp(13px, 1.05vw, 16px);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+  transition: opacity 0.45s ease;
+}
+
+.bk-spine_idx {
+  color: var(--palette-muted);
+}
+
+/* The subject tag only fits the flat rows on a phone. */
+.bk-spine_cat {
+  display: none;
+}
+
+.bk-cover {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.6s ease 0.1s;
+}
+
+.bk-vol.is-open .bk-spine_label {
+  opacity: 0;
+}
+
+.bk-vol.is-open .bk-cover {
+  opacity: 1;
+}
+
+.bk-cover img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.9s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .bk-vol.is-open .bk-vol_btn:hover img {
+    transform: scale(1.04);
+  }
+}
+
+/*
+ * Below 768px there is no hover to swell a spine, so the shelf stacks as flat
+ * rows — index, title, subject — and a tap goes straight to the viewer. The
+ * caption goes with it; the rows carry the same lines themselves.
+ */
+@media (width < 768px) {
+  .bk-cap {
+    display: none;
+  }
+
+  .bk-shelf {
+    flex-direction: column;
+    align-items: stretch;
+    width: calc(100% - 2 * var(--site-margin));
+    gap: 8px;
+    margin-top: 0;
+    /* Biases the centred stack upward, so the last row clears the raised
+       wordmark rather than standing on it. */
+    margin-bottom: 8rem;
+  }
+
+  .bk-vol,
+  .bk-vol.is-open {
+    width: 100%;
+    height: clamp(46px, 6.5svh, 58px);
+    transition: none;
+  }
+
+  .bk-cover {
+    display: none;
+  }
+
+  .bk-vol.is-open .bk-spine_label {
+    opacity: 1;
+  }
+
+  .bk-spine_label {
+    writing-mode: horizontal-tb;
+    padding: 0 1rem;
+    gap: 0.75em;
+  }
+
+  .bk-spine_cat {
+    display: block;
+    margin-left: auto;
+    color: var(--palette-muted);
+  }
+
+  /* The floating app controls own the bottom corners on a phone, so the
+     wordmark sits above them — as on the photography index. */
+  .bk-wordmark {
+    bottom: calc(var(--site-margin) + 7.5rem);
+  }
+}
+
+/* ── Viewer ─────────────────────────────────────────────────────────── */
+.bk-lg {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  background: var(--palette-background);
+  overflow: hidden;
+}
+
+/*
+ * Centres on a desktop and scrolls where it must: auto block margins on the
+ * grid rather than flex centring, so content taller than the viewport scrolls
+ * from its top instead of clipping it.
+ */
+.bk-lg_scroll {
+  display: flex;
+  height: 100%;
+  overflow-y: auto;
+  padding-block: calc(var(--site-margin) * 2 + 2.5rem);
+}
+
+.bk-lg_grid {
+  margin-block: auto;
+  row-gap: 2rem;
+  align-items: center;
+}
+
+.bk-lg_frame {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  max-height: 62svh;
+  overflow: hidden;
+  border-radius: var(--nav-radius);
+}
+
+/* The entrance's clip-reveal pair: the mask translates up while its inside
+   counter-translates down, so the shot holds still as the clip opens. */
+.bk-lg_mask,
+.bk-lg_mask_inside {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+}
+
+.bk-lg_thumbs {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.bk-lg_thumbs::-webkit-scrollbar {
+  display: none;
+}
+
+.bk-lg_thumbs button {
+  flex: none;
+  width: clamp(44px, 4vw, 60px);
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: var(--nav-radius);
+  opacity: 0.5;
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+  appearance: none;
+  border: 0;
+  padding: 0;
+  background: none;
+}
+
+.bk-lg_thumbs button:hover,
+.bk-lg_thumbs button:focus-visible,
+.bk-lg_thumbs button.is-cur {
+  opacity: 1;
+}
+
+.bk-lg_thumbs img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/*
+ * The viewer's top bar — the site header's stand-in while a book is open,
+ * matching the photography viewer's: same fixed box, same padding, so the
+ * title lands on the wordmark's line and Close on the menu button's.
+ */
+.bk-bar {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  z-index: 520;
+  padding-block: var(--site-margin);
+  /* The sheet scrolls beneath it on a phone, so it paints its own ground. */
+  background: var(--palette-background);
+}
+
+.bk-bar_title {
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bk-bar_close {
+  cursor: pointer;
+  appearance: none;
+  border: 0;
+  padding: 0;
+  background: none;
+  font: inherit;
+  color: inherit;
+  transition: opacity 0.25s ease;
+}
+
+.bk-bar_close:hover {
+  opacity: 0.6;
+}
+
+/* Tabular digits so the readout does not jitter as it counts. */
+.bk-bar_count {
+  position: fixed;
+  bottom: var(--site-margin);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 520;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--color--foreground--50);
+}
+
+/*
+ * Next and previous — the photography viewer's side pills (`.pg-side`),
+ * pinned along the bottom edge here rather than mid-height: the viewer is a
+ * reading layout, and mid-edge pills would sit on the text column.
+ */
+.bk-sides {
+  position: fixed;
+  inset-inline: var(--site-margin);
+  bottom: var(--site-margin);
+  z-index: 520;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row-reverse;
+  pointer-events: none;
+}
+
+@media (width <= 768px) {
+  .bk-sides {
+    display: none;
+  }
+}
+
+/*
+ * Phone: the way through the shelf, at the foot of the sheet. Shown by the
+ * media query rather than a `md:hidden` utility: these rules are unlayered,
+ * so they would beat Tailwind's layered display utility anyway.
+ */
+.bk-lg_mnav {
+  display: none;
+  justify-content: space-between;
+  gap: 1rem;
+  border-top: 1px dotted var(--palette-rule);
+  padding-top: 0.75rem;
+}
+
+@media (width < 768px) {
+  .bk-lg_mnav {
+    display: flex;
+  }
+}
+
+.bk-lg_mnav button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5em;
+  padding: 0.5rem 0;
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  appearance: none;
+  border: 0;
+  background: none;
+  color: inherit;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.bk-lg_mnav_arrow {
+  width: 0.9em;
+  flex: none;
+}
+
+/*
+ * A book is open: the site header would sit over the viewer's own bar, and
+ * its links lead away from a view the user is still inside — the same
+ * treatment the photography viewer gives it. The floating theme and grid
+ * pills go too: `main` is isolated, so they paint over the viewer, and they
+ * share the bottom-right corner with the next-book pill.
+ */
+body.bk-viewing header,
+body.bk-viewing .app-aside {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+  transition:
+    opacity 0.3s ease,
+    visibility 0s linear 0.3s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bk-vol,
+  .bk-spine_label,
+  .bk-cover,
+  .bk-cover img,
+  .bk-lg_thumbs button,
+  .bk-bar_close {
+    transition: none;
+  }
+}
+
 /* The preloader has already played this visit (flag set before paint in the
    root layout); keep its cover off-screen until hydration removes it. */
 html.preloaded .preloader {
@@ -2689,5 +3143,357 @@ html.preloaded .preloader {
   }
   .pt-strip:nth-child(n + 3) {
     display: none;
+  }
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * Print requests — the pill pinned to the bottom-left corner that carries the
+ * running count, and the drawer it opens: the selection reviewed, a short
+ * form, and a Send that composes the email. See PrintRequestDock.tsx.
+ * ---------------------------------------------------------------------------
+ */
+/* Filled like the CTA pill, and on the opposite corner from .app-aside so the
+ * two floating clusters never collide. Hidden until something is picked. */
+.preq-pill {
+  position: fixed;
+  left: var(--site-margin);
+  bottom: calc(var(--site-margin) + env(safe-area-inset-bottom, 0px));
+  z-index: 270;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45em;
+  min-height: 44px;
+  padding: 0.25em 1.1em;
+  border-radius: var(--nav-radius);
+  background: var(--palette-foreground);
+  color: var(--palette-background);
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(0.75rem);
+  pointer-events: none;
+  transition:
+    opacity 0.35s ease,
+    transform 0.5s cubic-bezier(0.16, 1, 0.35, 1);
+}
+
+.preq-pill.is-on {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.preq-pill:hover {
+  opacity: 0.9;
+}
+
+.preq-pill:active {
+  transform: scale(0.95);
+}
+
+/* The count pulses when it changes (the span remounts per count), so adding a
+ * frame answers from the corner of the eye without a toast. */
+.preq-pill_count {
+  display: inline-block;
+  font-variant-numeric: tabular-nums;
+  animation: preq-bump 0.35s ease;
+}
+
+@keyframes preq-bump {
+  35% {
+    transform: scale(1.3);
+  }
+}
+
+/* Hidden with the rest of the floating chrome: under the preloader's cover,
+ * while a photograph is magnified and — on a phone, where the bottom edge is
+ * the viewer's own controls — while a frame is open at all. */
+body.cover-is-visible .preq-pill,
+body:has(.pg-root.is-zoomed) .preq-pill {
+  opacity: 0;
+  pointer-events: none;
+}
+
+@media (width <= 768px) {
+  body.pg-viewing .preq-pill {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+/* Above the route curtain (900) and the header (999): the drawer is the
+ * topmost surface while it is open. */
+.preq-scrim {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: var(--color--foreground--25);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.4s ease,
+    visibility 0s linear 0.4s;
+}
+
+.preq-scrim.is-open {
+  opacity: 1;
+  visibility: visible;
+  transition:
+    opacity 0.4s ease,
+    visibility 0s;
+}
+
+.preq-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1001;
+  display: flex;
+  flex-direction: column;
+  width: min(27.5rem, 100%);
+  background: var(--palette-background);
+  color: var(--palette-foreground);
+  border-left: 1px solid var(--color--foreground--10);
+  /* The extra pixel keeps the border off-screen while closed. */
+  transform: translateX(calc(100% + 1px));
+  visibility: hidden;
+  transition:
+    transform 0.55s cubic-bezier(0.16, 1, 0.35, 1),
+    visibility 0s linear 0.55s;
+}
+
+.preq-panel.is-open {
+  transform: none;
+  visibility: visible;
+  transition:
+    transform 0.55s cubic-bezier(0.16, 1, 0.35, 1),
+    visibility 0s;
+}
+
+.preq-panel:focus {
+  outline: none;
+}
+
+.preq-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: var(--site-margin);
+  border-bottom: 1px solid var(--color--foreground--10);
+}
+
+.preq-close {
+  cursor: pointer;
+  transition: opacity 0.25s ease;
+}
+
+.preq-close:hover {
+  opacity: 0.6;
+}
+
+/* The picks, one row each; the list is what scrolls, so the form below stays
+ * reachable however long the selection grows. */
+.preq-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 0 var(--site-margin);
+}
+
+.preq-row {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  padding-block: 0.8rem;
+  border-bottom: 1px solid var(--color--foreground--10);
+}
+
+.preq-row:last-child {
+  border-bottom: 0;
+}
+
+.preq-row img {
+  flex: none;
+  width: 3.25rem;
+  height: 4rem;
+  object-fit: cover;
+  border-radius: var(--nav-radius);
+}
+
+.preq-row_meta {
+  flex: 1;
+  min-width: 0;
+}
+
+/* The filename can be long; it ellipses rather than wrapping the row. */
+.preq-row_sub {
+  color: var(--color--foreground--50);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.preq-remove {
+  flex: none;
+  cursor: pointer;
+  color: var(--color--foreground--50);
+  text-underline-offset: 0.2em;
+  transition: color 0.25s ease;
+}
+
+.preq-remove:hover {
+  color: var(--palette-foreground);
+  text-decoration: underline;
+}
+
+.preq-form {
+  display: grid;
+  gap: 1.1rem;
+  padding: var(--site-margin);
+  border-top: 1px solid var(--color--foreground--10);
+}
+
+.preq-field {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.preq-field label {
+  font-size: 13px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color--foreground--50);
+}
+
+/* Underlined fields rather than boxes, on the type-first look of the rest of
+ * the chrome. 16px so iOS does not zoom the page on focus. */
+.preq-field input,
+.preq-field textarea {
+  width: 100%;
+  padding: 0.4em 0;
+  border: 0;
+  border-bottom: 1px solid var(--color--foreground--20);
+  border-radius: 0;
+  background: transparent;
+  color: var(--palette-foreground);
+  font: inherit;
+  font-size: 16px;
+  transition: border-color 0.25s ease;
+}
+
+.preq-field textarea {
+  resize: vertical;
+  min-height: 4.5em;
+}
+
+.preq-field input::placeholder,
+.preq-field textarea::placeholder {
+  color: var(--color--foreground--33);
+}
+
+.preq-field input:focus-visible,
+.preq-field textarea:focus-visible {
+  outline: none;
+  border-bottom-color: var(--palette-foreground);
+}
+
+.preq-send {
+  min-height: 48px;
+  padding: 0.5em 1.2em;
+  border-radius: var(--nav-radius);
+  background: var(--palette-foreground);
+  color: var(--palette-background);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+  cursor: pointer;
+  transition:
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.preq-send:hover {
+  opacity: 0.9;
+}
+
+.preq-send:active {
+  transform: scale(0.97);
+}
+
+.preq-hint {
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--color--foreground--50);
+}
+
+.preq-aux {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.preq-aux button {
+  cursor: pointer;
+  color: var(--color--foreground--50);
+  text-underline-offset: 0.2em;
+  transition: color 0.25s ease;
+}
+
+.preq-aux button:hover {
+  color: var(--palette-foreground);
+  text-decoration: underline;
+}
+
+.preq-empty {
+  display: grid;
+  gap: 1.25rem;
+  justify-items: start;
+  padding: var(--site-margin);
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--color--foreground--50);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .preq-pill,
+  .preq-scrim,
+  .preq-panel {
+    transition: none;
+  }
+
+  .preq-pill_count {
+    animation: none;
+  }
+}
+
+/*
+ * ===========================================================================
+ * Documentary cinema (/documentary).
+ *
+ * The stage's active still drifts on a slow Ken Burns zoom. It is a CSS
+ * animation rather than a GSAP tween so it owns `transform` outright — the
+ * crossfade on film change animates opacity only, and the two never write
+ * the same property.
+ * ===========================================================================
+ */
+@keyframes dc-drift {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.06);
+  }
+}
+
+.dc-drift {
+  animation: dc-drift 16s ease-in-out infinite alternate;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dc-drift {
+    animation: none;
   }
 }

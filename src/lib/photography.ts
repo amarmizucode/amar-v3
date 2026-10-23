@@ -18,6 +18,8 @@ export type Frame = {
   src: string;
   /** 2400px long edge: the lightbox. */
   full: string;
+  /** Original filename in the source folder — how a print request names the master. */
+  file: string;
   width: number;
   height: number;
   /** Aspect ratio of the slot, as a CSS `aspect-ratio` value. */
@@ -151,6 +153,7 @@ const toFrame = (f: ManifestGallery["frames"][number]): Frame => ({
   thumb: assetUrl(f.thumb),
   src: assetUrl(f.src),
   full: assetUrl(f.full),
+  file: f.file,
   width: f.width,
   height: f.height,
   ratio: `${f.width} / ${f.height}`,

@@ -7,16 +7,16 @@ import { CtaPill } from "@/components/CtaPill";
 
 /*
  * Root-relative rather than bare hashes: the header renders on the
- * /photography routes too, where a plain `#works` would resolve against the
+ * /photography routes too, where a plain `#ventures` would resolve against the
  * current page and go nowhere. SmoothScroll only intercepts `href^="#"`, so
  * these fall through to normal navigation off the home page and still scroll
  * smoothly once on it.
  */
 const NAV = [
-  { label: "Works", href: "/#works" },
+  { label: "Documentary", href: "/documentary" },
   { label: "Photography", href: "/photography" },
-  { label: "Books", href: "/#ventures" },
-  { label: "About", href: "/#about" },
+  { label: "Books", href: "/books" },
+  { label: "About", href: "/about" },
 ];
 
 export function SiteHeader() {

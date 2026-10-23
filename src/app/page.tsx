@@ -88,12 +88,12 @@ const VENTURES = [
 ];
 
 const SERVICES = [
-  "Photography",
-  "Films",
-  "Campaign",
-  "Mentorship",
-  "Documentary",
-  "Publishing",
+  { label: "Photography", href: "/photography" },
+  { label: "Films" },
+  { label: "Campaign" },
+  { label: "Mentorship" },
+  { label: "Documentary", href: "/documentary" },
+  { label: "Publishing" },
 ];
 
 const FAQS = [
