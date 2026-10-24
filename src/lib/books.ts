@@ -28,6 +28,20 @@ export type Book = {
   cover: string;
   /** Additional product shots, in store order. */
   plates: string[];
+  /**
+   * The shelf's book art: a flat spine strip (`spine.png`) and flat
+   * front-cover artwork (`cover-art.jpg`), supplied per book. The ratios are
+   * each image's width/height; `heightRatio` is this book's height relative
+   * to the tallest of the set (the spine strips are height-matched), so the
+   * shelf keeps the books' real formats and relative sizes.
+   */
+  art: {
+    spine: string;
+    cover: string;
+    spineRatio: number;
+    coverRatio: number;
+    heightRatio: number;
+  };
 };
 
 /** Book copy, in shelf order — the store's own, newest first. */
@@ -40,6 +54,7 @@ const COPY: Array<{
   price: number;
   available: boolean;
   plateCount: number;
+  art: { spineRatio: number; coverRatio: number; heightRatio: number };
 }> = [
   {
     slug: "perura-pateesa",
@@ -51,6 +66,7 @@ const COPY: Array<{
     price: 3800,
     available: true,
     plateCount: 2,
+    art: { spineRatio: 0.0854, coverRatio: 0.8287, heightRatio: 0.9314 },
   },
   {
     slug: "bhavani-jamakkalam",
@@ -62,6 +78,7 @@ const COPY: Array<{
     price: 2499,
     available: true,
     plateCount: 4,
+    art: { spineRatio: 0.0868, coverRatio: 0.7182, heightRatio: 0.9005 },
   },
   {
     slug: "madras-margazhi",
@@ -73,6 +90,7 @@ const COPY: Array<{
     price: 1000,
     available: false,
     plateCount: 5,
+    art: { spineRatio: 0.0955, coverRatio: 1.0,    heightRatio: 0.8471 },
   },
   {
     slug: "stones-and-stories",
@@ -84,6 +102,7 @@ const COPY: Array<{
     price: 1000,
     available: false,
     plateCount: 3,
+    art: { spineRatio: 0.0979, coverRatio: 1.0,    heightRatio: 0.8333 },
   },
   {
     slug: "aranga",
@@ -95,6 +114,7 @@ const COPY: Array<{
     price: 1199,
     available: true,
     plateCount: 2,
+    art: { spineRatio: 0.0831, coverRatio: 0.8092, heightRatio: 0.9657 },
   },
   {
     slug: "pudhu-mandapam",
@@ -106,6 +126,7 @@ const COPY: Array<{
     price: 4800,
     available: true,
     plateCount: 6,
+    art: { spineRatio: 0.0913, coverRatio: 0.768,  heightRatio: 0.9012 },
   },
   {
     slug: "mogappu",
@@ -117,6 +138,7 @@ const COPY: Array<{
     price: 2800,
     available: true,
     plateCount: 4,
+    art: { spineRatio: 0.0816, coverRatio: 1.0,    heightRatio: 1.0 },
   },
   {
     slug: "kolli-kannu",
@@ -128,6 +150,7 @@ const COPY: Array<{
     price: 2400,
     available: true,
     plateCount: 5,
+    art: { spineRatio: 0.088,  coverRatio: 1.0242, heightRatio: 0.8656 },
   },
 ];
 
@@ -142,6 +165,11 @@ export const BOOKS: Book[] = COPY.map((copy, i) => ({
   available: copy.available,
   buyUrl: `https://maralabs.in/products/${copy.slug}`,
   cover: `/assets/books/${copy.slug}/cover.jpg`,
+  art: {
+    spine: `/assets/books/${copy.slug}/spine.png`,
+    cover: `/assets/books/${copy.slug}/cover-art.jpg`,
+    ...copy.art,
+  },
   plates: Array.from(
     { length: copy.plateCount },
     (_, n) => `/assets/books/${copy.slug}/plate-${n + 1}.jpg`,

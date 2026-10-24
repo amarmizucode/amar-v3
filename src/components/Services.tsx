@@ -14,7 +14,7 @@ import { opticalClass } from "@/lib/optical";
  * `mix-blend-mode: difference`, so the type inverts wherever it crosses the
  * photograph — the effect that makes the pattern read.
  */
-export type ServiceItem = { label: string; href?: string };
+export type ServiceItem = { label: string; href?: string; image?: string };
 
 export function Services({ items }: { items: ServiceItem[] }) {
   const root = useRef<HTMLDivElement>(null);
@@ -87,7 +87,7 @@ export function Services({ items }: { items: ServiceItem[] }) {
   return (
     <div ref={root}>
       <div className="flex flex-col gap-0 md:gap-1">
-        {items.map(({ label, href }, i) => {
+        {items.map(({ label, href, image }, i) => {
           // A plain anchor, so the route curtain's document-level click
           // handler picks it up like the header links.
           const Row = href ? "a" : "div";
@@ -104,7 +104,7 @@ export function Services({ items }: { items: ServiceItem[] }) {
                 className="services_home_service_image pointer-events-none absolute right-0 top-1/2 z-0 hidden aspect-[4/5] w-[9rem] -translate-y-1/2 overflow-hidden md:block"
               >
                 <img
-                  src={MEDIA.services[i % MEDIA.services.length]}
+                  src={image ?? MEDIA.services[i % MEDIA.services.length]}
                   alt=""
                   className="absolute inset-0 h-full w-full object-cover"
                 />

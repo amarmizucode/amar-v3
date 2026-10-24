@@ -1,18 +1,20 @@
 import type { Metadata } from "next";
-import { DocumentaryCinema } from "@/components/DocumentaryCinema";
-import { FILMS } from "@/lib/documentary";
+import { DocumentaryIndex } from "@/components/DocumentaryIndex";
+import { ALL_FILMS } from "@/lib/documentary";
 
 export const metadata: Metadata = {
   title: "Documentary — Amar Ramesh",
   description:
-    "Culture of India: a growing documentary archive of the crafts, rituals, festivals and art forms of India's living culture — Kalamkari, Jamakkalam, Madurai Sungudi, Bidri, the mridangam makers and more — all directed and filmed by Amar Ramesh.",
+    "Culture of India: a growing documentary archive of the crafts, rituals, festivals and art forms of India's living culture — Kalamkari, Jamakkalam, Madurai Sungudi, Bidri, the mridangam makers and more — directed and filmed by Amar Ramesh, alongside the Big Short Films archive of real, inspiring stories.",
 };
 
 /*
- * Like the photography index, this page is a single non-scrolling viewport —
- * no SiteFooter, no SmoothScroll. The fixed site header from the root layout
- * sits on top; the cinema's top band leaves room for it.
+ * A faithful copy of seyityilmaz.com: list left, sticky identity right, each
+ * row floating its film over the page. Minimal like the reference — no
+ * SiteFooter, and no SmoothScroll either: the sticky intro cannot engage
+ * inside ScrollSmoother's transformed content, so the page scrolls natively,
+ * exactly as the reference does.
  */
 export default function Page() {
-  return <DocumentaryCinema films={FILMS} />;
+  return <DocumentaryIndex films={ALL_FILMS} />;
 }

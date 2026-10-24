@@ -52,7 +52,11 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
       // the touch gesture and preventDefaults it, which stops the browser's own
       // pull-to-refresh from ever arming at the top. `isTouch === 1` is
       // touch-only; 2 is a hybrid with a mouse, which still wants normalizing.
-      normalizeScroll: ScrollTrigger.isTouch !== 1,
+      // allowNestedScroll: the normalizer otherwise preventDefaults every
+      // wheel, which kills a trackpad's sideways swipe on the home page's
+      // film carousel (and any other inner scroller); with it, gestures over
+      // a scrollable element are left to the browser.
+      normalizeScroll: ScrollTrigger.isTouch !== 1 ? { allowNestedScroll: true } : false,
       ignoreMobileResize: true,
     });
 

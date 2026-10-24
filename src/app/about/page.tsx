@@ -1,57 +1,60 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { AboutHero } from "@/components/AboutHero";
+import { JourneyRail, type Chapter } from "@/components/JourneyRail";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { Reveal } from "@/components/Reveal";
 import { SectionLabel } from "@/components/SectionLabel";
 import { HighlightText } from "@/components/HighlightText";
 import { MediaFrame } from "@/components/MediaFrame";
 import { CtaPill } from "@/components/CtaPill";
+import { CornerArrow } from "@/components/Arrows";
 import { SiteFooter } from "@/components/SiteFooter";
+import { InNumbers, Recognition } from "@/components/Highlights";
 import { MEDIA } from "@/lib/media";
+import { BOOKS } from "@/lib/books";
 import { assetUrl } from "@/lib/assetUrl";
 
 export const metadata: Metadata = {
   title: "About — Amar Ramesh",
   description:
-    "Engineer turned storyteller. Founder of Studio A, Big Short Films, Mara Labs and the Kanavu Fellowship — over seven hundred and fifty weddings across twenty-two countries, a thousand temples documented, and seven books.",
+    "Engineer turned storyteller. Founder of Studio A, Big Short Films, Mara Labs and the Kanavu Fellowship — over seven hundred and fifty weddings across twenty-two countries, a thousand temples documented, and eight books.",
 };
 
 /*
- * The journey, told as numbered chapters rather than a dated timeline — the
- * same kicker / title / blurb rhythm as the home page's Notable Ventures rows.
+ * The journey, told as five chapters that ride a pinned horizontal track on
+ * desktop (JourneyRail) and stack vertically everywhere else.
  */
-const CHAPTERS = [
+const CHAPTERS: Chapter[] = [
   {
-    kicker: "01. Seattle",
+    kicker: "Seattle — 2004",
     title: "The first camera",
     blurb:
       "A master's in electronics and computer science, a software career in the United States — and a camera bought in 2004 to record weekend travels. Apprenticeships with award-winning photographers in the Pacific Northwest turned the hobby into a craft.",
     image: MEDIA.services[4],
   },
   {
-    kicker: "02. Chennai",
+    kicker: "Chennai — 2010",
     title: "The return",
     blurb:
       "A one-way ticket home in 2010. The software career stayed behind; the temples of Tamil Nadu became the first body of work — the Land of Temples project that set the course for everything after.",
     image: MEDIA.work4,
   },
   {
-    kicker: "03. Studio A",
+    kicker: "Studio A",
     title: "The studio",
     blurb:
       "What began as one man with a camera is now a team of twenty-five and one of India's most sought-after wedding studios — over seven hundred and fifty weddings across twenty-two countries.",
     image: MEDIA.venture1,
   },
   {
-    kicker: "04. The wider frame",
+    kicker: "The wider frame",
     title: "Films & books",
     blurb:
       "Documentary film through Big Short Films — Jamakkaalam led to the Centre for Weavers — and publishing through Mara Labs: pictorial monographs on the temples, portals and people of South India.",
     image: MEDIA.venture3,
   },
   {
-    kicker: "05. Giving back",
+    kicker: "Giving back",
     title: "Kanavu",
     blurb:
       "A year-long fellowship run with the Chennai Photo Biennale, training women photographers and filmmakers from small Tamil Nadu towns — photography, lighting, storytelling, editing and the business of both.",
@@ -59,53 +62,17 @@ const CHAPTERS = [
   },
 ];
 
-const NUMBERS = [
-  { stat: "750+", label: "weddings photographed" },
-  { stat: "22", label: "countries worked in" },
-  { stat: "1,000+", label: "temples documented" },
-  { stat: "7", label: "books written & photographed" },
-];
-
-const BOOKS = [
-  {
-    index: "01/07",
-    title: "Stones & Stories",
-    blurb: "A photo journey through the timeless Kanchi Kailasanathar temple, a Pallava marvel.",
-  },
-  {
-    index: "02/07",
-    title: "Mogappu — Portals of Chettinad",
-    blurb: "The ornamental doorways of Chettinad's mansions, documented before they disappear.",
-  },
-  {
-    index: "03/07",
-    title: "Madras Margazhi",
-    blurb: "Carnatic musicians photographed against the iconic backdrops of their own city.",
-  },
-  {
-    index: "04/07",
-    title: "50 Inspiring Women",
-    blurb: "Portraits and stories of fifty women shaping Tamil Nadu on their own terms.",
-  },
-];
-
-const RECOGNITION = [
-  "Fearless Photographers Award",
-  "WPPI honours",
-  "TEDx — Life Through the Lens",
-  "Featured in The Hindu, Reader's Digest, DestinAsian and Wedding Vows",
-];
-
 export default function About() {
   return (
     <SmoothScroll>
       <main className="flex-1">
-        {/* ── Hero — home-page geometry: ledes mid-frame, display
-             type at the bottom of a full viewport. */}
+        {/* ── Hero — display staircase with photographs set into the type. */}
         <AboutHero />
 
-        {/* ── Portrait + statements — same split as the home page's
-             about section: image cols 1-3, roles 4-5, copy from 6. */}
+        {/* ── Portrait + statements — portrait and roles keep to one quiet
+             column on the left; the statements take the frame from col 5 with
+             a full gutter column of air between, and section-scale gaps so the
+             three paragraphs read as beats rather than a wall. */}
         <section
           className="shell"
           style={{
@@ -113,27 +80,23 @@ export default function About() {
             paddingBottom: "var(--section-space-large)",
           }}
         >
-          <div className="grid-12 gap-y-10">
-            <Reveal className="col-span-6 md:col-span-3">
-              <Image
+          <div className="grid-12 gap-y-14">
+            <Reveal className="col-span-12">
+              <SectionLabel>The short version</SectionLabel>
+            </Reveal>
+
+            <Reveal className="col-span-8 sm:col-span-6 md:col-span-3">
+              <MediaFrame
+                ratio="4 / 5"
                 src={assetUrl("/assets/amar-ramesh.jpg")}
-                alt="Amar Ramesh"
-                width={313}
-                height={313}
-                sizes="(max-width: 768px) 50vw, 313px"
-                className="w-full max-w-[313px] aspect-square object-cover object-top bg-foreground"
+                parallax={14}
               />
+              <p className="mt-4 text-[13px] font-medium text-muted">
+                Photographer · Filmmaker · Author &amp; Mentor
+              </p>
             </Reveal>
 
-            <Reveal className="col-span-6 md:col-start-4 md:col-span-2" delay={80}>
-              <ul className="text-[16px] leading-[1.25] font-medium">
-                <li>Photographer</li>
-                <li>Filmmaker</li>
-                <li>Author &amp; Mentor</li>
-              </ul>
-            </Reveal>
-
-            <div className="col-span-12 md:col-start-6 md:col-span-6 flex flex-col gap-6">
+            <div className="col-span-12 flex flex-col gap-12 md:col-start-5 md:col-span-7 md:gap-20">
               <HighlightText className="text-statement font-semibold">
                 I grew up in Chennai, studied engineering, and spent years writing software in the
                 United States — until a camera, bought to record weekend travels, quietly took over.
@@ -153,102 +116,61 @@ export default function About() {
           </div>
         </section>
 
-        {/* ── The journey ────────────────────────────────────────── */}
-        <section className="shell pb-20 md:pb-28">
-          <Reveal>
-            <SectionLabel>The journey</SectionLabel>
-          </Reveal>
-
-          <div className="mt-16 border-t border-rule">
-            {CHAPTERS.map((chapter) => (
-              <div
-                key={chapter.title}
-                className="grid-12 gap-y-6 border-b border-rule bg-background pb-8"
-              >
-                <p className="col-span-12 pt-8 md:col-span-2 text-[13px] font-medium text-muted">
-                  {chapter.kicker}
-                </p>
-                <div className="col-span-12 pt-8 md:col-start-3 md:col-span-3 flex flex-col gap-2">
-                  <h3 className="text-[19px] font-semibold tracking-[-0.03em]">{chapter.title}</h3>
-                  <p className="text-[15px] leading-[1.55] text-muted max-w-[38ch]">
-                    {chapter.blurb}
-                  </p>
-                </div>
-                <div className="col-span-12 md:col-start-7 md:col-span-6">
-                  <MediaFrame ratio="722 / 415" src={chapter.image} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
+        {/* ── The journey — pinned horizontal ride through five chapters. ── */}
+        <div className="pb-20 md:pb-28">
+          <JourneyRail chapters={CHAPTERS} />
+        </div>
 
         {/* ── In numbers ─────────────────────────────────────────── */}
-        <section className="shell pb-20 md:pb-28">
-          <div className="grid-12 gap-y-12">
-            <Reveal className="col-span-12 md:col-span-3">
-              <SectionLabel>In numbers</SectionLabel>
-            </Reveal>
+        <InNumbers />
 
-            <div className="col-span-12 md:col-start-6 md:col-span-7 grid grid-cols-2 gap-x-4 gap-y-10 sm:gap-x-8">
-              {NUMBERS.map((item, i) => (
-                <Reveal key={item.label} delay={i * 60}>
-                  <span className="inline-block bg-chip px-3 py-1.5 text-[22px] font-semibold tracking-[-0.03em]">
-                    {item.stat}
-                  </span>
-                  <p className="pt-3 text-[15px] font-medium">{item.label}</p>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ── Books ──────────────────────────────────────────────── */}
+        {/* ── Books — the full Mara Labs catalogue; every row leads to the
+             shelf, with the site's inverting row interaction marking the way. */}
         <section className="shell pb-20 md:pb-28">
           <div className="grid-12 gap-y-12">
             <Reveal className="col-span-12 md:col-span-3">
               <SectionLabel>Books</SectionLabel>
+              <p className="mt-6 max-w-[30ch] text-[15px] leading-[1.55] text-muted">
+                Eight pictorial monographs, written and photographed by Amar, published through
+                Mara Labs.
+              </p>
+              <a
+                href="/books"
+                className="link-wipe mt-5 flex w-fit items-center gap-[0.3em] text-[13px] font-medium"
+              >
+                Browse the shelf
+                <CornerArrow className="w-[0.8em]" />
+              </a>
             </Reveal>
 
             <div className="col-span-12 md:col-start-6 md:col-span-7">
               {BOOKS.map((book) => (
-                <div
-                  key={book.title}
-                  className="grid grid-cols-12 gap-y-2 border-b border-rule py-6 first:border-t"
+                <a
+                  key={book.slug}
+                  href="/books"
+                  aria-label={`${book.title} — browse the books shelf`}
+                  className="footer_hover_row grid grid-cols-12 gap-y-2 border-b border-rule py-6 first:border-t"
                 >
-                  <span className="col-span-12 sm:col-span-2 text-[13px] font-medium text-muted">
-                    {book.index}
+                  <span className="footer_hover_label col-span-11 sm:col-span-2 text-[13px] font-medium text-muted">
+                    {book.index}/{String(BOOKS.length).padStart(2, "0")}
                   </span>
-                  <h3 className="col-span-12 sm:col-span-4 text-[19px] font-semibold tracking-[-0.03em]">
+                  <h3 className="footer_hover_label col-span-12 sm:col-span-4 text-[19px] font-semibold tracking-[-0.03em]">
                     {book.title}
                   </h3>
-                  <p className="col-span-12 sm:col-start-7 sm:col-span-6 text-[15px] leading-[1.55] text-muted">
+                  <p className="footer_hover_label col-span-12 sm:col-start-7 sm:col-span-5 text-[15px] leading-[1.55] text-muted">
                     {book.blurb}
                   </p>
-                </div>
+                  <span className="footer_hover_marker col-start-12 col-span-1 row-start-1 flex items-center justify-end self-center sm:row-start-auto">
+                    <CornerArrow className="w-[14px]" />
+                  </span>
+                </a>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ── Recognition ────────────────────────────────────────── */}
-        <section className="shell pb-24 md:pb-36">
-          <div className="grid-12 gap-y-12">
-            <Reveal className="col-span-12 md:col-span-3">
-              <SectionLabel>Recognition</SectionLabel>
-            </Reveal>
-
-            <ul className="col-span-12 md:col-start-6 md:col-span-7 flex flex-col">
-              {RECOGNITION.map((item) => (
-                <li
-                  key={item}
-                  className="border-b border-rule py-5 text-[17px] font-semibold tracking-[-0.03em] first:border-t"
-                >
-                  {item}
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
+        {/* ── Recognition — the honours as laurel wreaths, and the press. ─── */}
+        <Recognition />
 
         {/* ── Closing ────────────────────────────────────────────── */}
         <section className="shell pb-24 md:pb-36">

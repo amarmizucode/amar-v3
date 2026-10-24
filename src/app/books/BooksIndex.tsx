@@ -1,10 +1,16 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
 import { useGSAP } from "@gsap/react";
 import { CornerArrow, RightArrow } from "@/components/Arrows";
 import { usePageReady } from "@/components/PageTransition";
-import { Wordmark } from "@/components/Wordmark";
 import { gsap, DUR } from "@/lib/gsap";
 import type { Book } from "@/lib/books";
 
@@ -36,10 +42,13 @@ export function BooksIndex({ books }: { books: Book[] }) {
   const overlay = useRef<HTMLDivElement>(null);
   const closeBtn = useRef<HTMLButtonElement>(null);
 
-  /** The volume standing open on the shelf (hover / focus / initial). */
-  const [active, setActive] = useState(0);
+  /** The volume standing open on the shelf (hover / focus), if any — the
+   * shelf rests with every book closed. */
+  const [active, setActive] = useState<number | null>(null);
   /** The book in the detail viewer, or null while the shelf is on show. */
   const [open, setOpen] = useState<number | null>(null);
+  /** Phone only: the book held under a finger, its cover lifted off the pile. */
+  const [peek, setPeek] = useState<number | null>(null);
   /** Which shot the viewer's frame holds: 0 is the cover, then the plates. */
   const [shot, setShot] = useState(0);
 
@@ -59,29 +68,64 @@ export function BooksIndex({ books }: { books: Book[] }) {
     () => {
       const vols = gsap.utils.toArray<HTMLElement>(".bk-vol", root.current);
       if (!vols.length || reduced()) return;
-      const lines = cap.current ? Array.from(cap.current.children) : [];
+
+      /* Phones: the pile is dropped. Every book starts above the viewport
+       * and falls with free-fall physics — quadratic acceleration, fall time
+       * from its own drop distance (t ∝ √d) — then settles with the smallest
+       * of hops, a few pixels scaled to the drop. Books release in order —
+       * bottom of the pile first, building upward — with a pinch of random
+       * jitter inside each step, small enough that the order always reads. */
+      if (window.matchMedia("(max-width: 767px)").matches) {
+        const tl = gsap.timeline({ paused: !readyRef.current, delay: 0.25 });
+        [...vols].reverse().forEach((el, n) => {
+          const dist = el.getBoundingClientRect().bottom + 40;
+          gsap.set(el, { y: -dist });
+          const release = n * 0.13 + Math.random() * 0.05;
+          const hop = Math.min(8, Math.max(3, dist * 0.012));
+          tl.to(
+            el,
+            { y: 0, duration: Math.sqrt(dist / 2400), ease: "power1.in" },
+            release,
+          )
+            .to(el, { y: -hop, duration: 0.12, ease: "power1.out" }, ">")
+            .to(el, { y: 0, duration: 0.14, ease: "power1.in" }, ">");
+        });
+        intro.current = tl;
+        return;
+      }
+
+      /* Desktop: the volumes rise out of the shelf's clip. */
       gsap.set(vols, { yPercent: 112 });
-      gsap.set(lines, { autoAlpha: 0, y: 18 });
       intro.current = gsap
         .timeline({
           paused: !readyRef.current,
           delay: 0.25,
           defaults: { ease: "expo.out", duration: 1.5 },
         })
-        .to(vols, { yPercent: 0, stagger: 0.055 }, 0)
-        .to(lines, { autoAlpha: 1, y: 0, stagger: 0.07, duration: 1 }, 0.35);
+        .to(vols, { yPercent: 0, stagger: 0.055 }, 0);
     },
     { scope: root },
   );
 
-  /* ── Caption swap when another volume takes the shelf ────────────────── */
-  const prevActive = useRef(0);
+  /* ── Caption: in with the hovered book's lines, away when none is ────── */
+  const prevActive = useRef<number | null>(null);
   useEffect(() => {
     if (prevActive.current === active) return;
     prevActive.current = active;
-    if (!cap.current || reduced()) return;
+    const el = cap.current;
+    if (!el) return;
+    if (reduced()) {
+      gsap.set(el, { autoAlpha: active == null ? 0 : 1 });
+      if (active != null) gsap.set(el.children, { clearProps: "y,opacity,visibility" });
+      return;
+    }
+    if (active == null) {
+      gsap.to(el, { autoAlpha: 0, duration: DUR.fast, ease: "ease-transition", overwrite: true });
+      return;
+    }
+    gsap.set(el, { autoAlpha: 1 });
     gsap.fromTo(
-      cap.current.children,
+      el.children,
       { y: 14, autoAlpha: 0 },
       {
         y: 0,
@@ -94,8 +138,37 @@ export function BooksIndex({ books }: { books: Book[] }) {
     );
   }, [active]);
 
+  /* ── Phone hold-to-peek ──────────────────────────────────────────────── */
+  /* Holding a book lifts its cover over the pile; releasing drops it back.
+   * A press shorter than the threshold stays a tap and opens the viewer; a
+   * longer one is a peek, and the click it releases into is swallowed. */
+  const holdTimer = useRef(0);
+  const peeked = useRef(false);
+
+  const holdStart = (i: number) => {
+    if (!window.matchMedia("(max-width: 767px)").matches) return;
+    // Warm the art so the peek paints instantly even on its first hold.
+    new Image().src = books[i].art.cover;
+    window.clearTimeout(holdTimer.current);
+    holdTimer.current = window.setTimeout(() => {
+      peeked.current = true;
+      setPeek(i);
+    }, 220);
+  };
+
+  const holdEnd = () => {
+    window.clearTimeout(holdTimer.current);
+    setPeek(null);
+    // The release's click (when the browser sends one) fires right after
+    // pointerup; the flag outlives it by a beat, then clears for real taps.
+    window.setTimeout(() => {
+      peeked.current = false;
+    }, 80);
+  };
+
   /* ── Viewer open / close / step ──────────────────────────────────────── */
   const openBook = (i: number) => {
+    if (peeked.current) return;
     setActive(i);
     setShot(0);
     setOpen(i);
@@ -105,7 +178,7 @@ export function BooksIndex({ books }: { books: Book[] }) {
     (dir: 1 | -1) => {
       setShot(0);
       setOpen((o) => (o == null ? o : (o + dir + books.length) % books.length));
-      setActive((a) => (a + dir + books.length) % books.length);
+      setActive((a) => (a == null ? a : (a + dir + books.length) % books.length));
     },
     [books.length],
   );
@@ -176,7 +249,15 @@ export function BooksIndex({ books }: { books: Book[] }) {
     };
   }, [viewing, requestClose, step]);
 
-  const featured = books[active];
+  /* The caption keeps the last hovered book's lines while it fades away, so
+   * a mouse-leave does not empty the block mid-fade; the peek keeps its last
+   * cover the same way. */
+  const lastShown = useRef(0);
+  if (active != null) lastShown.current = active;
+  const featured = books[active ?? lastShown.current];
+  const lastPeek = useRef(0);
+  if (peek != null) lastPeek.current = peek;
+  const peekBook = books[peek ?? lastPeek.current];
   const book = open != null ? books[open] : null;
   const next = open != null ? books[(open + 1) % books.length] : null;
   const prev = open != null ? books[(open - 1 + books.length) % books.length] : null;
@@ -187,55 +268,100 @@ export function BooksIndex({ books }: { books: Book[] }) {
       <main className="relative isolate h-svh overflow-hidden">
         <h1 className="sr-only">Books — Amar Ramesh</h1>
 
-        {/* Beneath the shelf, so the open volume hangs over it. */}
-        <div
-          className="bk-wordmark pointer-events-none absolute inset-x-0 bottom-0 z-0"
-          style={{ padding: "0 var(--site-margin) var(--site-margin)" }}
-        >
-          <Wordmark>Books</Wordmark>
-        </div>
-
-        <div className="bk-stage absolute inset-0 z-10">
-          {/* The active book's line, in the band the header leaves free. */}
-          <div ref={cap} className="bk-cap shell">
-            <p className="text-[15px] font-medium text-muted">
-              [{featured.index}] — {featured.category}
-            </p>
-            <p className="max-w-[46ch] text-[clamp(17px,1.4vw,22px)] font-medium leading-[1.25] tracking-[-0.02em]">
-              {featured.blurb}
-            </p>
-            <p className="text-[15px] font-medium text-muted">
-              {featured.available ? rupees(featured.price) : "Sold out"} — published by Mara Labs
-            </p>
-          </div>
-
-          <div className="bk-shelf" role="list">
+        <div className="bk-stage absolute inset-0 z-10" data-peek={peek != null}>
+          {/* Leaving the shelf closes whichever book was open. */}
+          <div className="bk-shelf" role="list" onMouseLeave={() => setActive(null)}>
             {books.map((b, i) => (
               <article
                 key={b.slug}
                 role="listitem"
                 className={`bk-vol ${i === active ? "is-open" : ""}`}
+                /* The measured art proportions; the stylesheet derives each
+                 * volume's height, spine width and cover width from these, so
+                 * the shelf keeps the set's true formats and relative sizes. */
+                style={
+                  {
+                    "--hr": b.art.heightRatio,
+                    "--sr": b.art.spineRatio,
+                    "--cr": b.art.coverRatio,
+                    /* The phone pile's jitter: deterministic per position, so
+                     * the server and client agree and the pile still looks
+                     * casually dropped. */
+                    "--mx": `${(i * 53) % 31}px`,
+                  } as CSSProperties
+                }
               >
                 <button
                   type="button"
                   onMouseEnter={() => setActive(i)}
                   onFocus={() => setActive(i)}
                   onClick={() => openBook(i)}
+                  onPointerDown={() => holdStart(i)}
+                  onPointerUp={holdEnd}
+                  onPointerCancel={holdEnd}
+                  onContextMenu={(e) => e.preventDefault()}
                   aria-label={`${b.title} — open the book`}
                   className="bk-vol_btn"
                 >
-                  <span className="bk-spine_label" aria-hidden>
-                    <span className="bk-spine_idx">[{b.index}]</span>
-                    <span>{b.title}</span>
-                    <span className="bk-spine_cat">{b.category}</span>
+                  {/* The 3D book: the real spine strip faces out, the cover
+                      artwork stands at a right angle behind it, and `is-open`
+                      swivels the pair on the spine's left edge so the cover
+                      swings around to the viewer. */}
+                  <span className="bk-book" aria-hidden>
+                    <span className="bk-face bk-face_spine">
+                      <img src={b.art.spine} alt="" draggable={false} />
+                    </span>
+                    <span className="bk-face bk-face_cover">
+                      <img
+                        src={b.art.cover}
+                        alt=""
+                        draggable={false}
+                        loading={i === 0 ? "eager" : "lazy"}
+                      />
+                    </span>
                   </span>
-                  <span className="bk-cover" aria-hidden>
-                    <img src={b.cover} alt="" draggable={false} loading={i < 2 ? "eager" : "lazy"} />
+                  {/* Phones have no hover: the books lie flat in a pile, each
+                      row the spine art turned horizontal, and a tap opens the
+                      detail view. */}
+                  <span className="bk-row_art" aria-hidden>
+                    <img src={b.art.spine} alt="" draggable={false} />
                   </span>
                 </button>
               </article>
             ))}
           </div>
+
+          {/* The hovered book's name, small and quiet beneath the shelf.
+              Hidden until a book stands open; GSAP owns it from then on. */}
+          <div ref={cap} className="bk-cap" style={{ opacity: 0, visibility: "hidden" }}>
+            <p className="text-[13px] font-semibold uppercase tracking-[0.04em] text-muted">
+              {featured.title}
+            </p>
+          </div>
+        </div>
+
+        {/* Phone peek: the held book stands up over the dimmed pile and
+            swivels open — the same spine-to-cover turn as the web hover. */}
+        <div className="bk-peek" aria-hidden data-on={peek != null}>
+          <span
+            className="bk-peek_vol"
+            style={
+              {
+                "--hr": peekBook.art.heightRatio,
+                "--sr": peekBook.art.spineRatio,
+                "--cr": peekBook.art.coverRatio,
+              } as CSSProperties
+            }
+          >
+            <span className="bk-book">
+              <span className="bk-face bk-face_spine">
+                <img src={peekBook.art.spine} alt="" draggable={false} />
+              </span>
+              <span className="bk-face bk-face_cover">
+                <img src={peekBook.art.cover} alt="" draggable={false} />
+              </span>
+            </span>
+          </span>
         </div>
 
         {/* ── Viewer ─────────────────────────────────────────────────── */}

@@ -47,8 +47,40 @@ const requestBody = (items: PrintItem[], name: string, email: string, notes: str
   ].join("\n");
 };
 
+/**
+ * The trigger, rendered inside the site header before its CTA, as its
+ * secondary button: outlined where the CTA is filled, with the photograph
+ * icon, the label and the running count in the site's bracketed tabular
+ * style. It collapses to nothing while the list is empty, so the header
+ * reads unchanged until a print is saved.
+ */
+export function PrintRequestTrigger() {
+  const { count, openDrawer } = usePrintRequest();
+  return (
+    <button
+      type="button"
+      className={`preq-trigger text-[15px] font-medium tracking-[-0.03em]${count > 0 ? " is-on" : ""}`}
+      onClick={openDrawer}
+      aria-label={`Open print requests (${count} selected)`}
+      aria-hidden={count === 0}
+      tabIndex={count === 0 ? -1 : 0}
+    >
+      {/* A photograph glyph beside the label. */}
+      <svg viewBox="0 0 32 32" width="17" height="17" fill="none" aria-hidden>
+        <rect x="5" y="5" width="22" height="22" stroke="currentColor" strokeWidth="2.25" />
+        <circle cx="12.5" cy="12.5" r="2.25" fill="currentColor" />
+        <path d="M9 24l5.5-6.5 4 4.5 3-3.5L25 24H9z" fill="currentColor" />
+      </svg>
+      Prints{" "}
+      <span key={count} className="preq-pill_count">
+        [{pad(count)}]
+      </span>
+    </button>
+  );
+}
+
 export function PrintRequestDock() {
-  const { items, count, remove, clear, isOpen, openDrawer, closeDrawer } = usePrintRequest();
+  const { items, count, remove, clear, isOpen, closeDrawer } = usePrintRequest();
   const panel = useRef<HTMLElement>(null);
 
   const [name, setName] = useState("");
@@ -111,19 +143,6 @@ export function PrintRequestDock() {
 
   return (
     <>
-      <button
-        type="button"
-        className={`preq-pill text-[15px] font-medium tracking-[-0.03em]${count > 0 ? " is-on" : ""}`}
-        onClick={openDrawer}
-        aria-label={`Open print requests (${count} selected)`}
-        aria-hidden={count === 0}
-        tabIndex={count === 0 ? -1 : 0}
-      >
-        Print requests{" "}
-        <span key={count} className="preq-pill_count">
-          [{pad(count)}]
-        </span>
-      </button>
 
       <div
         className={`preq-scrim${isOpen ? " is-open" : ""}`}
@@ -176,10 +195,10 @@ export function PrintRequestDock() {
                 <li key={it.id} className="preq-row">
                   <img src={it.thumb} alt="" loading="lazy" decoding="async" />
                   <div className="preq-row_meta">
-                    <p className="text-[15px] font-medium tracking-[-0.01em]">
+                    <p className="text-[18px] font-medium tracking-[-0.02em]">
                       [{it.index}] {it.gallery}
                     </p>
-                    <p className="preq-row_sub text-[13px]">
+                    <p className="preq-row_sub text-[14px]">
                       Frame {String(it.frame).padStart(3, "0")} · {it.file}
                     </p>
                   </div>

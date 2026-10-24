@@ -88,7 +88,11 @@ export function Hero({ start }: { start: boolean }) {
       const navWrap = q(".navbar_wrap");
       const navHome = q(".navbar_home");
       const navItems = q(".navbar_links_li");
-      const navCta = q(".navbar_cta_wrap > *");
+      // :not(.preq-trigger): the print-request trigger manages its own
+      // entrance (it collapses while the list is empty); riding this intro
+      // too left it parked a row below the CTA whenever the tween was
+      // interrupted mid-flight.
+      const navCta = q(".navbar_cta_wrap > :not(.preq-trigger)");
 
       // Initial states — everything sits below its mask until `start`. Set from
       // JS (not markup) so a script failure leaves the page readable.

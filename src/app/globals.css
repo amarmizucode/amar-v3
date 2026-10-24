@@ -385,6 +385,213 @@ body {
 }
 
 /*
+ * Mobile menu sheet.
+ *
+ * Opening, the sheet wipes down from under the bar, then each row's label
+ * rises out of its clip while its dotted rule draws in from the left, one row
+ * after another; the eyebrow and the contact block fade up last. Closing runs
+ * the same moves in reverse with every delay dropped, so it gets out of the
+ * way quickly. Delays live only on the open state for that reason.
+ */
+.mobile-menu {
+  visibility: hidden;
+  clip-path: inset(0 0 100% 0);
+  transition:
+    clip-path 0.55s var(--nav-ease),
+    visibility 0s linear 0.55s;
+}
+
+.mobile-menu[data-open] {
+  visibility: visible;
+  clip-path: inset(0);
+  transition:
+    clip-path 0.8s var(--nav-expo-out),
+    visibility 0s;
+}
+
+.mobile-menu_inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  /* Clear the bar: its padding either side of the 44px toggle. */
+  padding-top: calc(var(--site-margin) * 2 + 44px + var(--f-space-4));
+  padding-bottom: calc(var(--site-margin) + env(safe-area-inset-bottom));
+}
+
+.mobile-menu_head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: var(--f-space-3);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+.mobile-menu_li {
+  --row-delay: calc(0.18s + var(--i) * 0.07s);
+  position: relative;
+}
+
+/* Dotted rule above every row, plus one closing off the last. */
+.mobile-menu_li::before,
+.mobile-menu_li:last-child::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  border-top: 1px dotted var(--color--foreground--25);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.4s var(--nav-ease);
+}
+
+.mobile-menu_li:last-child::after {
+  top: auto;
+  bottom: 0;
+}
+
+.mobile-menu[data-open] .mobile-menu_li::before,
+.mobile-menu[data-open] .mobile-menu_li:last-child::after {
+  transform: scaleX(1);
+  transition: transform 1s var(--nav-expo-out) var(--row-delay);
+}
+
+.mobile-menu_link {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--nav-space-2);
+  padding-block: clamp(0.75rem, 3.2vw, 1.125rem);
+  -webkit-tap-highlight-color: transparent;
+  transition: opacity 0.2s ease;
+}
+
+.mobile-menu_link:active {
+  opacity: 0.55;
+}
+
+.mobile-menu_clip {
+  display: block;
+  overflow: clip;
+  /* Room for the caps' overshoot inside the clip. */
+  padding-block: 0.04em;
+}
+
+.mobile-menu_label {
+  display: block;
+  font-size: min(11vw, 4.5rem);
+  font-weight: 600;
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  text-transform: uppercase;
+  transform: translateY(105%);
+  transition: transform 0.45s var(--nav-ease);
+}
+
+.mobile-menu[data-open] .mobile-menu_label {
+  transform: translateY(0);
+  transition: transform 1s var(--nav-expo-out) var(--row-delay);
+}
+
+/* The row's number, top-aligned to the caps like a footnote mark. */
+.mobile-menu_index {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  gap: 0.4em;
+  padding-top: 0.35em;
+  font-size: 13px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+  color: var(--palette-muted);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.mobile-menu_link[aria-current="page"] .mobile-menu_index {
+  color: var(--palette-foreground);
+}
+
+.mobile-menu[data-open] .mobile-menu_index {
+  opacity: 1;
+  transition: opacity 0.6s ease calc(var(--row-delay) + 0.25s);
+}
+
+/* Contact block: pinned to the foot, or below the list if the screen is short. */
+.mobile-menu_foot {
+  display: flex;
+  flex-direction: column;
+  gap: var(--f-space-5);
+  margin-top: auto;
+  padding-top: var(--f-space-7);
+  font-size: 15px;
+  font-weight: 500;
+  letter-spacing: -0.03em;
+}
+
+.mobile-menu_details {
+  display: flex;
+  flex-direction: column;
+  row-gap: var(--f-space-3);
+}
+
+.mobile-menu_details p {
+  margin-bottom: 0.25em;
+}
+
+.mobile-menu_details ul {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--f-space-4);
+}
+
+.mobile-menu_base {
+  display: flex;
+  justify-content: space-between;
+  padding-top: var(--f-space-3);
+  border-top: 1px solid var(--palette-rule);
+  font-size: 13px;
+  text-transform: uppercase;
+}
+
+.mobile-menu_fade {
+  opacity: 0;
+  transform: translateY(0.75rem);
+  transition:
+    opacity 0.25s ease,
+    transform 0.4s var(--nav-ease);
+}
+
+.mobile-menu[data-open] .mobile-menu_fade {
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 0.7s ease 0.45s,
+    transform 1s var(--nav-expo-out) 0.45s;
+}
+
+/* The eyebrow arrives with the sheet, not after the rows. */
+.mobile-menu[data-open] .mobile-menu_head {
+  transition-delay: 0.12s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mobile-menu,
+  .mobile-menu *,
+  .mobile-menu *::before,
+  .mobile-menu *::after {
+    transition: none !important;
+  }
+
+  .mobile-menu {
+    clip-path: none;
+  }
+}
+
+/*
  * CTA pill (`g_btn_main` + `g_btn_aside_*`), matching the reference exactly.
  *
  * Three things move on hover, and none of them is opacity on the label:
@@ -410,6 +617,9 @@ body {
   border-radius: var(--nav-radius);
   background: var(--palette-foreground);
   color: var(--palette-background);
+  /* Never wraps: the label's hover slide leans on a text-shadow duplicate
+     exactly one line-step below, which a second line would expose. */
+  white-space: nowrap;
   overflow: clip;
   transition:
     transform var(--active-speed) var(--active-ease),
@@ -607,6 +817,9 @@ body {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  /* The footer owns a full viewport: the rows at its top, the bar and
+     wordmark pinned to its foot by the space-between above. */
+  min-height: 100svh;
   /*
    * Frames on the page grid rather than the reference's --site-margin: same
    * max-width, margin and centring as .shell, so the footer's columns land on
@@ -618,7 +831,9 @@ body {
   padding-inline: var(--grid-margin);
   padding-top: var(--f-space-8);
   padding-bottom: var(--grid-margin);
-  row-gap: var(--f-section-page-top);
+  /* The reference's --f-section-page-top (7-14rem) pushed the bottom bar
+     and wordmark far from the rows above; a tight step is enough. */
+  row-gap: 1.5rem;
 }
 
 /*
@@ -845,7 +1060,8 @@ body {
   display: flex;
   flex-direction: column;
   margin-top: var(--f-section-main);
-  row-gap: var(--f-space-4);
+  /* The © bar hugs the wordmark (its own py already gives a little air). */
+  row-gap: 0;
 }
 
 /*
@@ -1711,32 +1927,61 @@ body[data-theme="00"] .app-aside .option.theme .icon-container { transition-dela
  * The footer also sits beneath the closing CTA's full-bleed image, which is
  * why it needs an opaque ground of its own rather than inheriting one.
  */
+/*
+ * The footer is an inverted band: the page palette flipped, so it reads
+ * black on the light stops and follows every stop of the theme ramp.
+ *
+ * The flip needs the stash on <body>: custom properties compute where they
+ * are DEFINED, so these resolve against the ramp's palette on <body> and
+ * inherit into the footer as concrete colours. Swapping --palette-* directly
+ * on the footer would self-reference and invalidate the pair.
+ */
+body {
+  --footer-ground: var(--palette-foreground);
+  --footer-ink: var(--palette-background);
+  --footer-ink-muted: color-mix(in srgb, var(--palette-background) 55%, var(--palette-foreground));
+  --footer-ink-rule: color-mix(in srgb, var(--palette-background) 22%, var(--palette-foreground));
+  --footer-ink-chip: color-mix(in srgb, var(--palette-background) 12%, var(--palette-foreground));
+}
+
 .footer_wrap_main {
   position: relative;
   z-index: 1;
-  /*
-   * Paints from --palette-* rather than --color-*.
-   *
-   * The --color-* aliases are declared by Tailwind on :root, so a var()
-   * inside them resolves --palette-* in :ROOT's scope, where it is the static
-   * light default. The theme ramp redefines --palette-* on <body>, so reading
-   * the palette layer directly is what actually follows the active stop.
-   */
-  background-color: var(--palette-background);
+  background-color: var(--footer-ground);
+  /* Both token layers, so everything inside — Tailwind utilities and the
+     footer's own --palette-* reads alike — takes the inverted scheme. */
+  --palette-background: var(--footer-ground);
+  --palette-foreground: var(--footer-ink);
+  --palette-muted: var(--footer-ink-muted);
+  --palette-rule: var(--footer-ink-rule);
+  --palette-chip: var(--footer-ink-chip);
+  --color-background: var(--footer-ground);
+  --color-foreground: var(--footer-ink);
+  --color-muted: var(--footer-ink-muted);
+  --color-rule: var(--footer-ink-rule);
+  --color-chip: var(--footer-ink-chip);
+  /* The row-hover inversion flips with the band: a light fill with dark
+     ink, instead of the page's dark-fill pair, which vanishes on black. */
+  --color-hover-fill: var(--footer-ink);
+  --color-hover-ink: var(--footer-ground);
 }
 
 .footer_wrap {
-  background-color: var(--palette-background);
-  color: var(--palette-foreground);
+  background-color: var(--footer-ground);
+  color: var(--footer-ink);
 }
 
 /* ---------------------------------------------------------------------------
  * Header
  *
- * No scrim: the header sits directly over the page with nothing painted behind
- * it — no blur, no tint. Content scrolls under the nav at full contrast rather
- * than fading out as it reaches the top.
+ * Sticky: the bar stays while the page scrolls under it, transparent —
+ * no scrim, no tint; content passes beneath at full contrast.
  * ------------------------------------------------------------------------ */
+.navbar_wrap {
+  /* No ground: the sticky bar sits transparent over whatever scrolls
+     under it. */
+  padding-block: var(--site-margin);
+}
 
 /*
  * ---------------------------------------------------------------------------
@@ -2641,54 +2886,62 @@ body .pg-root.is-zoomed .pg-bar,
  * ---------------------------------------------------------------------------
  * Books shelf — /books. See BooksIndex.tsx for the engine.
  *
- * The shelf is a flex row of fixed-height volumes; React moves `is-open`
- * between them (hover / focus / initial) and these width transitions carry
- * the motion, the way the filmstrip's `is-big` does. `.bk-lg` is the detail
+ * The shelf is a flex row of real books, standing on a common baseline with
+ * their true relative heights and thicknesses (each volume's --bk-vh/--bk-sw/
+ * --bk-cw come inline from the measured art). React moves `is-open` between
+ * them (hover / focus / initial), the way the filmstrip moves `is-big`: the
+ * slot widens from spine to cover width while the two-faced book — the real
+ * spine strip out front, the cover artwork at a right angle behind it —
+ * swivels on its left edge to bring the cover around. `.bk-lg` is the detail
  * viewer, with a `.bk-bar` standing in for the hidden site header and the
  * photography viewer's `.pg-side` pills pinned along the bottom.
  * ---------------------------------------------------------------------------
  */
 .bk-stage {
+  /* The shelf's working height; the volumes and the caption offset both
+     derive from it, so it lives on the stage rather than the shelf. */
+  --bk-h: min(56svh, 540px);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
-/* The active book's line, in the band between the header and the shelf. */
+/* The hovered book's name: small and quiet, just beneath the shelf. In flow,
+   with a reserved line so its appearance never shifts the shelf. */
 .bk-cap {
-  position: absolute;
-  inset-inline: 0;
-  top: calc(var(--site-margin) * 2 + 2.5rem);
-  display: flex;
-  flex-direction: column;
-  gap: 0.6rem;
+  margin-top: 1.5rem;
+  min-height: 1em;
+  text-align: center;
   pointer-events: none;
 }
 
 .bk-shelf {
-  --bk-h: min(56svh, 540px);
   --bk-spine: clamp(3rem, 4.4vw, 4.75rem);
   display: flex;
   align-items: flex-end;
   gap: clamp(6px, 0.6vw, 10px);
-  /* Rides a little low so the open volume hangs toward the wordmark, the way
-     the filmstrip's active slide hangs over it. */
-  margin-top: clamp(3rem, 9svh, 6rem);
   /* The intro slides the volumes up out of this box; the padding keeps a
-     volume's focus ring inside the clip. */
+     volume's focus ring inside the clip, with vertical headroom for the few
+     pixels perspective pushes the turning cover past the volume's box. */
   overflow: hidden;
-  padding: 6px;
+  padding: 12px 6px;
 }
 
+/* Each volume's inline --hr / --sr / --cr (height, spine and cover ratios,
+   measured from the art) resolve here into its real dimensions. */
 .bk-vol {
+  --bk-vh: calc(var(--bk-h) * var(--hr));
+  --bk-sw: calc(var(--bk-vh) * var(--sr));
+  --bk-cw: min(calc(var(--bk-vh) * var(--cr)), 38vw);
   flex: none;
-  width: var(--bk-spine);
-  height: var(--bk-h);
+  width: var(--bk-sw);
+  height: var(--bk-vh);
   transition: width 1s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 .bk-vol.is-open {
-  width: min(calc(var(--bk-h) * 0.78), 38vw);
+  width: var(--bk-cw);
 }
 
 .bk-vol_btn {
@@ -2696,17 +2949,23 @@ body .pg-root.is-zoomed .pg-bar,
   display: block;
   width: 100%;
   height: 100%;
-  overflow: hidden;
-  border-radius: var(--nav-radius);
-  background: var(--color--foreground--5);
   cursor: pointer;
   appearance: none;
+  background: none;
   border: 0;
   padding: 0;
   margin: 0;
   font: inherit;
   color: inherit;
   text-align: inherit;
+  /* Hold-to-peek on a phone: the long press belongs to the page, not to the
+     system's callout, selection or image drag. */
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  /* The 3D stage. On the button rather than the shelf, so every book keeps
+     its own vanishing point and the end spines do not skew. */
+  perspective: 1600px;
 }
 
 .bk-vol_btn:focus-visible {
@@ -2714,59 +2973,137 @@ body .pg-root.is-zoomed .pg-bar,
   outline-offset: 2px;
 }
 
-/* Spine type reads top-to-bottom, as on a standing book. */
-.bk-spine_label {
+/*
+ * The book: the spine strip facing out, the cover artwork standing at a right
+ * angle off the spine's right edge, pointing back into the shelf. `is-open`
+ * swivels the pair on the spine's LEFT edge — short of the full quarter turn,
+ * so the cover arrives almost flat while the spine stays just visible at the
+ * hinge, the way a book is pulled from a shelf and turned.
+ */
+.bk-book {
   position: absolute;
   inset: 0;
-  display: flex;
-  align-items: center;
-  gap: 0.9em;
-  writing-mode: vertical-rl;
-  padding-block: 1.1rem;
-  font-size: clamp(13px, 1.05vw, 16px);
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  white-space: nowrap;
-  transition: opacity 0.45s ease;
+  transform-style: preserve-3d;
+  transform-origin: left center;
+  transform: rotateY(0deg);
+  transition: transform 1s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
-.bk-spine_idx {
-  color: var(--palette-muted);
+.bk-vol.is-open .bk-book {
+  transform: rotateY(-78deg);
 }
 
-/* The subject tag only fits the flat rows on a phone. */
-.bk-spine_cat {
-  display: none;
-}
-
-.bk-cover {
+.bk-face {
   position: absolute;
-  inset: 0;
-  opacity: 0;
-  transition: opacity 0.6s ease 0.1s;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  border-radius: var(--nav-radius);
+  overflow: hidden;
 }
 
-.bk-vol.is-open .bk-spine_label {
-  opacity: 0;
-}
-
-.bk-vol.is-open .bk-cover {
-  opacity: 1;
-}
-
-.bk-cover img {
+.bk-face img {
   position: absolute;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
-  transition: transform 0.9s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
-@media (hover: hover) and (pointer: fine) {
-  .bk-vol.is-open .bk-vol_btn:hover img {
-    transform: scale(1.04);
-  }
+.bk-face_spine {
+  width: var(--bk-sw);
+}
+
+/* Shading as the spine turns away — the cheap half of the lighting. */
+.bk-face_spine::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgb(0 0 0 / 0.25);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.bk-vol.is-open .bk-face_spine::after {
+  opacity: 1;
+}
+
+/* Stood edge-on at the spine's right edge; the swivel brings it around. The
+   quick fade hides the sliver of it that perspective would otherwise show
+   beside the resting spine. */
+.bk-face_cover {
+  width: var(--bk-cw);
+  transform: translateX(var(--bk-sw)) rotateY(90deg);
+  transform-origin: left center;
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+.bk-vol.is-open .bk-face_cover {
+  opacity: 1;
+}
+
+/* Binding shadow along the hinge, so the cover meets the spine with depth. */
+.bk-face_cover::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(90deg, rgb(0 0 0 / 0.22), rgb(0 0 0 / 0) 10%);
+  pointer-events: none;
+}
+
+/* The phones' flat spine; the desktop shelf shows the standing book instead. */
+.bk-row_art {
+  display: none;
+}
+
+/*
+ * Phone peek: hold a book and it stands up over the pile, swivelling open
+ * from spine to cover exactly as the desktop hover does — the same .bk-book
+ * assembly, driven by [data-on] instead of .is-open. Release and it drops
+ * back. Pointer events stay off — the finger keeps talking to the button
+ * underneath, whose release ends the peek.
+ */
+.bk-peek {
+  position: fixed;
+  inset: 0;
+  z-index: 300;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+/* A shelf volume's double, sized from the same ratio vars on a phone scale. */
+.bk-peek_vol {
+  --bk-vh: calc(min(52svh, 440px) * var(--hr));
+  --bk-sw: calc(var(--bk-vh) * var(--sr));
+  --bk-cw: min(calc(var(--bk-vh) * var(--cr)), 82vw);
+  position: relative;
+  display: block;
+  width: var(--bk-cw);
+  height: var(--bk-vh);
+  perspective: 1600px;
+}
+
+.bk-peek[data-on="true"] {
+  opacity: 1;
+}
+
+.bk-peek[data-on="true"] .bk-book {
+  transform: rotateY(-78deg);
+}
+
+.bk-peek[data-on="true"] .bk-face_spine::after {
+  opacity: 1;
+}
+
+.bk-peek[data-on="true"] .bk-face_cover {
+  opacity: 1;
 }
 
 /*
@@ -2780,47 +3117,71 @@ body .pg-root.is-zoomed .pg-bar,
   }
 
   .bk-shelf {
+    /* The usable row length, for sizing the flat books below. */
+    --bk-mw: calc(100vw - 2 * var(--site-margin) - 12px);
     flex-direction: column;
-    align-items: stretch;
+    /* A dropped pile: left-aligned, each book nudged by its own jitter,
+       spines touching. */
+    align-items: flex-start;
     width: calc(100% - 2 * var(--site-margin));
-    gap: 8px;
-    margin-top: 0;
-    /* Biases the centred stack upward, so the last row clears the raised
-       wordmark rather than standing on it. */
-    margin-bottom: 8rem;
+    gap: 0;
+    /* The intro drops the books in from above the viewport, so the shelf
+       must not clip them; the page itself is the clip. */
+    overflow: visible;
   }
 
+  /* Each book lies flat at its true length and thickness, shifted right by
+     the volume's inline --mx so the stack reads casually dropped rather
+     than squared off. */
   .bk-vol,
   .bk-vol.is-open {
-    width: 100%;
-    height: clamp(46px, 6.5svh, 58px);
+    --bk-rw: calc(var(--bk-mw) * var(--hr));
+    --bk-rt: calc(var(--bk-rw) * var(--sr));
+    width: var(--bk-rw);
+    height: var(--bk-rt);
+    margin-left: var(--mx, 0px);
     transition: none;
   }
 
-  .bk-cover {
+  /* Only the SHELF's standing books flatten on a phone — the peek's double
+     still swivels in 3D. */
+  .bk-shelf .bk-book {
     display: none;
   }
 
-  .bk-vol.is-open .bk-spine_label {
-    opacity: 1;
+  .bk-vol_btn {
+    perspective: none;
   }
 
-  .bk-spine_label {
-    writing-mode: horizontal-tb;
-    padding: 0 1rem;
-    gap: 0.75em;
+  .bk-peek {
+    display: flex;
   }
 
-  .bk-spine_cat {
+  /* The pile gives way while a cover is held up. */
+  .bk-shelf {
+    transition: opacity 0.3s ease;
+  }
+
+  .bk-stage[data-peek="true"] .bk-shelf {
+    opacity: 0.2;
+  }
+
+  /* The spine strip turned a quarter anticlockwise, so it reads left to
+     right — a standing book laid down, cover up. */
+  .bk-row_art {
     display: block;
-    margin-left: auto;
-    color: var(--palette-muted);
+    position: absolute;
+    inset: 0;
   }
 
-  /* The floating app controls own the bottom corners on a phone, so the
-     wordmark sits above them — as on the photography index. */
-  .bk-wordmark {
-    bottom: calc(var(--site-margin) + 7.5rem);
+  .bk-row_art img {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: var(--bk-rt);
+    height: var(--bk-rw);
+    transform: translate(-50%, -50%) rotate(-90deg);
+    border-radius: var(--nav-radius);
   }
 }
 
@@ -3041,9 +3402,12 @@ body.bk-viewing .app-aside {
 
 @media (prefers-reduced-motion: reduce) {
   .bk-vol,
-  .bk-spine_label,
-  .bk-cover,
-  .bk-cover img,
+  .bk-book,
+  .bk-face_spine::after,
+  .bk-face_cover,
+  .bk-shelf,
+  .bk-peek,
+  .bk-peek img,
   .bk-lg_thumbs button,
   .bk-bar_close {
     transition: none;
@@ -3155,40 +3519,62 @@ html.preloaded .preloader {
  */
 /* Filled like the CTA pill, and on the opposite corner from .app-aside so the
  * two floating clusters never collide. Hidden until something is picked. */
-.preq-pill {
-  position: fixed;
-  left: var(--site-margin);
-  bottom: calc(var(--site-margin) + env(safe-area-inset-bottom, 0px));
-  z-index: 270;
+/*
+ * The trigger lives in the site header, before its CTA, as the secondary
+ * button to its filled pill: the same radius and height, but outlined —
+ * hairline border, transparent ground — with the photograph icon, the
+ * label and the running count in the site's bracketed tabular style. A
+ * faint fill arrives on hover. While the list is empty it collapses to
+ * zero width, so the header reads unchanged.
+ */
+.preq-trigger {
+  position: relative;
+  flex: none;
   display: inline-flex;
   align-items: center;
-  gap: 0.45em;
-  min-height: 44px;
-  padding: 0.25em 1.1em;
+  gap: 0.5em;
+  max-width: 0;
+  /* 2em at the shared 15px label = the CTA pill's exact height (its 0.25em
+     padding around a 1.5em aside). */
+  min-height: 2em;
+  padding: 0;
+  border: 1px solid transparent;
   border-radius: var(--nav-radius);
-  background: var(--palette-foreground);
-  color: var(--palette-background);
+  color: var(--color--foreground--100);
+  white-space: nowrap;
+  overflow: clip;
   cursor: pointer;
   opacity: 0;
-  transform: translateY(0.75rem);
   pointer-events: none;
   transition:
     opacity 0.35s ease,
-    transform 0.5s cubic-bezier(0.16, 1, 0.35, 1);
+    max-width 0.45s cubic-bezier(0.16, 1, 0.35, 1),
+    padding 0.45s cubic-bezier(0.16, 1, 0.35, 1),
+    border-color 0.35s ease,
+    background-color 0.2s ease,
+    transform 0.35s cubic-bezier(0.48, 1.68, 0.64, 1);
 }
 
-.preq-pill.is-on {
+.preq-trigger.is-on {
+  max-width: 260px;
+  padding: 0.25em 1em;
+  border-color: var(--color--foreground--15);
+  /* A subtle ground, so it reads as a button before it is hovered. */
+  background-color: var(--color--foreground--5);
   opacity: 1;
-  transform: none;
   pointer-events: auto;
 }
 
-.preq-pill:hover {
-  opacity: 0.9;
+.preq-trigger:hover {
+  background-color: var(--color--foreground--15);
 }
 
-.preq-pill:active {
+.preq-trigger:active {
   transform: scale(0.95);
+}
+
+.preq-trigger svg {
+  flex: none;
 }
 
 /* The count pulses when it changes (the span remounts per count), so adding a
@@ -3208,14 +3594,14 @@ html.preloaded .preloader {
 /* Hidden with the rest of the floating chrome: under the preloader's cover,
  * while a photograph is magnified and — on a phone, where the bottom edge is
  * the viewer's own controls — while a frame is open at all. */
-body.cover-is-visible .preq-pill,
-body:has(.pg-root.is-zoomed) .preq-pill {
+body.cover-is-visible .preq-trigger,
+body:has(.pg-root.is-zoomed) .preq-trigger {
   opacity: 0;
   pointer-events: none;
 }
 
 @media (width <= 768px) {
-  body.pg-viewing .preq-pill {
+  body.pg-viewing .preq-trigger {
     opacity: 0;
     pointer-events: none;
   }
@@ -3316,8 +3702,8 @@ body:has(.pg-root.is-zoomed) .preq-pill {
 
 .preq-row img {
   flex: none;
-  width: 3.25rem;
-  height: 4rem;
+  width: 4rem;
+  height: 5rem;
   object-fit: cover;
   border-radius: var(--nav-radius);
 }
@@ -3458,7 +3844,7 @@ body:has(.pg-root.is-zoomed) .preq-pill {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .preq-pill,
+  .preq-trigger,
   .preq-scrim,
   .preq-panel {
     transition: none;
@@ -3470,30 +3856,30 @@ body:has(.pg-root.is-zoomed) .preq-pill {
 }
 
 /*
- * ===========================================================================
- * Documentary cinema (/documentary).
- *
- * The stage's active still drifts on a slow Ken Burns zoom. It is a CSS
- * animation rather than a GSAP tween so it owns `transform` outright — the
- * crossfade on film change animates opacity only, and the two never write
- * the same property.
- * ===========================================================================
+ * The home page's ruled logo wall ("Notable brands I've helped"). On the
+ * light stops of the theme ramp (09-16) the logos keep their own colours,
+ * multiplied into the page so any white in an image drops out. On the dark
+ * and coloured stops (00-08) a navy or charcoal logo would vanish, so each
+ * turns to a light single-colour mark: greyed, inverted and screened, which
+ * keeps its letterforms and drops its dark ground.
  */
-@keyframes dc-drift {
-  from {
-    transform: scale(1);
-  }
-  to {
-    transform: scale(1.06);
-  }
+.brand-wall__logo {
+  mix-blend-mode: multiply;
 }
 
-.dc-drift {
-  animation: dc-drift 16s ease-in-out infinite alternate;
+:is(
+    [data-theme="00"],
+    [data-theme="01"],
+    [data-theme="02"],
+    [data-theme="03"],
+    [data-theme="04"],
+    [data-theme="05"],
+    [data-theme="06"],
+    [data-theme="07"],
+    [data-theme="08"]
+  )
+  .brand-wall__logo {
+  filter: grayscale(1) invert(1) contrast(1.15);
+  mix-blend-mode: screen;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .dc-drift {
-    animation: none;
-  }
-}

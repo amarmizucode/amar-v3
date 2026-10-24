@@ -1,9 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { CtaPill } from "@/components/CtaPill";
+import { PrintRequestTrigger } from "@/components/PrintRequestDock";
+import { CornerArrow } from "@/components/Arrows";
+import { SectionLabel } from "@/components/SectionLabel";
+import { SOCIALS } from "@/components/SiteFooter";
 
 /*
  * Root-relative rather than bare hashes: the header renders on the
@@ -16,12 +20,20 @@ const NAV = [
   { label: "Documentary", href: "/documentary" },
   { label: "Photography", href: "/photography" },
   { label: "Books", href: "/books" },
-  { label: "About", href: "/about" },
+  // About is hidden for now — restore by adding
+  // { label: "About", href: "/about" } back here.
 ];
 
 export function SiteHeader() {
   const pathname = usePathname();
+  const root = useRef<HTMLElement>(null);
 
+  /*
+   * Sticky, on every page: the bar is fixed and stays put while the page
+   * scrolls under it. (It used to ride the first stretch of scroll up and
+   * out like an in-flow header; that ride was removed when the header went
+   * sticky, so the GSAP scrub and the inner-scroll listener went with it.)
+   */
   /*
    * A link that leaves the page would otherwise leave the sheet open behind
    * the route transition. Rather than closing it from an effect — which
@@ -69,10 +81,18 @@ export function SiteHeader() {
 
   return (
     <header
-      className="navbar_wrap fixed inset-x-0 top-0 z-[999] w-full"
-      style={{ paddingBlock: "var(--site-margin)" }}
+      ref={root}
+      /*
+       * pointer-events-none: once the bar has ridden away, this fixed strip
+       * must not swallow clicks on the content scrolled under it. The bar and
+       * the sheet switch theirs back on. The root itself is never
+       * transformed, so the sheet's `position: fixed` keeps the viewport as
+       * its containing block.
+       */
+      /* Block padding lives in .navbar_wrap's CSS, beside its ground. */
+      className="navbar_wrap pointer-events-none fixed inset-x-0 top-0 z-[999] w-full"
     >
-      <div className="navbar_contain shell relative z-20 grid-12 items-center bg-transparent">
+      <div className="navbar_contain pointer-events-auto shell relative z-20 grid-12 items-center bg-transparent">
         {/* Wordmark: columns 1-5. */}
         <div
           className="navbar_left_contain col-span-6 flex items-center justify-start md:col-span-5"
@@ -120,7 +140,13 @@ export function SiteHeader() {
           className="navbar_cta_wrap col-span-6 flex items-center justify-end md:col-start-11 md:col-span-2"
           style={{ columnGap: "var(--nav-space-2)" }}
         >
-          <div className="navbar_cta_contain hidden overflow-hidden md:block">
+          {/* The print-request trigger, before the CTA; zero-width until
+              a print is saved. Both it and the CTA refuse to shrink: the
+              cell is two columns, so with the trigger open the pair grows
+              left into the empty grid instead of squeezing the CTA. */}
+          <PrintRequestTrigger />
+
+          <div className="navbar_cta_contain hidden shrink-0 overflow-hidden md:block">
             <CtaPill label="Get in Touch" href="/#contact" />
           </div>
 
@@ -146,44 +172,105 @@ export function SiteHeader() {
         </div>
       </div>
 
-      {open && (
-        /*
-         * The sheet and the bar are siblings inside the same fixed header, and
-         * the header paints no background of its own — so the sheet must cover
-         * the page (z-10) while the bar sits above it (z-20), keeping the
-         * wordmark and the toggle that closes it clickable.
-         */
-        <div
-          id="mobile-menu"
-          role="dialog"
-          aria-modal="true"
-          aria-label="Menu"
-          className="fixed inset-0 z-10 flex flex-col bg-background pt-[calc(var(--site-margin)*2+2rem)] md:hidden"
-        >
-          <nav
-            className="flex flex-col overflow-y-auto"
-            style={{ paddingInline: "var(--site-margin)" }}
-          >
-            {NAV.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                onClick={() => setOpen(false)}
-                className="display py-1 text-[13vw] leading-[1.05]"
-              >
-                {item.label}
-              </a>
-            ))}
+      {/*
+       * The sheet and the bar are siblings inside the same fixed header, and
+       * the header paints no background of its own — so the sheet must cover
+       * the page (z-10) while the bar sits above it (z-20), keeping the
+       * wordmark and the toggle that closes it clickable.
+       *
+       * Always mounted so it can animate out as well as in; `inert` keeps the
+       * closed sheet out of the tab order and the accessibility tree. The
+       * motion lives in the `.mobile-menu*` rules in globals.css.
+       */}
+      <div
+        id="mobile-menu"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Menu"
+        data-open={open || undefined}
+        inert={!open}
+        className="mobile-menu pointer-events-auto fixed inset-0 z-10 bg-background md:hidden"
+      >
+        <div className="mobile-menu_inner shell">
+          <div className="mobile-menu_head mobile-menu_fade">
+            <SectionLabel>Navigation</SectionLabel>
+            <span className="text-muted">({String(NAV.length).padStart(2, "0")})</span>
+          </div>
 
+          <nav aria-label="Primary">
+            <ul className="mobile-menu_ul">
+              {NAV.map((item, i) => {
+                const current = pathname === item.href || pathname.startsWith(`${item.href}/`);
+                return (
+                  <li
+                    key={item.label}
+                    className="mobile-menu_li"
+                    style={{ "--i": i } as CSSProperties}
+                  >
+                    <a
+                      href={item.href}
+                      onClick={() => setOpen(false)}
+                      aria-current={current ? "page" : undefined}
+                      className="mobile-menu_link"
+                    >
+                      <span className="mobile-menu_clip">
+                        <span className="mobile-menu_label">{item.label}</span>
+                      </span>
+                      <span className="mobile-menu_index">
+                        {current && (
+                          <span aria-hidden className="size-1.5 rounded-full bg-foreground" />
+                        )}
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+
+          <div className="mobile-menu_foot mobile-menu_fade">
             <CtaPill
               label="Get in Touch"
               href="/#contact"
-              className="mt-8 self-start"
+              size="text-[17px]"
               onClick={() => setOpen(false)}
             />
-          </nav>
+
+            <div className="mobile-menu_details">
+              <div>
+                <p className="text-muted">(Email)</p>
+                <a href="mailto:hello@amarramesh.com" className="link-wipe">
+                  hello@amarramesh.com
+                </a>
+              </div>
+              <div>
+                <p className="text-muted">(Socials)</p>
+                <ul>
+                  {SOCIALS.map((social) => (
+                    <li key={social.label}>
+                      <a
+                        href={social.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-[0.3em]"
+                      >
+                        {social.label}
+                        <CornerArrow className="w-[0.75em]" />
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <p className="mobile-menu_base text-muted">
+              <span>Chennai, IN</span>
+              <span>© 2026, Amar Ramesh</span>
+            </p>
+          </div>
         </div>
-      )}
+      </div>
 
     </header>
   );

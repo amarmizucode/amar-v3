@@ -2,14 +2,14 @@ import { CornerArrow, RightArrow } from "@/components/Arrows";
 import { SectionLabel } from "@/components/SectionLabel";
 import { AI_SERVICES, AiIcon, aiHref } from "@/components/AiIcons";
 
-const NAV_FOOTER = ["Documentary", "Photography", "Books", "Initiatives", "About", "Contact"];
+// About is hidden for now — add "About" back before "Contact" to restore it.
+const NAV_FOOTER = ["Documentary", "Photography", "Books", "Contact"];
 
 /** Where each footer nav item points. Most are home-page anchors. */
 const NAV_HREF: Record<string, string> = {
   Documentary: "/documentary",
   Photography: "/photography",
   Books: "/books",
-  Initiatives: "/#ventures",
   About: "/about",
   Contact: "/#contact",
 };
@@ -18,7 +18,7 @@ const NAV_HREF: Record<string, string> = {
  * Footer socials. Facebook and Linkedin are confirmed; the Instagram handle is
  * still a placeholder awaiting the real profile URL.
  */
-const SOCIALS = [
+export const SOCIALS = [
   { label: "Instagram", href: "https://www.instagram.com/amarramesh/" },
   { label: "Linkedin", href: "https://in.linkedin.com/in/amarramesh" },
   { label: "Facebook", href: "https://www.facebook.com/amarramesh.me/" },
@@ -70,7 +70,7 @@ export function SiteFooter() {
                 href="mailto:hello@amarramesh.com"
                 className="footer_email footer_hover_row is-inline-row flex w-fit items-center gap-[0.3em] self-start"
               >
-                <span className="footer_hover_label">⮡ hello@amarramesh.com</span>
+                <span className="footer_hover_label">hello@amarramesh.com</span>
                 <span className="footer_hover_marker flex items-center">
                   <CornerArrow className="inline-arrow" />
                 </span>
@@ -132,17 +132,14 @@ export function SiteFooter() {
 
       {/* Bottom bar, section-space--main below the top row. */}
       <div className="footer_bottom">
-        <div className="grid-12 border-t border-rule py-6 text-[15px]">
-          <span className="col-span-12 md:col-span-4">Chennai, IN</span>
+        <div className="grid-12 pb-2 pt-6 text-[15px]">
+          <span className="col-span-6 md:col-span-4">© 2026, AMAR RAMESH</span>
           <a
             href="#top"
-            className="link-wipe col-span-6 md:col-start-6 md:col-span-3 justify-self-start"
+            className="link-wipe col-span-6 justify-self-end md:col-start-6 md:col-span-3 md:justify-self-start"
           >
             Back to top ↑
           </a>
-          <span className="col-span-6 md:col-start-10 md:col-span-3 justify-self-end md:justify-self-start">
-            © 2026, AMAR RAMESH
-          </span>
         </div>
 
         <div className="grid-12">
