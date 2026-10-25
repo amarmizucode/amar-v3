@@ -124,25 +124,22 @@ export function Recognition({ className = "pb-24 md:pb-36" }: { className?: stri
         </div>
 
         <div className="col-span-12 md:col-start-6 md:col-span-7">
-          {/* The footer nav's row interaction, class for class: the fill
-              inverts behind the row, the title slides right, and the arrow
-              rests blurred and offset until the hover eases it in. The li
-              carries the type size so the arrow's 0.72em cap resolves
-              against it. Not links — the classes only animate on hover. */}
+          {/* The footer navigation's rows, structure for structure: the
+              dotted-rule li (.footer_nav_li), the .footer_nav_text row
+              inside it carrying the nav's own type (--f-h3, weight 500) and
+              padding, and the .footer_hover_row interaction — fill inverts,
+              label slides right, the arrow eases in from its blur. Only the
+              element differs: a div, not an anchor, since an award is not a
+              destination. */}
           <ul>
             {AWARDS.map((title, i) => (
-              <Reveal
-                as="li"
-                key={title}
-                delay={i * 60}
-                className="footer_hover_row flex items-center justify-between gap-6 border-b border-rule py-4 text-[clamp(1.35rem,2.4vw,2rem)] first:border-t md:py-5"
-              >
-                <h3 className="footer_hover_label font-semibold leading-[1.2] tracking-[-0.03em]">
-                  {title}
-                </h3>
-                <span aria-hidden className="footer_nav_arrow">
-                  <RightArrow className="inline-arrow" />
-                </span>
+              <Reveal as="li" key={title} delay={i * 60} className="footer_nav_li">
+                <div className="footer_nav_text footer_hover_row">
+                  <span className="footer_hover_label">{title}</span>
+                  <span aria-hidden className="footer_nav_arrow">
+                    <RightArrow className="inline-arrow" />
+                  </span>
+                </div>
               </Reveal>
             ))}
           </ul>
