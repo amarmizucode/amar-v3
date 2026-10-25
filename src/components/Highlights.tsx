@@ -111,14 +111,12 @@ export function Recognition({ className = "pb-24 md:pb-36" }: { className?: stri
               It&rsquo;s always lovely when the work gets appreciated
             </h2>
           </Reveal>
-          <Reveal className="flex flex-col gap-4 text-[17px] leading-[1.5] text-muted">
-            <p>
+          <Reveal>
+            {/* The document's two sentences, set as one paragraph. */}
+            <p className="text-[17px] leading-[1.5] text-muted">
               I&rsquo;ve been fortunate to receive recognition for my photography and filmmaking
-              over the years.
-            </p>
-            <p>
-              It&rsquo;s encouraging, especially when the recognition comes for projects that my
-              team and I have spent so much time working on.
+              over the years. It&rsquo;s encouraging, especially when the recognition comes for
+              projects that my team and I have spent so much time working on.
             </p>
           </Reveal>
         </div>
