@@ -100,63 +100,71 @@ export function InNumbers({ className = "py-20 md:py-28" }: { className?: string
 export function Recognition({ className = "pb-24 md:pb-36" }: { className?: string }) {
   return (
     <section id="recognition" className={`shell ${className}`}>
-      <Reveal>
-        <SectionLabel>Recognition</SectionLabel>
-      </Reveal>
-      <Reveal className="mt-3 md:mt-4">
-        <h2 className="max-w-[26ch] text-[clamp(1.5rem,2.6vw,2.25rem)] font-semibold leading-[1.15] tracking-[-0.03em]">
-          It&rsquo;s always lovely when the work gets appreciated
-        </h2>
-      </Reveal>
-
-      <ul className="mt-8 md:mt-12">
-        {AWARDS.map((item, i) => (
-          <Reveal
-            as="li"
-            key={item.title}
-            delay={i * 60}
-            className="grid-12 items-baseline gap-y-1 border-b border-rule py-4 first:border-t md:py-5"
-          >
-            <span className="col-span-2 text-[13px] font-medium tabular-nums text-muted md:col-span-1">
-              {String(i + 1).padStart(2, "0")}
-            </span>
-            <h3 className="col-span-10 text-[clamp(1.35rem,2.4vw,2rem)] font-semibold leading-[1.2] tracking-[-0.03em] md:col-span-8">
-              {item.title}
-            </h3>
-            {/* Under the title on a phone, right-aligned on the rule's far
-                end from md. */}
-            <span className="col-start-3 col-span-10 text-[15px] font-medium text-muted md:col-start-10 md:col-span-3 md:text-right">
-              {item.detail}
-            </span>
+      {/* The standard section layout — label and headline in the first
+          columns, content from column 6 — so the award rows and mastheads
+          start on the same line as the About statements above. */}
+      <div className="grid-12 gap-y-8">
+        <div className="col-span-12 flex flex-col gap-3 md:col-span-4 md:gap-4">
+          <Reveal>
+            <SectionLabel>Recognition</SectionLabel>
           </Reveal>
-        ))}
-      </ul>
+          <Reveal>
+            <h2 className="max-w-[18ch] text-[clamp(1.5rem,2.6vw,2.25rem)] font-semibold leading-[1.15] tracking-[-0.03em]">
+              It&rsquo;s always lovely when the work gets appreciated
+            </h2>
+          </Reveal>
+        </div>
 
-      {/* Featured in — the mastheads in one quiet run across the measure,
-          monochrome via .brand-wall__logo; no rules, no cells. */}
-      <Reveal className="mt-14 md:mt-20">
-        <SectionLabel>Featured in</SectionLabel>
-      </Reveal>
-      <Reveal className="mt-6 md:mt-8">
-        <ul className="flex flex-wrap items-center gap-x-12 gap-y-8 md:justify-between md:gap-x-16">
-          {PRESS.map((item) => (
-            <li key={item.name} className="flex items-center">
-              <img
-                src={item.logo}
-                alt={`${item.name} logo`}
-                loading="lazy"
-                decoding="async"
-                width={logoWidth(item.ratio, item.weight, PRESS_LOGO_SIDE)}
-                height={Math.round(logoWidth(item.ratio, item.weight, PRESS_LOGO_SIDE) / item.ratio)}
-                /* An inline width, not `w-auto`: width:auto beats the width
-                   attribute and rendered the mastheads at file size. */
-                style={{ width: logoWidth(item.ratio, item.weight, PRESS_LOGO_SIDE) }}
-                className="brand-wall__logo h-auto"
-              />
-            </li>
-          ))}
-        </ul>
-      </Reveal>
+        <div className="col-span-12 md:col-start-6 md:col-span-7">
+          <ul>
+            {AWARDS.map((item, i) => (
+              <Reveal
+                as="li"
+                key={item.title}
+                delay={i * 60}
+                className="grid grid-cols-[2.5rem_1fr] items-baseline gap-x-4 gap-y-1 border-b border-rule py-4 first:border-t md:grid-cols-[2.5rem_1fr_auto] md:py-5"
+              >
+                <span className="text-[13px] font-medium tabular-nums text-muted">
+                  {String(i + 1).padStart(2, "0")}
+                </span>
+                <h3 className="text-[clamp(1.35rem,2.4vw,2rem)] font-semibold leading-[1.2] tracking-[-0.03em]">
+                  {item.title}
+                </h3>
+                {/* Under the title on a phone, on the rule's far end from md. */}
+                <span className="col-start-2 text-[15px] font-medium text-muted md:col-start-3 md:text-right">
+                  {item.detail}
+                </span>
+              </Reveal>
+            ))}
+          </ul>
+
+          {/* Featured in — the mastheads in one quiet run on the same
+              measure, monochrome via .brand-wall__logo; no rules, no cells. */}
+          <Reveal className="mt-12 md:mt-16">
+            <SectionLabel>Featured in</SectionLabel>
+          </Reveal>
+          <Reveal className="mt-6 md:mt-8">
+            <ul className="flex flex-wrap items-center gap-x-10 gap-y-8 md:justify-between md:gap-x-12">
+              {PRESS.map((item) => (
+                <li key={item.name} className="flex items-center">
+                  <img
+                    src={item.logo}
+                    alt={`${item.name} logo`}
+                    loading="lazy"
+                    decoding="async"
+                    width={logoWidth(item.ratio, item.weight, PRESS_LOGO_SIDE)}
+                    height={Math.round(logoWidth(item.ratio, item.weight, PRESS_LOGO_SIDE) / item.ratio)}
+                    /* An inline width, not `w-auto`: width:auto beats the width
+                       attribute and rendered the mastheads at file size. */
+                    style={{ width: logoWidth(item.ratio, item.weight, PRESS_LOGO_SIDE) }}
+                    className="brand-wall__logo h-auto"
+                  />
+                </li>
+              ))}
+            </ul>
+          </Reveal>
+        </div>
+      </div>
     </section>
   );
 }
