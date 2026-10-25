@@ -411,58 +411,57 @@ export default function Home() {
              padding only: the About section supplies the gap above. ─── */}
         <Recognition className="pb-20 md:pb-28" />
 
-        {/* ── Trusted by — no top padding of its own: the section above's
+        {/* ── Collaborations — the client marks as a slow marquee rather
+             than a boxed grid: one continuous strip drifting across the
+             full viewport, feathered out at both edges, each mark
+             monochrome at rest. The header keeps the shell; the strip
+             bleeds past it. No top padding of its own: the section above's
              bottom padding supplies the gap. ──────────────────────── */}
-        <section className="shell pb-20 md:pb-28">
-          {/* The section grammar everywhere else on the page: a short
-              eyebrow, then the copy doc's line as the headline rather than
-              a sentence squeezed into a label. */}
-          <Reveal>
-            <SectionLabel>Collaborations</SectionLabel>
-          </Reveal>
-          <Reveal className="mt-3 md:mt-4">
-            <h2 className="max-w-[26ch] text-[clamp(1.5rem,2.6vw,2.25rem)] font-semibold leading-[1.15] tracking-[-0.03em]">
-              Some wonderful people and organisations along the way
-            </h2>
-          </Reveal>
+        <section className="pb-20 md:pb-28">
+          <div className="shell">
+            <Reveal>
+              <SectionLabel>Collaborations</SectionLabel>
+            </Reveal>
+            <Reveal className="mt-3 md:mt-4">
+              <h2 className="max-w-[26ch] text-[clamp(1.5rem,2.6vw,2.25rem)] font-semibold leading-[1.15] tracking-[-0.03em]">
+                Some wonderful people and organisations along the way
+              </h2>
+            </Reveal>
+          </div>
 
-          {/* The Featured-in grammar at section width: a ruled table of
-              cells sharing single hairlines — the container draws the top
-              and left edge, each cell its right and bottom. The brands sit
-              five across (two on a phone), empty ruled cells squaring off
-              the last row so the table always closes clean. Each
-              logo is centred in its cell, its width from brandLogoWidth so
-              all ten read at one visual weight, capped to the cell; the
-              name lives in the alt text. On the dark and coloured stops of
-              the theme slider the logos turn to light single-colour marks
-              (`.brand-wall__logo`). */}
-          <ul className="mt-8 grid grid-cols-2 border-l border-t border-rule sm:grid-cols-5 md:mt-10">
-            {BRANDS.map((brand) => (
-              <li
-                key={brand.name}
-                className="brand-wall__cell flex aspect-video items-center justify-center border-b border-r border-rule px-5"
-              >
-                <img
-                  src={brand.logo}
-                  alt={`${brand.name} logo`}
-                  loading="lazy"
-                  decoding="async"
-                  width={logoWidth(brand.ratio, brand.weight)}
-                  height={Math.round(logoWidth(brand.ratio, brand.weight) / brand.ratio)}
-                  className="brand-wall__logo h-auto max-h-[55%] w-auto max-w-[78%]"
-                />
-              </li>
-            ))}
-            {/* Fillers to the row's end — one set sized for the phone's two
-                columns, one for the five on sm+, each shown only at its own
-                breakpoint so both layouts close. */}
-            {Array.from({ length: (2 - (BRANDS.length % 2)) % 2 }, (_, i) => (
-              <li key={`f2-${i}`} aria-hidden className="border-b border-r border-rule sm:hidden" />
-            ))}
-            {Array.from({ length: (5 - (BRANDS.length % 5)) % 5 }, (_, i) => (
-              <li key={`f5-${i}`} aria-hidden className="hidden border-b border-r border-rule sm:block" />
-            ))}
-          </ul>
+          {/* Two copies of the list, the track translating -50% on loop so
+              the seam never shows; the second copy is decoration, hidden
+              from AT. CSS-only, so nothing fights ScrollSmoother, and
+              prefers-reduced-motion swaps it for a static wrapped row (the
+              duplicate display:none'd). Hovering a mark hands back its
+              colour; hovering the strip rests it. */}
+          <Reveal className="mt-8 md:mt-12">
+            <div className="logo-marquee" role="list" aria-label="Brands and institutions Amar has worked with">
+              <div className="logo-marquee__track">
+                {[0, 1].map((copy) => (
+                  <ul key={copy} aria-hidden={copy === 1} className="logo-marquee__list">
+                    {BRANDS.map((brand) => (
+                      <li key={brand.name} role={copy === 0 ? "listitem" : undefined} className="flex items-center">
+                        <img
+                          src={brand.logo}
+                          alt={copy === 0 ? `${brand.name} logo` : ""}
+                          loading="lazy"
+                          decoding="async"
+                          width={logoWidth(brand.ratio, brand.weight, 50)}
+                          height={Math.round(logoWidth(brand.ratio, brand.weight, 50) / brand.ratio)}
+                          /* An inline width, not `w-auto`: width:auto beats
+                             the width attribute (a presentational hint) and
+                             rendered every mark at its file's own size. */
+                          style={{ width: logoWidth(brand.ratio, brand.weight, 50) }}
+                          className="brand-wall__logo h-auto"
+                        />
+                      </li>
+                    ))}
+                  </ul>
+                ))}
+              </div>
+            </div>
+          </Reveal>
         </section>
 
         {/* ── The work — photography, documentary and books, each a

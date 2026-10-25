@@ -3893,8 +3893,67 @@ body:has(.pg-root.is-zoomed) .preq-trigger {
   transition: filter 0.45s ease;
 }
 
-.brand-wall__cell:hover .brand-wall__logo {
+li:hover > .brand-wall__logo {
   filter: grayscale(0) opacity(1);
+}
+
+/*
+ * The collaborations marquee: a track holding two copies of the logo run,
+ * translating one copy's width on a linear loop. The strip is feathered at
+ * both viewport edges and pauses under the pointer. Reduced motion swaps
+ * the loop for a static wrapped row: the duplicate copy display:none'd,
+ * the mask dropped, the shell's gutter restored.
+ */
+.logo-marquee {
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+}
+
+.logo-marquee__track {
+  display: flex;
+  width: max-content;
+  animation: logo-marquee 45s linear infinite;
+}
+
+.logo-marquee:hover .logo-marquee__track {
+  animation-play-state: paused;
+}
+
+.logo-marquee__list {
+  display: flex;
+  align-items: center;
+  gap: clamp(3.5rem, 7vw, 7rem);
+  padding-inline-end: clamp(3.5rem, 7vw, 7rem);
+}
+
+@keyframes logo-marquee {
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo-marquee {
+    -webkit-mask-image: none;
+    mask-image: none;
+    padding-inline: var(--grid-margin);
+  }
+
+  .logo-marquee__track {
+    animation: none;
+    width: auto;
+  }
+
+  .logo-marquee__list[aria-hidden="true"] {
+    display: none;
+  }
+
+  .logo-marquee__list {
+    flex-wrap: wrap;
+    row-gap: 2.5rem;
+    padding-inline-end: 0;
+  }
 }
 
 :is(

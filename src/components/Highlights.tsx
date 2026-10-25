@@ -1,4 +1,3 @@
-import { AwardLaurel } from "@/components/AwardLaurel";
 import { Reveal } from "@/components/Reveal";
 import { SectionLabel } from "@/components/SectionLabel";
 
@@ -30,7 +29,7 @@ const AWARDS = [
   { title: "Fearless Photographers", detail: "Award" },
   { title: "WPPI", detail: "Award" },
   { title: "One Eyeland", detail: "Award" },
-  { title: "YES I AM THE CHANGE", detail: "Birdman" },
+  { title: "YES I AM THE CHANGE", detail: "For Birdman" },
 ];
 
 /**
@@ -91,11 +90,12 @@ export function InNumbers({ className = "py-20 md:py-28" }: { className?: string
 }
 
 /**
- * Recognition — the honours and the press, in the section grammar the rest
- * of the page speaks: a short eyebrow, the copy doc's line as the headline
- * (it was set as a 17px eyebrow before — a sentence squeezed into a label),
- * then two ruled tables sharing single hairlines with the brand wall, so
- * all the site's logo-and-mark walls read as one system.
+ * Recognition — the honours as statement rows on hairlines, the press as
+ * one open run of mastheads. No badges and no boxed cells: the honours
+ * speak the footer's and FAQ's list grammar — an index, the award, what it
+ * was for, one rule-separated line each — and the mastheads sit bare on
+ * the measure, monochrome, so the section stays type-first like the page
+ * around it.
  */
 export function Recognition({ className = "pb-24 md:pb-36" }: { className?: string }) {
   return (
@@ -109,34 +109,38 @@ export function Recognition({ className = "pb-24 md:pb-36" }: { className?: stri
         </h2>
       </Reveal>
 
-      {/* The four honours, a wreath centred in each ruled cell: four across,
-          pairs on a phone. */}
-      <Reveal className="mt-8 md:mt-10">
-        <ul className="grid grid-cols-2 border-l border-t border-rule md:grid-cols-4">
-          {AWARDS.map((item) => (
-            <li
-              key={item.title}
-              className="flex items-center justify-center border-b border-r border-rule px-5 py-8 md:px-8 md:py-10"
-            >
-              <AwardLaurel title={item.title} detail={item.detail} />
-            </li>
-          ))}
-        </ul>
-      </Reveal>
+      <ul className="mt-8 md:mt-12">
+        {AWARDS.map((item, i) => (
+          <Reveal
+            as="li"
+            key={item.title}
+            delay={i * 60}
+            className="grid-12 items-baseline gap-y-1 border-b border-rule py-4 first:border-t md:py-5"
+          >
+            <span className="col-span-2 text-[13px] font-medium tabular-nums text-muted md:col-span-1">
+              {String(i + 1).padStart(2, "0")}
+            </span>
+            <h3 className="col-span-10 text-[clamp(1.35rem,2.4vw,2rem)] font-semibold leading-[1.2] tracking-[-0.03em] md:col-span-8">
+              {item.title}
+            </h3>
+            {/* Under the title on a phone, right-aligned on the rule's far
+                end from md. */}
+            <span className="col-start-3 col-span-10 text-[15px] font-medium text-muted md:col-start-10 md:col-span-3 md:text-right">
+              {item.detail}
+            </span>
+          </Reveal>
+        ))}
+      </ul>
 
-      {/* Featured in — the mastheads rather than a text list, in the same
-          cells but shallower: the marks are wide and thin. The grayscale
-          rest state and hover colour come with .brand-wall__logo. */}
-      <Reveal className="mt-12 md:mt-16">
+      {/* Featured in — the mastheads in one quiet run across the measure,
+          monochrome via .brand-wall__logo; no rules, no cells. */}
+      <Reveal className="mt-14 md:mt-20">
         <SectionLabel>Featured in</SectionLabel>
       </Reveal>
-      <Reveal className="mt-4 md:mt-6">
-        <ul className="grid grid-cols-2 border-l border-t border-rule md:grid-cols-4">
+      <Reveal className="mt-6 md:mt-8">
+        <ul className="flex flex-wrap items-center gap-x-12 gap-y-8 md:justify-between md:gap-x-16">
           {PRESS.map((item) => (
-            <li
-              key={item.name}
-              className="brand-wall__cell flex aspect-[16/7] items-center justify-center border-b border-r border-rule px-6 md:aspect-[16/6]"
-            >
+            <li key={item.name} className="flex items-center">
               <img
                 src={item.logo}
                 alt={`${item.name} logo`}
@@ -144,7 +148,10 @@ export function Recognition({ className = "pb-24 md:pb-36" }: { className?: stri
                 decoding="async"
                 width={logoWidth(item.ratio, item.weight, PRESS_LOGO_SIDE)}
                 height={Math.round(logoWidth(item.ratio, item.weight, PRESS_LOGO_SIDE) / item.ratio)}
-                className="brand-wall__logo h-auto max-h-[55%] w-auto max-w-[78%]"
+                /* An inline width, not `w-auto`: width:auto beats the width
+                   attribute and rendered the mastheads at file size. */
+                style={{ width: logoWidth(item.ratio, item.weight, PRESS_LOGO_SIDE) }}
+                className="brand-wall__logo h-auto"
               />
             </li>
           ))}
