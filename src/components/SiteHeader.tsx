@@ -8,6 +8,7 @@ import { PrintRequestTrigger } from "@/components/PrintRequestDock";
 import { CornerArrow } from "@/components/Arrows";
 import { SectionLabel } from "@/components/SectionLabel";
 import { SOCIALS } from "@/components/SiteFooter";
+import { AI_SERVICES, AiIcon, aiHref } from "@/components/AiIcons";
 
 /*
  * Root-relative rather than bare hashes: the header renders on the
@@ -23,6 +24,13 @@ const NAV = [
   // About is hidden for now — restore by adding
   // { label: "About", href: "/about" } back here.
 ];
+
+/*
+ * The sheet lists what the footer lists — Home first, Contact last — so a
+ * phone has everything the footer offers without scrolling down to it. The
+ * bar keeps NAV: there the wordmark is Home and the CTA is Contact.
+ */
+const MOBILE_NAV = [{ label: "Home", href: "/" }, ...NAV, { label: "Contact", href: "/#contact" }];
 
 export function SiteHeader() {
   const pathname = usePathname();
@@ -194,12 +202,13 @@ export function SiteHeader() {
         <div className="mobile-menu_inner shell">
           <div className="mobile-menu_head mobile-menu_fade">
             <SectionLabel>Navigation</SectionLabel>
-            <span className="text-muted">({String(NAV.length).padStart(2, "0")})</span>
+            <span className="text-muted">({String(MOBILE_NAV.length).padStart(2, "0")})</span>
           </div>
 
           <nav aria-label="Primary">
             <ul className="mobile-menu_ul">
-              {NAV.map((item, i) => {
+              {MOBILE_NAV.map((item, i) => {
+                // Home matches itself alone: no other path starts with "//".
                 const current = pathname === item.href || pathname.startsWith(`${item.href}/`);
                 return (
                   <li
@@ -237,12 +246,14 @@ export function SiteHeader() {
               onClick={() => setOpen(false)}
             />
 
+            {/* The footer's three blocks, in its order and wording. */}
             <div className="mobile-menu_details">
               <div>
-                <p className="text-muted">(Email)</p>
+                <p className="text-muted">(Personal details)</p>
                 <a href="mailto:hello@amarramesh.com" className="link-wipe">
                   hello@amarramesh.com
                 </a>
+                <p className="mt-1 text-muted">Based in Chennai, India and Working Worldwide.</p>
               </div>
               <div>
                 <p className="text-muted">(Socials)</p>
@@ -262,10 +273,30 @@ export function SiteHeader() {
                   ))}
                 </ul>
               </div>
+              <div>
+                <p className="text-muted">(Ask AI About Me)</p>
+                {/* The footer's chips: 2.5em squares on their own font size. */}
+                <div className="footer_middle_wrap is-ai text-[16px]">
+                  {AI_SERVICES.map((service) => (
+                    <a
+                      key={service.name}
+                      href={aiHref(service.name)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title={`Ask ${service.label} about Amar Ramesh`}
+                      className="footer_ai_link"
+                    >
+                      <span className="sr-only">Ask {service.label} about Amar Ramesh</span>
+                      <AiIcon name={service.name} className="h-full w-full" />
+                    </a>
+                  ))}
+                </div>
+              </div>
             </div>
 
+            {/* The location now sits in the details above, so the base keeps
+                only the copyright. */}
             <p className="mobile-menu_base text-muted">
-              <span>Chennai, IN</span>
               <span>© 2026, Amar Ramesh</span>
             </p>
           </div>

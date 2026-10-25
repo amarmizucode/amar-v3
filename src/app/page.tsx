@@ -535,8 +535,15 @@ export default function Home() {
               <Reveal delay={80} className="mt-auto flex flex-col gap-6">
                 {/* Two columns of the 12-col page grid. The portrait is
                     750x1125, so the frame takes its 4:5 rather than a square:
-                    a 1:1 crop of it centres on the torso and cuts the face. */}
-                <div className="w-full md:w-[var(--column-width-2)]">
+                    a 1:1 crop of it centres on the torso and cuts the face.
+
+                    On a phone it is a headshot beside "Chat with Amar", not a
+                    full-bleed portrait: at the full column width a 4:5 frame
+                    stands taller than it needs to and pushes the CTA down the
+                    page, so it is capped to 40% of the measure (floored at
+                    140px for a narrow phone). From md: up the two-column
+                    width takes over. */}
+                <div className="w-[40%] min-w-[140px] md:w-[var(--column-width-2)] md:min-w-0">
                   <MediaFrame ratio="4 / 5" src={MEDIA.faq} parallax={0} />
                 </div>
                 <p className="text-[17px] font-semibold leading-[1.3] tracking-[-0.03em]">
