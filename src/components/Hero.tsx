@@ -155,13 +155,14 @@ export function Hero({ start }: { start: boolean }) {
       <div className="grid-12 my-auto shrink-0 gap-y-8">
         <div className="col-span-12 md:col-span-4">
           <p className="hero_content_p text-lede font-semibold">
-            I tell stories that make brands worth remembering.
+            The camera was just the beginning.
           </p>
         </div>
         <div className="col-span-12 md:col-start-6 md:col-span-4">
           <p className="hero_content_p text-lede font-semibold">
-            I work with ambitious organizations to turn ideas, people and purpose into powerful
-            visual stories, films and experiences.
+            What started with photography has taken me into the fascinating worlds of art,
+            architecture, culture, films and books. And there&rsquo;s still so much more I want to
+            discover.
           </p>
         </div>
       </div>

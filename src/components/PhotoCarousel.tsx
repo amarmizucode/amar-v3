@@ -113,6 +113,14 @@ export function PhotoCarousel({
         </div>
       </div>
 
+      {/* The section's headline, from the copy doc. It sits under the
+          eyebrow row rather than in it: that row is a justify-between flex
+          with the paging arrows at its end, where a full sentence would
+          crowd them on a phone. */}
+      <h2 className="shell mt-3 text-[clamp(1.5rem,2.6vw,2.25rem)] font-semibold leading-[1.15] tracking-[-0.03em] md:mt-4 md:w-[70%]">
+        All these years, and I still love picking up my camera
+      </h2>
+
       <div
         ref={track}
         className="mt-6 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain [scrollbar-width:none] md:mt-8 md:gap-6 [&::-webkit-scrollbar]:hidden"

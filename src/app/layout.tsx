@@ -12,9 +12,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Amar Ramesh — I tell stories that make brands worth remembering.",
+  title: "Amar Ramesh — The camera was just the beginning",
   description:
-    "I work with ambitious organizations to turn ideas, people and purpose into powerful visual stories, films and experiences.",
+    "Photographer, filmmaker, author and mentor. What started with photography has taken me into the fascinating worlds of art, architecture, culture, films and books.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

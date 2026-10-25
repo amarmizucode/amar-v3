@@ -27,10 +27,10 @@ const NUMBERS = [
  * talk is "Life Through the Lens".
  */
 const AWARDS = [
-  { title: "Fearless Photographers", detail: "5 awards" },
-  { title: "WPPI", detail: "Honours" },
-  { title: "TEDx", detail: "Life Through the Lens" },
-  { title: "YES Bank Changemaker", detail: "2016" },
+  { title: "Fearless Photographers", detail: "Award" },
+  { title: "WPPI", detail: "Award" },
+  { title: "One Eyeland", detail: "Award" },
+  { title: "YES I AM THE CHANGE", detail: "Birdman" },
 ];
 
 /* The press, set as quiet type rather than logos. */
@@ -98,7 +98,7 @@ export function Recognition({ className = "pb-24 md:pb-36" }: { className?: stri
         </Reveal>
 
         <Reveal className="col-span-12 mt-8 md:mt-0 md:row-start-1 md:col-start-6 md:col-span-7">
-          <SectionLabel>Awards</SectionLabel>
+          <SectionLabel>It&rsquo;s always lovely when the work gets appreciated</SectionLabel>
         </Reveal>
 
         {/* Centred against the press table's height, so the wreaths sit on

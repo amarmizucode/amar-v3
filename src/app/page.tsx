@@ -19,6 +19,7 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { MEDIA } from "@/lib/media";
 import { assetUrl } from "@/lib/assetUrl";
 import { BSF_CHANNEL, thumbUrl } from "@/lib/documentary";
+import { galleryBySlug } from "@/lib/photography";
 
 const WORKS = [
   {
@@ -80,42 +81,42 @@ const VENTURES = [
   {
     area: "Photography",
     title: "Studio A",
-    blurb: "Commercial photography studio. Over seven hundred weddings across twenty-two countries.",
+    blurb: "Where my professional photography journey began. We started with weddings and gradually expanded into other forms of photography and creative work.",
     image: assetUrl("/assets/photography-web/studio-a/11.jpg"),
     href: "https://studioa.amarramesh.com/",
-    linkLabel: "studioa.amarramesh.com",
+    linkLabel: "Visit Studio A",
   },
   {
     area: "Film",
     title: "Big Short Films",
-    blurb: "Documentary filmmaking. Jamakkaalam led to the Centre for Weavers.",
+    blurb: "Social and corporate documentaries, exploring subjects ranging from crafts and cultural traditions to businesses and individuals doing interesting work.",
     image: "/assets/ventures/big-short-films.jpg",
     href: BSF_CHANNEL.url,
-    linkLabel: "Watch on YouTube",
+    linkLabel: "Visit Big Short Films",
   },
   {
     area: "Publishing",
     title: "Mara Labs",
-    blurb: "Publishing house. Three pictorial monographs on South Indian heritage.",
+    blurb: "Books that bring together photography, research and thoughtful design. Holding and exploring a book matters as much as the photographs inside it.",
     image: "/assets/books/aranga/plate-2.jpg",
     href: "https://maralabs.in/",
-    linkLabel: "maralabs.in",
+    linkLabel: "Visit Mara Labs",
   },
   {
     area: "Mentorship",
-    title: "Kanavu Fellowship",
-    blurb: "A year-long programme training women photographers from small Tamil Nadu towns.",
+    title: "Kanavu",
+    blurb: "Photography training and learning opportunities, making the field more accessible to aspiring women photographers, including women from smaller towns in Tamil Nadu.",
     image: "/assets/ventures/kanavu.jpg",
     href: "https://chennaiphotobiennale.foundation/cpbx/projects/kanavu-fellowship",
-    linkLabel: "About the fellowship",
+    linkLabel: "Explore Kanavu",
   },
   {
     area: "Product",
-    title: "MIZU",
-    blurb: "Hand-made backdrops for photographers and studios.",
+    title: "MIZU Backdrops",
+    blurb: "Began with a problem we faced as photographers. Today it brings together artists and photographers to create handcrafted backdrops for photography and filmmaking.",
     image: "/assets/ventures/mizu.jpg",
     href: "https://www.mizubackdrops.com/",
-    linkLabel: "mizubackdrops.com",
+    linkLabel: "Visit MIZU",
   },
 ];
 
@@ -176,36 +177,60 @@ const brandLogoWidth = (ratio: number, weight: number) =>
  * ventures card's image), the Kalamkari film's YouTube still, and the open
  * Aranga spread that stands for Mara Labs.
  */
+/*
+ * The doc's "What I do" rows. Each photography row takes its gallery's own
+ * cover rather than a hardcoded frame, so a re-run of gen-photography.py
+ * cannot leave a dead path behind; galleryBySlug resolves it on the server.
+ */
 const SERVICES = [
   {
-    label: "Photography",
-    href: "/photography",
-    image: assetUrl("/assets/photography-web/studio-a/11.jpg"),
+    label: "Wedding Photography",
+    href: "/photography/weddings",
+    image: galleryBySlug("weddings")?.cover,
   },
-  { label: "Documentary", href: "/documentary", image: thumbUrl("6c_i4EoUaq4") },
-  { label: "Publishing", image: "/assets/books/aranga/plate-2.jpg" },
+  {
+    label: "Portrait Photography",
+    href: "/photography/musicians",
+    image: galleryBySlug("musicians")?.cover,
+  },
+  { label: "Films & Documentaries", href: "/documentary", image: thumbUrl("6c_i4EoUaq4") },
+  {
+    label: "Commercial Photography",
+    href: "/photography/art-form",
+    image: galleryBySlug("art-form")?.cover,
+  },
+  { label: "Books & Publishing", href: "/books", image: "/assets/books/aranga/plate-2.jpg" },
+  { label: "Mentorship", image: "/assets/ventures/kanavu.jpg" },
 ];
 
 const FAQS = [
   {
-    q: "Who do you work with?",
-    a: "Founders, institutions and brands building something with cultural weight — organizations that want the story behind the work told properly.",
+    q: "What kind of photography projects do you take up?",
+    a: "I work across wedding photography, portraits, commercial assignments, architecture and cultural documentation. I also photograph musicians and dancers, which is something I particularly enjoy.",
   },
   {
-    q: "What kind of projects do you take on?",
-    a: "Photography, documentary film, campaigns and long-form cultural documentation. Projects where the narrative matters as much as the image.",
+    q: "Do you work with brands and organisations?",
+    a: "Yes. My team and I work with brands and organisations on photography, films, documentaries and creative campaigns.",
   },
   {
-    q: "Do you work internationally?",
-    a: "Yes. Based in Chennai, India and working worldwide — over seven hundred projects across twenty-two countries.",
+    q: "Do you take up projects outside Chennai?",
+    a: "Absolutely. I'm based in Chennai, but my work has taken me across India and several other countries.",
   },
   {
-    q: "Can you work on a project from concept to completion?",
-    a: "That is the preferred way to work: research, narrative, production and final delivery handled end to end.",
+    q: "Can your team handle a project from start to finish?",
+    a: "Yes. Depending on the project, we can help with research, creative development, photography, filming, production and delivery.",
   },
   {
-    q: "Can we collaborate with one of your ventures?",
-    a: "Studio A, Big Short Films, Mara Labs, Kanavu Fellowship and MIZU all take on collaborations. Tell me what you have in mind.",
+    q: "Do you conduct photography workshops?",
+    a: "Yes. I've been involved in workshops and mentorship programmes for photographers. Kanavu is one of the initiatives through which we're creating more learning opportunities.",
+  },
+  {
+    q: "Can we collaborate on a book or cultural project?",
+    a: "Of course. Books, architecture, art and cultural documentation are subjects I really enjoy exploring. I'd be happy to hear about your idea.",
+  },
+  {
+    q: "How do I get in touch?",
+    a: "You can use the contact form to share your project details, and my team and I can take it from there.",
   },
 ];
 
@@ -310,14 +335,19 @@ export default function Home() {
               {/* All three set alike: statement size, 600 weight, 120%
                   leading, -3% tracking. The column sets the measure. */}
               <HighlightText className="text-statement font-semibold">
-                Meaningful work deserves a story as powerful as the work itself.
+                I&rsquo;m Amar Ramesh. I started my career as an engineer in the US. Somewhere along
+                the way, I realised photography was what I really wanted to pursue. So I made the
+                switch.
               </HighlightText>
               <HighlightText className="text-statement font-semibold">
-                The organizations I work with have built something worth talking about. A culture
-                worth preserving. An idea worth sharing. A community worth understanding.
+                I&rsquo;ve always been curious about our temples, architecture, art and the people
+                who dedicate their lives to keeping our traditions alive. One project led to
+                another.
               </HighlightText>
               <HighlightText className="text-statement font-semibold">
-                My work is to find that story — and give it a form people can see, feel and remember.
+                Today, my work takes me across photography, films, publishing, cultural
+                documentation and mentorship. I enjoy the variety. Every experience teaches me
+                something.
               </HighlightText>
 
               {/* Byline, matching `gap_home_testimonial`: 2.5rem round
@@ -380,7 +410,7 @@ export default function Home() {
         <section className="shell pb-20 md:pb-28">
           {/* The label, flush with the table's left edge. */}
           <Reveal className="mb-4 md:mb-6">
-            <SectionLabel>Notable brands I&rsquo;ve helped</SectionLabel>
+            <SectionLabel>Some wonderful people and organisations along the way</SectionLabel>
           </Reveal>
 
           {/* The Featured-in grammar at section width: a ruled table of
@@ -505,7 +535,7 @@ export default function Home() {
                 its image. */}
             <div className="col-span-12 md:col-start-6 md:col-span-7">
               <Reveal className="mb-8">
-                <SectionLabel>Explore all</SectionLabel>
+                <SectionLabel>Here&rsquo;s what I enjoy working on</SectionLabel>
               </Reveal>
               <Services items={SERVICES} />
             </div>
@@ -515,7 +545,7 @@ export default function Home() {
         {/* ── Notable ventures ───────────────────────────────────── */}
         <section id="ventures" className="shell pb-20 md:pb-28">
           <Reveal>
-            <SectionLabel>Notable Ventures</SectionLabel>
+            <SectionLabel>Some ideas I couldn&rsquo;t stop thinking about</SectionLabel>
           </Reveal>
 
           <Reveal className="mt-6 md:mt-8">
@@ -547,18 +577,18 @@ export default function Home() {
                   <MediaFrame ratio="4 / 5" src={MEDIA.faq} parallax={0} />
                 </div>
                 <p className="text-[17px] font-semibold leading-[1.3] tracking-[-0.03em]">
-                  Got more questions?
+                  Have an interesting idea?
                   <br />
-                  Chat with Amar.
+                  I&rsquo;d love to hear about it.
                 </p>
-                <CtaPill label="Book a Call" className="self-start" />
+                <CtaPill label="Start a Conversation" className="self-start" />
               </Reveal>
             </div>
 
             <div className="col-span-12 md:col-start-6 md:col-span-7 flex flex-col gap-10">
               <Reveal>
                 <h2 className="text-[clamp(2rem,3.4vw,3.25rem)] font-semibold leading-[1.15] tracking-[-0.03em]">
-                  Here is what you need to consider before partnering with me.
+                  A few things you might want to know.
                 </h2>
               </Reveal>
               <Reveal delay={100}>
