@@ -33,8 +33,32 @@ const AWARDS = [
   { title: "YES I AM THE CHANGE", detail: "Birdman" },
 ];
 
-/* The press, set as quiet type rather than logos. */
-const PRESS = ["The Hindu", "Reader's Digest", "DestinAsian", "Wedding Vows"];
+/**
+ * One visual weight for every logo table on the site. Filling a fixed box
+ * makes wide wordmarks read small and square marks loom, so each mark gets
+ * the same area instead — `side` px square — scaled by an optical `weight`
+ * for density. Shared with the brand wall on the home page, so the press
+ * and brand tables read at one size.
+ */
+export const LOGO_SIDE = 44;
+export const logoWidth = (ratio: number, weight: number, side: number = LOGO_SIDE) =>
+  Math.round(side * weight * Math.sqrt(ratio));
+
+/* Mastheads are wide and thin, so the equal-area rule starves them of
+   height at the brand side; they get a larger one. */
+const PRESS_LOGO_SIDE = 54;
+
+/*
+ * The press, as the mastheads themselves — the files under
+ * public/assets/press/, which the site carried but no longer drew.
+ * `ratio` is each file's own width ÷ height.
+ */
+const PRESS = [
+  { name: "The Hindu", logo: "/assets/press/the-hindu.svg", ratio: 8.29, weight: 1 },
+  { name: "Reader's Digest", logo: "/assets/press/readers-digest.svg", ratio: 7.16, weight: 0.95 },
+  { name: "DestinAsian", logo: "/assets/press/destinasian.png", ratio: 7.25, weight: 1.05 },
+  { name: "Wedding Vows", logo: "/assets/press/wedding-vows.png", ratio: 1.82, weight: 0.9 },
+];
 
 /**
  * The figures as an unlabelled display list — no section heading, no rules,
@@ -67,59 +91,65 @@ export function InNumbers({ className = "py-20 md:py-28" }: { className?: string
 }
 
 /**
- * Featured in and Awards as one section, side by side: the press as a
- * quiet run of names in the label column, and from column 6 the three
- * honours, each set in its laurel wreath — drawn in currentColor, so it
- * follows the theme. Each column runs under its own eyebrow; a phone
- * stacks the four blocks in that order.
+ * Recognition — the honours and the press, in the section grammar the rest
+ * of the page speaks: a short eyebrow, the copy doc's line as the headline
+ * (it was set as a 17px eyebrow before — a sentence squeezed into a label),
+ * then two ruled tables sharing single hairlines with the brand wall, so
+ * all the site's logo-and-mark walls read as one system.
  */
 export function Recognition({ className = "pb-24 md:pb-36" }: { className?: string }) {
   return (
     <section id="recognition" className={`shell ${className}`}>
-      <div className="grid-12 gap-y-6">
-        <Reveal className="col-span-12 md:row-start-1 md:col-span-4">
-          <SectionLabel>Featured in</SectionLabel>
-        </Reveal>
+      <Reveal>
+        <SectionLabel>Recognition</SectionLabel>
+      </Reveal>
+      <Reveal className="mt-3 md:mt-4">
+        <h2 className="max-w-[26ch] text-[clamp(1.5rem,2.6vw,2.25rem)] font-semibold leading-[1.15] tracking-[-0.03em]">
+          It&rsquo;s always lovely when the work gets appreciated
+        </h2>
+      </Reveal>
 
-        {/* The publications as a plain run of quiet lines — no rules, no
-            logos, just the names in the small muted size. */}
-        <Reveal className="col-span-12 md:row-start-2 md:col-span-4">
-          <ul className="flex flex-col gap-2.5">
-            {PRESS.map((name, i) => (
-              <li
-                key={name}
-                className="flex items-baseline gap-4 text-[13px] font-medium leading-[1.4] text-muted"
-              >
-                <span className="tabular-nums">{String(i + 1).padStart(2, "0")}</span>
-                {name}
-              </li>
-            ))}
-          </ul>
-        </Reveal>
+      {/* The four honours, a wreath centred in each ruled cell: four across,
+          pairs on a phone. */}
+      <Reveal className="mt-8 md:mt-10">
+        <ul className="grid grid-cols-2 border-l border-t border-rule md:grid-cols-4">
+          {AWARDS.map((item) => (
+            <li
+              key={item.title}
+              className="flex items-center justify-center border-b border-r border-rule px-5 py-8 md:px-8 md:py-10"
+            >
+              <AwardLaurel title={item.title} detail={item.detail} />
+            </li>
+          ))}
+        </ul>
+      </Reveal>
 
-        <Reveal className="col-span-12 mt-8 md:mt-0 md:row-start-1 md:col-start-6 md:col-span-7">
-          <SectionLabel>It&rsquo;s always lovely when the work gets appreciated</SectionLabel>
-        </Reveal>
-
-        {/* Centred against the press table's height, so the wreaths sit on
-            the row's middle rather than hanging from its top. */}
-        <Reveal className="col-span-12 md:row-start-2 md:col-start-6 md:col-span-7 md:flex md:items-center">
-          {/* All four in one row from md, sharing the column equally and
-              capped so they never balloon on a wide screen — a fixed
-              basis wrapped the fourth onto its own line. A phone pairs
-              them two and two. */}
-          {/* w-full: the wreaths are @containers, so they report no
-              intrinsic width — without an explicit width the ul would
-              shrink-wrap to nothing inside its flex parent. */}
-          <ul className="flex w-full flex-wrap items-start gap-x-6 gap-y-10 md:gap-x-8">
-            {AWARDS.map((item) => (
-              <li key={item.title} className="min-w-0 basis-[calc(50%-0.75rem)] md:flex-1 md:basis-0 md:max-w-[200px]">
-                <AwardLaurel title={item.title} detail={item.detail} />
-              </li>
-            ))}
-          </ul>
-        </Reveal>
-      </div>
+      {/* Featured in — the mastheads rather than a text list, in the same
+          cells but shallower: the marks are wide and thin. The grayscale
+          rest state and hover colour come with .brand-wall__logo. */}
+      <Reveal className="mt-12 md:mt-16">
+        <SectionLabel>Featured in</SectionLabel>
+      </Reveal>
+      <Reveal className="mt-4 md:mt-6">
+        <ul className="grid grid-cols-2 border-l border-t border-rule md:grid-cols-4">
+          {PRESS.map((item) => (
+            <li
+              key={item.name}
+              className="brand-wall__cell flex aspect-[16/7] items-center justify-center border-b border-r border-rule px-6 md:aspect-[16/6]"
+            >
+              <img
+                src={item.logo}
+                alt={`${item.name} logo`}
+                loading="lazy"
+                decoding="async"
+                width={logoWidth(item.ratio, item.weight, PRESS_LOGO_SIDE)}
+                height={Math.round(logoWidth(item.ratio, item.weight, PRESS_LOGO_SIDE) / item.ratio)}
+                className="brand-wall__logo h-auto max-h-[55%] w-auto max-w-[78%]"
+              />
+            </li>
+          ))}
+        </ul>
+      </Reveal>
     </section>
   );
 }

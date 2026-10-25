@@ -1,7 +1,7 @@
 import { HomeHero } from "@/components/HomeHero";
 import { DocumentarySection, PhotographySection, BooksSection } from "@/components/HomeWork";
 import { VenturesAccordion } from "@/components/VenturesAccordion";
-import { InNumbers, Recognition } from "@/components/Highlights";
+import { InNumbers, Recognition, logoWidth } from "@/components/Highlights";
 import { HighlightText } from "@/components/HighlightText";
 import { Services } from "@/components/Services";
 import { Testimonials } from "@/components/Testimonials";
@@ -168,19 +168,14 @@ const BRANDS = [
 ];
 
 /*
- * Logos sized to one visual weight rather than one box. Filling a fixed box
- * makes wide wordmarks read small and square marks loom, so every logo gets
- * the same area instead — a square mark 72px a side, a wordmark wide and
- * short — and `weight` scales that for density: solid fields (Ramraj's
- * green bar, Thriveni's heavy caps) read heavier than their size, thin
- * linework (Hilton, the Tamil Nadu
- * script) lighter. The side matches the Featured-in press marks
- * (PRESS_LOGO_SIDE in Highlights), so the two logo tables read at one
- * size; the cell's own max-width/height caps guard the widest marks.
+ * Logos sized to one visual weight rather than one box, by `logoWidth`
+ * from Highlights — the same equal-area rule the Featured-in mastheads
+ * use, so the two logo tables read at one size. `weight` is the optical
+ * nudge: solid fields (Ramraj's green bar, Thriveni's heavy caps) read
+ * heavier than their size, thin linework (Hilton, the Tamil Nadu script)
+ * lighter. The cell's own max-width/height caps guard the widest marks.
  */
-const BRAND_LOGO_SIDE = 44;
-const brandLogoWidth = (ratio: number, weight: number) =>
-  Math.round(BRAND_LOGO_SIDE * weight * Math.sqrt(ratio));
+
 
 
 /*
@@ -419,9 +414,16 @@ export default function Home() {
         {/* ── Trusted by — no top padding of its own: the section above's
              bottom padding supplies the gap. ──────────────────────── */}
         <section className="shell pb-20 md:pb-28">
-          {/* The label, flush with the table's left edge. */}
-          <Reveal className="mb-4 md:mb-6">
-            <SectionLabel>Some wonderful people and organisations along the way</SectionLabel>
+          {/* The section grammar everywhere else on the page: a short
+              eyebrow, then the copy doc's line as the headline rather than
+              a sentence squeezed into a label. */}
+          <Reveal>
+            <SectionLabel>Collaborations</SectionLabel>
+          </Reveal>
+          <Reveal className="mt-3 md:mt-4">
+            <h2 className="max-w-[26ch] text-[clamp(1.5rem,2.6vw,2.25rem)] font-semibold leading-[1.15] tracking-[-0.03em]">
+              Some wonderful people and organisations along the way
+            </h2>
           </Reveal>
 
           {/* The Featured-in grammar at section width: a ruled table of
@@ -434,19 +436,19 @@ export default function Home() {
               name lives in the alt text. On the dark and coloured stops of
               the theme slider the logos turn to light single-colour marks
               (`.brand-wall__logo`). */}
-          <ul className="grid grid-cols-2 border-l border-t border-rule sm:grid-cols-5">
+          <ul className="mt-8 grid grid-cols-2 border-l border-t border-rule sm:grid-cols-5 md:mt-10">
             {BRANDS.map((brand) => (
               <li
                 key={brand.name}
-                className="flex aspect-video items-center justify-center border-b border-r border-rule px-5"
+                className="brand-wall__cell flex aspect-video items-center justify-center border-b border-r border-rule px-5"
               >
                 <img
                   src={brand.logo}
                   alt={`${brand.name} logo`}
                   loading="lazy"
                   decoding="async"
-                  width={brandLogoWidth(brand.ratio, brand.weight)}
-                  height={Math.round(brandLogoWidth(brand.ratio, brand.weight) / brand.ratio)}
+                  width={logoWidth(brand.ratio, brand.weight)}
+                  height={Math.round(logoWidth(brand.ratio, brand.weight) / brand.ratio)}
                   className="brand-wall__logo h-auto max-h-[55%] w-auto max-w-[78%]"
                 />
               </li>

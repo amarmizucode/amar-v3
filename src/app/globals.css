@@ -3886,6 +3886,15 @@ body:has(.pg-root.is-zoomed) .preq-trigger {
  */
 .brand-wall__logo {
   mix-blend-mode: multiply;
+  /* At rest the wall is monochrome and quiet — ten brand palettes at full
+     colour shouted over the page's black-and-white type. Hovering a cell
+     hands the mark its own colour back. */
+  filter: grayscale(1) opacity(0.65);
+  transition: filter 0.45s ease;
+}
+
+.brand-wall__cell:hover .brand-wall__logo {
+  filter: grayscale(0) opacity(1);
 }
 
 :is(
