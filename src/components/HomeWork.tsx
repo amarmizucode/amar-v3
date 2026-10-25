@@ -82,13 +82,27 @@ export function BooksSection({ className = "py-20 md:py-28" }: { className?: str
       </Reveal>
 
       {/* The whole shelf: every book in a single row on a wide screen, two
-          rows of four on a tablet, pairs on a phone (four across there leaves
-          covers under 80px). Product shots of the books themselves, so no
-          drift — the whole object stays in frame. */}
+          rows of four on a tablet. Product shots of the books themselves, so
+          no drift — the whole object stays in frame.
+
+          On a phone the shelf scrolls sideways instead of wrapping, the way
+          the photography and documentary strips above it do: two rows of
+          four stacked a cover deep each pushed the FAQ far down the page, and
+          a shelf is a row of spines to run your eye along. Native
+          overflow-scroll with CSS snap — the carousels' build — so a swipe
+          works for free and nothing fights ScrollSmoother. From `sm:` up it
+          is the grid again, where all eight fit without scrolling. */}
       <Reveal className="mt-8 md:mt-10">
-        <div className="grid grid-cols-2 gap-x-4 gap-y-8 sm:grid-cols-4 lg:grid-cols-8 lg:gap-x-5">
+        <div
+          className="-mx-[var(--grid-margin)] flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain px-[var(--grid-margin)] [scrollbar-width:none] sm:mx-0 sm:grid sm:grid-cols-4 sm:gap-x-4 sm:gap-y-8 sm:overflow-visible sm:px-0 lg:grid-cols-8 lg:gap-x-5 [&::-webkit-scrollbar]:hidden"
+          style={{ scrollPaddingInline: "var(--grid-margin)" }}
+        >
           {BOOKS.map((book) => (
-            <a key={book.slug} href="/books" className="group/book flex flex-col gap-2">
+            <a
+              key={book.slug}
+              href="/books"
+              className="group/book flex w-[38vw] shrink-0 snap-start flex-col gap-2 sm:w-auto sm:shrink"
+            >
               <MediaFrame ratio="1 / 1" src={book.cover} parallax={0} />
               <p className="text-[13px] font-semibold leading-[1.3] tracking-[-0.02em] transition-opacity duration-300 group-hover/book:opacity-60">
                 {book.title}

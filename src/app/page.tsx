@@ -533,9 +533,11 @@ export default function Home() {
               {/* mt-auto pins this group to the bottom of the section, level
                   with the end of the accordion beside it. */}
               <Reveal delay={80} className="mt-auto flex flex-col gap-6">
-                {/* Two columns of the 12-col page grid. */}
+                {/* Two columns of the 12-col page grid. The portrait is
+                    750x1125, so the frame takes its 4:5 rather than a square:
+                    a 1:1 crop of it centres on the torso and cuts the face. */}
                 <div className="w-full md:w-[var(--column-width-2)]">
-                  <MediaFrame ratio="1 / 1" src={MEDIA.faq} />
+                  <MediaFrame ratio="4 / 5" src={MEDIA.faq} parallax={0} />
                 </div>
                 <p className="text-[17px] font-semibold leading-[1.3] tracking-[-0.03em]">
                   Got more questions?

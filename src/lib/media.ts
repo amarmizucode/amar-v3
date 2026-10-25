@@ -30,7 +30,9 @@ export const MEDIA = {
   showreel: photo("photo-1497366216548-37526070297c", 1600, 1200),
   // Light-toned, so the black heading reads over it (measured luminance ~153).
   gap: photo("photo-1520962880247-cfaf541c8724", 512, 640),
-  faq: photo("photo-1516450360452-9312f5e86fc7", 626, 626),
+  // Amar himself, beside "Chat with Amar" — the same portrait the About
+  // block and the closing CTA use. Its frame takes the photo's own 4:5.
+  faq: assetUrl("/assets/amar-ramesh.jpg"),
 
   // Closing CTA backdrop — the reference's `cta_home_visual`. Uses the same
   // local portrait as the About section rather than a stock photo.
