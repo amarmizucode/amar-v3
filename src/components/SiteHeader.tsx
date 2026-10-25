@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import { CtaPill } from "@/components/CtaPill";
 import { PrintRequestTrigger } from "@/components/PrintRequestDock";
 import { CornerArrow } from "@/components/Arrows";
-import { SectionLabel } from "@/components/SectionLabel";
 import { SOCIALS } from "@/components/SiteFooter";
 import { AI_SERVICES, AiIcon, aiHref } from "@/components/AiIcons";
 
@@ -200,11 +199,6 @@ export function SiteHeader() {
         className="mobile-menu pointer-events-auto fixed inset-0 z-10 bg-background md:hidden"
       >
         <div className="mobile-menu_inner shell">
-          <div className="mobile-menu_head mobile-menu_fade">
-            <SectionLabel>Navigation</SectionLabel>
-            <span className="text-muted">({String(MOBILE_NAV.length).padStart(2, "0")})</span>
-          </div>
-
           <nav aria-label="Primary">
             <ul className="mobile-menu_ul">
               {MOBILE_NAV.map((item, i) => {
@@ -253,7 +247,6 @@ export function SiteHeader() {
                 <a href="mailto:hello@amarramesh.com" className="link-wipe">
                   hello@amarramesh.com
                 </a>
-                <p className="mt-1 text-muted">Based in Chennai, India and Working Worldwide.</p>
               </div>
               <div>
                 <p className="text-muted">(Socials)</p>
@@ -287,15 +280,13 @@ export function SiteHeader() {
                       className="footer_ai_link"
                     >
                       <span className="sr-only">Ask {service.label} about Amar Ramesh</span>
-                      <AiIcon name={service.name} className="h-full w-full" />
+                      <AiIcon name={service.name} instance="menu" className="h-full w-full" />
                     </a>
                   ))}
                 </div>
               </div>
             </div>
 
-            {/* The location now sits in the details above, so the base keeps
-                only the copyright. */}
             <p className="mobile-menu_base text-muted">
               <span>© 2026, Amar Ramesh</span>
             </p>

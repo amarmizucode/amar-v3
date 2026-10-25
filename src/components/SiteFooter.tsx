@@ -122,7 +122,7 @@ export function SiteFooter() {
                   <span className="sr-only">
                     Ask {service.label} about Amar Ramesh
                   </span>
-                  <AiIcon name={service.name} className="h-full w-full" />
+                  <AiIcon name={service.name} instance="footer" className="h-full w-full" />
                 </a>
               ))}
             </div>
