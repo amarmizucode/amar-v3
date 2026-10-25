@@ -196,8 +196,9 @@ body {
  * with normal blending. This draws an equivalent tile inline — fractal
  * noise at a frequency that clumps the way theirs does, desaturated, then
  * quantised through a discrete table whose lower half maps to black — so
- * nothing ships. Tuned against a flat patch of the reference: at this
- * opacity the two patches' luma spread agrees within 5%. Normal blend, so
+ * nothing ships. Tuned against a flat patch of the reference, measured
+ * live with the jitter running, so the two patches' luma spread agrees.
+ * Normal blend, so
  * like theirs it shows faintly over the dark bands too. body::after rather
  * than an element in the layout: body is never transformed (the smoother
  * moves #smooth-content), so fixed positioning holds, and nothing mounts.
@@ -210,7 +211,10 @@ body::after {
   height: 200vh;
   z-index: 2147483647;
   pointer-events: none;
-  opacity: 0.085;
+  /* 0.11, not the 0.085 the static tile needed: the jitter's sub-pixel
+     translate resamples the raster each step and softens it by about a
+     fifth, measured live, so the opacity makes that back. */
+  opacity: 0.11;
   background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.35' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/><feComponentTransfer><feFuncR type='discrete' tableValues='0 0 0 0 0 0 0 0 0.22 0.35 0.47 0.62 0.77 0.94 0.94 0.94'/><feFuncG type='discrete' tableValues='0 0 0 0 0 0 0 0 0.22 0.35 0.47 0.62 0.77 0.94 0.94 0.94'/><feFuncB type='discrete' tableValues='0 0 0 0 0 0 0 0 0.22 0.35 0.47 0.62 0.77 0.94 0.94 0.94'/></feComponentTransfer></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   background-size: 400px 400px;
   will-change: transform;
