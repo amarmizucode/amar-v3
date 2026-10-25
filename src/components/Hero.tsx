@@ -4,7 +4,6 @@ import { useEffect, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, SplitText, DUR } from "@/lib/gsap";
 import { createDotShader, type DotShaderHandle } from "@/lib/dotShader";
-import { CtaPill } from "@/components/CtaPill";
 
 /** Reads a theme custom property off <body>, falling back when unset. */
 function readThemeColor(prop: string, fallback: string) {
@@ -78,7 +77,6 @@ export function Hero({ start }: { start: boolean }) {
 
       if (reduced) {
         gsap.set([...allLines, ...displayLines], { yPercent: 0 });
-        gsap.set(".hero_cta", { autoAlpha: 1, yPercent: 0 });
         gsap.set(".hero_canvas_wrap", { autoAlpha: 0.32 });
         gsap.set(document.querySelectorAll(".navbar_wrap"), { autoAlpha: 1 });
         return;
@@ -100,8 +98,6 @@ export function Hero({ start }: { start: boolean }) {
       // JS (not markup) so a script failure leaves the page readable.
       gsap.set(allLines, { yPercent: 110 });
       gsap.set(displayLines, { yPercent: 110 });
-      // Not split text, so the pill fades and rises as one piece.
-      gsap.set(".hero_cta", { autoAlpha: 0, yPercent: 40 });
       gsap.set(".hero_canvas_wrap", { autoAlpha: 0 });
       gsap.set(navWrap, { autoAlpha: 0 });
 
@@ -110,7 +106,6 @@ export function Hero({ start }: { start: boolean }) {
       const tl = gsap.timeline({ defaults: { ease: "ease-transition" } });
 
       tl.to(allLines, { yPercent: 0, duration: DUR.slow, stagger: 0.05 })
-        .to(".hero_cta", { autoAlpha: 1, yPercent: 0, duration: DUR.slow }, "-=0.55")
         .to(displayLines, { yPercent: 0, duration: DUR.slow, stagger: 0.065 }, "-=0.85")
         .to(".hero_canvas_wrap", { autoAlpha: 0.32, duration: DUR.slow }, "<");
 
@@ -157,23 +152,18 @@ export function Hero({ start }: { start: boolean }) {
         <canvas ref={canvasRef} data-hero-canvas className="h-full w-full" />
       </div>
 
-      {/* The two paragraphs set as the reference frame sets its intro: one
-          narrow column of small, tightly-leaded copy with the call to
-          action under it, rather than two lede-size blocks spread across
-          the measure. The display name below is unchanged. */}
       <div className="grid-12 my-auto shrink-0 gap-y-8">
-        <div className="col-span-12 flex flex-col gap-5 sm:col-span-7 md:col-span-3">
-          <p className="hero_content_p text-[17px] font-medium leading-[1.45] tracking-[-0.02em]">
+        <div className="col-span-12 md:col-span-4">
+          <p className="hero_content_p text-lede font-semibold">
             The camera was just the beginning.
           </p>
-          <p className="hero_content_p text-[17px] font-medium leading-[1.45] tracking-[-0.02em]">
+        </div>
+        <div className="col-span-12 md:col-start-6 md:col-span-4">
+          <p className="hero_content_p text-lede font-semibold">
             What started with photography has taken me into the fascinating worlds of art,
             architecture, culture, films and books. And there&rsquo;s still so much more I want to
             discover.
           </p>
-          <div className="hero_cta mt-1">
-            <CtaPill label="Explore my work" href="#works" />
-          </div>
         </div>
       </div>
 
