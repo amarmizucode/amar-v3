@@ -44,26 +44,26 @@
  * other place these are declared, so without a :root baseline anything that
  * reads them before the attribute is applied resolves to nothing — which
  * silently drops borders, chips and the grid overlay's rules.
- * Mirrors stop 16 (black on white).
+ * Mirrors stop 16 (near-black on warm grey).
  */
 :root {
-  --color--foreground--100: rgb(0 0 0 / 1);
-  --color--foreground--50: rgb(0 0 0 / 0.5);
-  --color--foreground--33: rgb(0 0 0 / 0.333);
-  --color--foreground--25: rgb(0 0 0 / 0.25);
-  --color--foreground--20: rgb(0 0 0 / 0.2);
-  --color--foreground--15: rgb(0 0 0 / 0.15);
-  --color--foreground--10: rgb(0 0 0 / 0.1);
-  --color--foreground--5: rgb(0 0 0 / 0.05);
-  --color--foreground--0: rgb(0 0 0 / 0);
-  --color--background--100: rgb(255 255 255 / 1);
-  --color--background--0: rgb(255 255 255 / 0);
+  --color--foreground--100: rgb(8 8 7 / 1);
+  --color--foreground--50: rgb(8 8 7 / 0.5);
+  --color--foreground--33: rgb(8 8 7 / 0.333);
+  --color--foreground--25: rgb(8 8 7 / 0.25);
+  --color--foreground--20: rgb(8 8 7 / 0.2);
+  --color--foreground--15: rgb(8 8 7 / 0.15);
+  --color--foreground--10: rgb(8 8 7 / 0.1);
+  --color--foreground--5: rgb(8 8 7 / 0.05);
+  --color--foreground--0: rgb(8 8 7 / 0);
+  --color--background--100: rgb(232 232 227 / 1);
+  --color--background--0: rgb(232 232 227 / 0);
 }
 
 /* Light-palette defaults; body[data-theme] re-points these to the ramp. */
 :root {
-  --palette-background: #ffffff;
-  --palette-foreground: #000000;
+  --palette-background: #e8e8e3;
+  --palette-foreground: #080807;
   --palette-muted: #8b8a8a;
   --palette-rule: #e5e5e5;
   --palette-chip: #f2f2f2;
@@ -186,6 +186,47 @@ body {
   background: var(--palette-background);
   color: var(--palette-foreground);
   -webkit-font-smoothing: antialiased;
+}
+
+/*
+ * Film grain over the whole page — the reference lays a fixed, oversized
+ * noise tile above everything and jitters it in six steps so it shimmers
+ * like stock rather than sitting still. Theirs is a PNG; this is the same
+ * tile drawn by feTurbulence inline, so there is nothing to ship. body::after
+ * rather than an element in the layout: body is never transformed (the
+ * smoother moves #smooth-content), so fixed positioning holds, and no
+ * component has to mount it. Multiply at low opacity: it darkens the warm
+ * ground a touch and vanishes over the black bands, which is what the
+ * reference's grain does over its dark sections too.
+ */
+body::after {
+  content: "";
+  position: fixed;
+  inset: -50% 0 0 -50%;
+  width: 200%;
+  height: 200vh;
+  z-index: 2147483647;
+  pointer-events: none;
+  opacity: 0.085;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix type='saturate' values='0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  background-size: 320px 320px;
+  will-change: transform;
+  animation: page-grain 0.5s steps(6, end) infinite;
+}
+
+@keyframes page-grain {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-6%, 4%); }
+  40% { transform: translate(4%, -7%); }
+  60% { transform: translate(-3%, 8%); }
+  80% { transform: translate(7%, -2%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body::after {
+    animation: none;
+  }
 }
 
 /*
@@ -1371,17 +1412,17 @@ body {
   --color--background--0: rgb(242 251 253 / 0);
 }
 [data-theme="16"] {
-  --color--foreground--100: rgb(0 0 0 / 1);
-  --color--foreground--50: rgb(0 0 0 / 0.5);
-  --color--foreground--33: rgb(0 0 0 / 0.333);
-  --color--foreground--25: rgb(0 0 0 / 0.25);
-  --color--foreground--20: rgb(0 0 0 / 0.2);
-  --color--foreground--15: rgb(0 0 0 / 0.15);
-  --color--foreground--10: rgb(0 0 0 / 0.1);
-  --color--foreground--5: rgb(0 0 0 / 0.05);
-  --color--foreground--0: rgb(0 0 0 / 0);
-  --color--background--100: rgb(255 255 255 / 1);
-  --color--background--0: rgb(255 255 255 / 0);
+  --color--foreground--100: rgb(8 8 7 / 1);
+  --color--foreground--50: rgb(8 8 7 / 0.5);
+  --color--foreground--33: rgb(8 8 7 / 0.333);
+  --color--foreground--25: rgb(8 8 7 / 0.25);
+  --color--foreground--20: rgb(8 8 7 / 0.2);
+  --color--foreground--15: rgb(8 8 7 / 0.15);
+  --color--foreground--10: rgb(8 8 7 / 0.1);
+  --color--foreground--5: rgb(8 8 7 / 0.05);
+  --color--foreground--0: rgb(8 8 7 / 0);
+  --color--background--100: rgb(232 232 227 / 1);
+  --color--background--0: rgb(232 232 227 / 0);
 }
 
 /*
