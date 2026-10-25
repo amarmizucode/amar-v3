@@ -19,17 +19,12 @@ const NUMBERS = [
   { stat: "8", label: "books authored" },
 ];
 
-/*
- * Sourced as on the home page's closing section: Fearless Photographers
- * lists five Lifetime Fearless Awards on his profile; WPPI honours and the
- * 2016 YES Bank Changemaker of the Year are from his media kit; the TEDx
- * talk is "Life Through the Lens".
- */
+/* The copy document's award list, verbatim; the Birdman line is a
+   sentence in the doc, not a fourth item, and renders below the rows. */
 const AWARDS = [
-  { title: "Fearless Photographers", detail: "Award" },
-  { title: "WPPI", detail: "Award" },
-  { title: "One Eyeland", detail: "Award" },
-  { title: "YES I AM THE CHANGE", detail: "For Birdman" },
+  "Fearless Photographers Award",
+  "WPPI Award",
+  "One Eyeland Award",
 ];
 
 /**
@@ -100,9 +95,11 @@ export function InNumbers({ className = "py-20 md:py-28" }: { className?: string
 export function Recognition({ className = "pb-24 md:pb-36" }: { className?: string }) {
   return (
     <section id="recognition" className={`shell ${className}`}>
-      {/* The standard section layout — label and headline in the first
-          columns, content from column 6 — so the award rows and mastheads
-          start on the same line as the About statements above. */}
+      {/* The standard section layout — label, headline and the doc's two
+          intro paragraphs in the first columns, content from column 6 so
+          the award rows and mastheads start on the same line as the About
+          statements above. All copy verbatim from the document's
+          AWARDS & RECOGNITION section. */}
       <div className="grid-12 gap-y-8">
         <div className="col-span-12 flex flex-col gap-3 md:col-span-4 md:gap-4">
           <Reveal>
@@ -113,30 +110,47 @@ export function Recognition({ className = "pb-24 md:pb-36" }: { className?: stri
               It&rsquo;s always lovely when the work gets appreciated
             </h2>
           </Reveal>
+          <Reveal className="flex flex-col gap-4 text-[17px] leading-[1.5] text-muted">
+            <p>
+              I&rsquo;ve been fortunate to receive recognition for my photography and filmmaking
+              over the years.
+            </p>
+            <p>
+              It&rsquo;s encouraging, especially when the recognition comes for projects that my
+              team and I have spent so much time working on.
+            </p>
+          </Reveal>
         </div>
 
         <div className="col-span-12 md:col-start-6 md:col-span-7">
-          <ul>
-            {AWARDS.map((item, i) => (
+          <Reveal>
+            <p className="text-[15px] font-medium text-muted">
+              Some of the awards associated with my work include:
+            </p>
+          </Reveal>
+          <ul className="mt-5 md:mt-6">
+            {AWARDS.map((title, i) => (
               <Reveal
                 as="li"
-                key={item.title}
+                key={title}
                 delay={i * 60}
-                className="grid grid-cols-[2.5rem_1fr] items-baseline gap-x-4 gap-y-1 border-b border-rule py-4 first:border-t md:grid-cols-[2.5rem_1fr_auto] md:py-5"
+                className="grid grid-cols-[2.5rem_1fr] items-baseline gap-x-4 border-b border-rule py-4 first:border-t md:py-5"
               >
                 <span className="text-[13px] font-medium tabular-nums text-muted">
                   {String(i + 1).padStart(2, "0")}
                 </span>
                 <h3 className="text-[clamp(1.35rem,2.4vw,2rem)] font-semibold leading-[1.2] tracking-[-0.03em]">
-                  {item.title}
+                  {title}
                 </h3>
-                {/* Under the title on a phone, on the rule's far end from md. */}
-                <span className="col-start-2 text-[15px] font-medium text-muted md:col-start-3 md:text-right">
-                  {item.detail}
-                </span>
               </Reveal>
             ))}
           </ul>
+          <Reveal className="mt-6 md:mt-8">
+            <p className="max-w-[52ch] text-[17px] leading-[1.5] text-muted">
+              Big Short Films&rsquo; <em className="not-italic font-medium text-foreground">Birdman</em>{" "}
+              was also recognised at the YES I AM THE CHANGE social film contest.
+            </p>
+          </Reveal>
 
           {/* Featured in — the mastheads in one quiet run on the same
               measure, monochrome via .brand-wall__logo; no rules, no cells. */}
