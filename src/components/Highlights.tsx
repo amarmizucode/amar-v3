@@ -104,15 +104,16 @@ export function Recognition({ className = "pb-24 md:pb-36" }: { className?: stri
         {/* Centred against the press table's height, so the wreaths sit on
             the row's middle rather than hanging from its top. */}
         <Reveal className="col-span-12 md:row-start-2 md:col-start-6 md:col-span-7 md:flex md:items-center">
-          {/* All four in one horizontal run from sm, each wreath at a set
-              modest width rather than splitting the whole column. A phone
-              pairs them two and two. */}
+          {/* All four in one row from md, sharing the column equally and
+              capped so they never balloon on a wide screen — a fixed
+              basis wrapped the fourth onto its own line. A phone pairs
+              them two and two. */}
           {/* w-full: the wreaths are @containers, so they report no
               intrinsic width — without an explicit width the ul would
               shrink-wrap to nothing inside its flex parent. */}
           <ul className="flex w-full flex-wrap items-start gap-x-6 gap-y-10 md:gap-x-8">
             {AWARDS.map((item) => (
-              <li key={item.title} className="min-w-0 basis-[calc(50%-0.75rem)] sm:basis-[160px] sm:flex-none md:basis-[175px]">
+              <li key={item.title} className="min-w-0 basis-[calc(50%-0.75rem)] md:flex-1 md:basis-0 md:max-w-[200px]">
                 <AwardLaurel title={item.title} detail={item.detail} />
               </li>
             ))}

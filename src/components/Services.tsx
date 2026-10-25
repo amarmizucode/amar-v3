@@ -112,8 +112,13 @@ export function Services({ items }: { items: ServiceItem[] }) {
 
               {/* Type sits above its image; the image is inset from the left
                   so the heading stays legible where they overlap. */}
+              {/* `display` sets the hero's size; the labels here are two words
+                  each ("Commercial Photography"), which at that size wrap
+                  to two lines apiece and run the list across two screens.
+                  The override caps it so every label sits on one line in
+                  its column, with a little room between rows. */}
               <h3
-                className={`services_home_heading display relative z-[1] !normal-case ${opticalClass(
+                className={`services_home_heading display relative z-[1] !normal-case !text-[clamp(1.75rem,4.2vw,4rem)] !leading-[1.1] py-[0.12em] ${opticalClass(
                   label,
                 )}`}
               >

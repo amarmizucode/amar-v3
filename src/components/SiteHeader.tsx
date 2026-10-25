@@ -98,6 +98,14 @@ export function SiteHeader() {
       /* Block padding lives in .navbar_wrap's CSS, beside its ground. */
       className="navbar_wrap pointer-events-none fixed inset-x-0 top-0 z-[999] w-full"
     >
+      {/* The bar's ground: a frosted strip that fades out at its foot, so
+          the wordmark and links stay legible over whatever scrolls under
+          them without a hard-edged band. A sibling of the sheet rather
+          than a style on the wrap: backdrop-filter makes its element the
+          containing block for fixed descendants, which would pin the
+          sheet's inset-0 to this strip. z-0 keeps it under the sheet
+          (z-10) and the bar (z-20). */}
+      <div aria-hidden className="navbar_ground absolute inset-0 z-0" />
       <div className="navbar_contain pointer-events-auto shell relative z-20 grid-12 items-center bg-transparent">
         {/* Wordmark: columns 1-5. */}
         <div

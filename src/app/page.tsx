@@ -427,14 +427,14 @@ export default function Home() {
           {/* The Featured-in grammar at section width: a ruled table of
               cells sharing single hairlines — the container draws the top
               and left edge, each cell its right and bottom. The brands sit
-              six across (two on a phone), empty ruled cells squaring off
+              five across (two on a phone), empty ruled cells squaring off
               the last row so the table always closes clean. Each
               logo is centred in its cell, its width from brandLogoWidth so
               all ten read at one visual weight, capped to the cell; the
               name lives in the alt text. On the dark and coloured stops of
               the theme slider the logos turn to light single-colour marks
               (`.brand-wall__logo`). */}
-          <ul className="grid grid-cols-2 border-l border-t border-rule sm:grid-cols-6">
+          <ul className="grid grid-cols-2 border-l border-t border-rule sm:grid-cols-5">
             {BRANDS.map((brand) => (
               <li
                 key={brand.name}
@@ -452,13 +452,13 @@ export default function Home() {
               </li>
             ))}
             {/* Fillers to the row's end — one set sized for the phone's two
-                columns, one for the six on sm+, each shown only at its own
+                columns, one for the five on sm+, each shown only at its own
                 breakpoint so both layouts close. */}
             {Array.from({ length: (2 - (BRANDS.length % 2)) % 2 }, (_, i) => (
               <li key={`f2-${i}`} aria-hidden className="border-b border-r border-rule sm:hidden" />
             ))}
-            {Array.from({ length: (6 - (BRANDS.length % 6)) % 6 }, (_, i) => (
-              <li key={`f6-${i}`} aria-hidden className="hidden border-b border-r border-rule sm:block" />
+            {Array.from({ length: (5 - (BRANDS.length % 5)) % 5 }, (_, i) => (
+              <li key={`f5-${i}`} aria-hidden className="hidden border-b border-r border-rule sm:block" />
             ))}
           </ul>
         </section>
@@ -500,15 +500,21 @@ export default function Home() {
                 <Reveal key={work.title}>
                   {/* The whole row is the link, so the image and its blurb
                       lead to the same place. */}
-                  <a href={work.href} className="group/work grid-12 gap-y-6 items-start">
+                  <a href={work.href} className="group/work grid-12 gap-y-4 items-start md:gap-y-6">
+                    {/* The index holds the left three columns — the same
+                        columns the section header sits in — so the row
+                        spans the full measure instead of leaving them
+                        blank. Small on a phone, where it sits above the
+                        image; statement-size and faint from md. */}
+                    <span className="col-span-12 text-[13px] font-medium tabular-nums text-muted md:col-span-3 md:text-[clamp(2rem,3.4vw,3.25rem)] md:font-semibold md:leading-none md:tracking-[-0.03em] md:text-foreground/25">
+                      {work.index}
+                    </span>
+
                     <div className="col-span-12 md:col-start-4 md:col-span-6">
                       <MediaFrame ratio="726 / 415" src={work.image} parallax={48} />
                     </div>
 
                     <div className="col-span-12 md:col-start-10 md:col-span-3 flex flex-col gap-4">
-                      <span className="text-[13px] font-medium tabular-nums text-muted">
-                        {work.index}
-                      </span>
                       <h3 className="text-[22px] font-semibold tracking-[-0.03em] transition-opacity duration-300 group-hover/work:opacity-60">
                         {work.title}
                       </h3>

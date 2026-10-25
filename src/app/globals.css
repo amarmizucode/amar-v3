@@ -1963,9 +1963,23 @@ body {
  * no scrim, no tint; content passes beneath at full contrast.
  * ------------------------------------------------------------------------ */
 .navbar_wrap {
-  /* No ground: the sticky bar sits transparent over whatever scrolls
-     under it. */
   padding-block: var(--site-margin);
+}
+
+/*
+ * The bar's ground. Mostly the page colour, blurred, and feathered to
+ * nothing over its last third, so the bar reads as part of the page rather
+ * than a strip laid on it — but the type on it no longer lands on a
+ * portrait or a statement with nothing between. Over the black band and
+ * footer it is a pale strip, which keeps the wordmark visible there (black
+ * on black otherwise).
+ */
+.navbar_ground {
+  background: color-mix(in srgb, var(--palette-background) 82%, transparent);
+  -webkit-backdrop-filter: blur(14px) saturate(1.15);
+  backdrop-filter: blur(14px) saturate(1.15);
+  -webkit-mask-image: linear-gradient(to bottom, #000 62%, transparent);
+  mask-image: linear-gradient(to bottom, #000 62%, transparent);
 }
 
 /*

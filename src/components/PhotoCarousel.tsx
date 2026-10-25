@@ -116,10 +116,14 @@ export function PhotoCarousel({
       {/* The section's headline, from the copy doc. It sits under the
           eyebrow row rather than in it: that row is a justify-between flex
           with the paging arrows at its end, where a full sentence would
-          crowd them on a phone. */}
-      <h2 className="shell mt-3 text-[clamp(1.5rem,2.6vw,2.25rem)] font-semibold leading-[1.15] tracking-[-0.03em] md:mt-4 md:w-[70%]">
+          crowd them on a phone. The shell is the wrapper, not the h2: a
+          shell is max-width with auto margins, so a narrower h2 carrying
+          it would be centred rather than flush left. */}
+      <div className="shell">
+        <h2 className="mt-3 max-w-[22ch] text-[clamp(1.5rem,2.6vw,2.25rem)] font-semibold leading-[1.15] tracking-[-0.03em] md:mt-4">
         All these years, and I still love picking up my camera
-      </h2>
+        </h2>
+      </div>
 
       <div
         ref={track}

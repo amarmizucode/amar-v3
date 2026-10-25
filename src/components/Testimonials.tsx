@@ -9,7 +9,19 @@ export type Testimonial = {
   quote: string;
   name: string;
   role: string;
-  avatar: string;
+  /** Kept for the call sites; no longer drawn. */
+  avatar?: string;
+};
+
+/** "Dr. S. Raghunathan" -> "SR": the first letter of the first and last
+ * name, skipping honorifics. */
+const initials = (name: string) => {
+  const parts = name
+    .split(/\s+/)
+    .filter((w) => !/^(dr|prof|mr|mrs|ms)\.?$/i.test(w));
+  const first = parts[0]?.[0] ?? "";
+  const last = parts.length > 1 ? parts[parts.length - 1][0] : "";
+  return (first + last).toUpperCase();
 };
 
 /** How long each testimonial holds before advancing, in ms. */
@@ -149,11 +161,14 @@ export function Testimonials({ items }: { items: Testimonial[] }) {
         <div key={index} data-slide className="flex flex-col gap-8">
           <p className="text-[15px] leading-[1.6]">{current.quote}</p>
           <div className="flex items-center gap-4">
-            <img
-              src={current.avatar}
-              alt=""
-              className="size-[54px] shrink-0 rounded-full bg-chip object-cover"
-            />
+            {/* A monogram rather than a photograph: the avatars were stock
+                faces that matched neither the name nor each other. */}
+            <span
+              aria-hidden
+              className="flex size-[54px] shrink-0 items-center justify-center rounded-full bg-chip text-[15px] font-semibold tracking-[-0.02em]"
+            >
+              {initials(current.name)}
+            </span>
             <div className="text-[15px] leading-[1.35]">
               <p className="font-medium">{current.name}</p>
               <p className="text-muted">{current.role}</p>

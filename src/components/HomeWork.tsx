@@ -72,20 +72,19 @@ export function BooksSection({ className = "py-20 md:py-28" }: { className?: str
       {/* One header row across the measure — the label on the left and the
           way to the shelf on the right — so the books themselves get the full
           width. */}
+      {/* The label and the headline stack in the left cell, the pill sits
+          at the row's end — so a phone reads label, headline, pill, shelf
+          rather than putting the pill between the label and its headline. */}
       <Reveal className="grid-12 items-end gap-y-6">
-        <div className="col-span-12 md:col-span-6">
+        <div className="col-span-12 flex flex-col gap-3 md:col-span-7 md:gap-4">
           <SectionLabel>Books &amp; Publishing</SectionLabel>
+          <h2 className="max-w-[22ch] text-[clamp(1.5rem,2.6vw,2.25rem)] font-semibold leading-[1.15] tracking-[-0.03em]">
+            I&rsquo;ve always had a thing for books
+          </h2>
         </div>
         <div className="col-span-12 md:col-start-10 md:col-span-3 md:justify-self-end">
           <CtaPill label="Explore My Books" href="/books" />
         </div>
-      </Reveal>
-
-      {/* The section's headline, from the copy doc, under the header row. */}
-      <Reveal className="mt-3 md:mt-4">
-        <h2 className="text-[clamp(1.5rem,2.6vw,2.25rem)] font-semibold leading-[1.15] tracking-[-0.03em] md:w-[70%]">
-          I&rsquo;ve always had a thing for books
-        </h2>
       </Reveal>
 
       {/* The whole shelf: every book in a single row on a wide screen, two
