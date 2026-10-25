@@ -1,5 +1,5 @@
 import { Reveal } from "@/components/Reveal";
-import { RightArrow } from "@/components/Arrows";
+import { CornerArrow } from "@/components/Arrows";
 import { SectionLabel } from "@/components/SectionLabel";
 
 /**
@@ -125,19 +125,20 @@ export function Recognition({ className = "pb-24 md:pb-36" }: { className?: stri
           {/* The footer navigation's rows — the dotted-rule li
               (.footer_nav_li), the .footer_nav_text row inside it, the
               .footer_hover_row interaction (fill inverts, label slides
-              right, the arrow eases in from its blur) — but at this
-              section's own type: the !-utilities put back the smaller
-              semibold line in place of the nav's --f-h3 at 500, and the
-              roomier row padding with it. Only the element differs from
-              the footer: a div, not an anchor, since an award is not a
-              destination. */}
+              right, the arrow eases in from its blur) — but at the type of
+              the section above: text-statement, the size and weight the
+              About statements are set in, in place of the nav's --f-h3 at
+              500. The arrow is the navigation's own CornerArrow, `tight` so
+              its glyph reads at the row's size rather than half of it. Only
+              the element differs from the footer: a div, not an anchor,
+              since an award is not a destination. */}
           <ul>
             {AWARDS.map((title, i) => (
               <Reveal as="li" key={title} delay={i * 60} className="footer_nav_li">
-                <div className="footer_nav_text footer_hover_row !py-4 !text-[clamp(1.35rem,2.4vw,2rem)] !font-semibold !leading-[1.2] md:!py-5">
+                <div className="footer_nav_text footer_hover_row !py-4 !text-statement !font-semibold md:!py-5">
                   <span className="footer_hover_label">{title}</span>
                   <span aria-hidden className="footer_nav_arrow">
-                    <RightArrow className="inline-arrow" />
+                    <CornerArrow tight className="inline-arrow" />
                   </span>
                 </div>
               </Reveal>
