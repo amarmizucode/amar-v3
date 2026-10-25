@@ -3742,7 +3742,8 @@ body:has(.pg-root.is-zoomed) .preq-trigger {
 /* Underlined fields rather than boxes, on the type-first look of the rest of
  * the chrome. 16px so iOS does not zoom the page on focus. */
 .preq-field input,
-.preq-field textarea {
+.preq-field textarea,
+.preq-field select {
   width: 100%;
   padding: 0.4em 0;
   border: 0;
@@ -3760,13 +3761,34 @@ body:has(.pg-root.is-zoomed) .preq-trigger {
   min-height: 4.5em;
 }
 
+/* The native select brings its own background, border and arrow; strip them
+   so it reads as the underlined fields beside it, then draw one chevron. */
+.preq-field select {
+  appearance: none;
+  padding-right: 1.5em;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: right 0.55em center, right 0.25em center;
+  background-size: 0.3em 0.3em, 0.3em 0.3em;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+/* The options are drawn by the OS, so they do not inherit the theme: give
+   them explicit colours or a dark stop renders black-on-black. */
+.preq-field select option {
+  background: #ffffff;
+  color: #000000;
+}
+
 .preq-field input::placeholder,
 .preq-field textarea::placeholder {
   color: var(--color--foreground--33);
 }
 
 .preq-field input:focus-visible,
-.preq-field textarea:focus-visible {
+.preq-field textarea:focus-visible,
+.preq-field select:focus-visible {
   outline: none;
   border-bottom-color: var(--palette-foreground);
 }

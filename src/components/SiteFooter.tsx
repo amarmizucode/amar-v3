@@ -2,15 +2,26 @@ import { CornerArrow, RightArrow } from "@/components/Arrows";
 import { SectionLabel } from "@/components/SectionLabel";
 import { AI_SERVICES, AiIcon, aiHref } from "@/components/AiIcons";
 
-// About is hidden for now — add "About" back before "Contact" to restore it.
-const NAV_FOOTER = ["Documentary", "Photography", "Books", "Contact"];
+/* The copy document's footer navigation, in its order. Work and Ventures are
+   home-page sections; the rest are pages. */
+const NAV_FOOTER = [
+  "About",
+  "Work",
+  "Photography",
+  "Films",
+  "Books",
+  "Ventures",
+  "Contact",
+];
 
 /** Where each footer nav item points. Most are home-page anchors. */
 const NAV_HREF: Record<string, string> = {
-  Documentary: "/documentary",
-  Photography: "/photography",
-  Books: "/books",
   About: "/about",
+  Work: "/#works",
+  Photography: "/photography",
+  Films: "/documentary",
+  Books: "/books",
+  Ventures: "/#ventures",
   Contact: "/#contact",
 };
 

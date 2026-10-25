@@ -324,13 +324,13 @@ export function DocumentaryIndex({ films }: { films: ChannelFilm[] }) {
             viewport (centred within it), so the list below starts at the 60%
             line. md trades it for the full-height sticky box. */}
         <div className="order-first col-span-12 flex min-h-[60svh] flex-col items-start justify-center gap-8 pt-28 md:order-0 md:row-start-1 md:col-start-6 md:col-span-5 md:sticky md:top-0 md:h-svh md:pt-0">
+          {/* The copy document's "Films & documentaries" section. The two
+              channels stay linked inside its wording: they are where the
+              films are published. */}
           <p className="di-lede text-lede font-semibold">
-            I am a documentary filmmaker at{" "}
-            <a href={CHANNEL.url} target="_blank" rel="noopener noreferrer" className="link-wipe">
-              {CHANNEL.name}
-            </a>{" "}
-            — a growing archive of the crafts, rituals, festivals and living traditions of India,
-            researched, directed and filmed with my team — and the founder of{" "}
+            People have the most interesting stories. One of my favourite parts of making a
+            documentary is the research — getting to know someone, spending time in their world
+            and discovering things I would never have learnt otherwise. Through{" "}
             <a
               href={BSF_CHANNEL.url}
               target="_blank"
@@ -338,8 +338,13 @@ export function DocumentaryIndex({ films }: { films: ChannelFilm[] }) {
               className="link-wipe"
             >
               {BSF_CHANNEL.name}
+            </a>{" "}
+            and{" "}
+            <a href={CHANNEL.url} target="_blank" rel="noopener noreferrer" className="link-wipe">
+              {CHANNEL.name}
             </a>
-            , real and inspiring stories told one film at a time.
+            , we&rsquo;ve made social and corporate documentaries about people, businesses,
+            traditions and communities. Every project has introduced us to something different.
           </p>
         </div>
       </div>

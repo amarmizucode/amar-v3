@@ -4,6 +4,10 @@ import type { CSSProperties, ReactNode } from "react";
  * Closing CTA — a solid black band holding the client row, supporting copy
  * and the contact CTA.
  *
+ * Its id is `work-with-me`, not `contact`: the contact form below it owns
+ * #contact, which the header and footer link to, and two elements sharing
+ * one id makes the anchor resolve to whichever comes first.
+ *
  * The palette variables are pinned to a white-on-black ramp here because the
  * body's theme ramp re-points them per scroll stop: without the local
  * override, `text-muted`, rules and the pill's fill/ink would follow the page
@@ -22,7 +26,7 @@ const BLACK_PALETTE = {
 export function ClosingCta({ children }: { children: ReactNode }) {
   return (
     <section
-      id="contact"
+      id="work-with-me"
       style={BLACK_PALETTE}
       className="relative isolate flex min-h-[70svh] flex-col items-center justify-center overflow-clip bg-black text-white py-16 sm:py-20 md:py-24"
     >

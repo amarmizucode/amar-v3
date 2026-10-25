@@ -13,6 +13,7 @@ import { GapSection } from "@/components/GapSection";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { CornerArrow } from "@/components/Arrows";
 import { ClosingCta } from "@/components/ClosingCta";
+import { ContactSection } from "@/components/ContactSection";
 import { CtaPill } from "@/components/CtaPill";
 import { SectionLabel } from "@/components/SectionLabel";
 import { SiteFooter } from "@/components/SiteFooter";
@@ -21,38 +22,48 @@ import { assetUrl } from "@/lib/assetUrl";
 import { BSF_CHANNEL, thumbUrl } from "@/lib/documentary";
 import { galleryBySlug } from "@/lib/photography";
 
+/*
+ * The copy document's "Selected work" — the four subjects it singles out,
+ * in its order, with its blurbs. Each leads to where that work actually
+ * lives on the site: the galleries for the photographic subjects, the
+ * documentary index for the films.
+ */
 const WORKS = [
   {
-    index: "01/40",
+    index: "01",
     title: "Culture of India",
-    blurb: "Documenting the people, traditions and crafts keeping India's living culture alive.",
-    stat: "500+",
-    statLabel: "stories & cultural records",
-    image: MEDIA.work1,
+    blurb:
+      "The more I travel across India, the more fascinated I become by the sheer variety of art, craft and traditions we have. I've met musicians, dancers, artisans and craftspeople who have spent years mastering what they do.",
+    cta: "Explore Culture of India",
+    href: "/photography/folk-art",
+    image: galleryBySlug("folk-art")?.cover,
   },
   {
-    index: "02/40",
+    index: "02",
     title: "Inspiring Women",
-    blurb: "Stories of women whose journeys, courage and work create impact around them.",
-    stat: "150+",
-    statLabel: "Stories documented",
-    image: MEDIA.work2,
+    blurb:
+      "I've met some remarkable women through my photography projects. Women from different backgrounds, each with their own experiences, achievements and stories. It's always fascinating to learn about the different paths people take in life.",
+    cta: "Explore Inspiring Women",
+    href: "/books",
+    image: "/assets/books/bhavani-jamakkalam/plate-3.jpg",
   },
   {
-    index: "03/40",
-    title: "The Chettinad Project",
-    blurb: "Exploring the architecture, craft, people and visual heritage of Chettinad.",
-    stat: "XX+",
-    statLabel: "locations documented",
-    image: MEDIA.work3,
+    index: "03",
+    title: "Chettinad",
+    blurb:
+      "I have a special fascination for Chettinad. The magnificent homes, beautifully carved doorways, architecture, craftsmanship and the stories associated with them. Every time I return, I find something new to appreciate.",
+    cta: "Explore Chettinad",
+    href: "/photography/chettinad",
+    image: galleryBySlug("chettinad")?.cover,
   },
   {
-    index: "04/40",
+    index: "04",
     title: "Temples of India",
-    blurb: "Documenting India's temples, architecture, traditions and the people who keep them alive.",
-    stat: "1,000+",
-    statLabel: "temples documented",
-    image: MEDIA.work4,
+    blurb:
+      "I've spent a great deal of time travelling to temples and photographing their architecture and sculptures. The carvings, the proportions, the craftsmanship and the stories behind these structures have always fascinated me.",
+    cta: "Explore Temples of India",
+    href: "/photography/temples",
+    image: galleryBySlug("temples")?.cover,
   },
 ];
 
@@ -462,62 +473,59 @@ export default function Home() {
         {/* ── I close that gap — hidden for now; restore by rendering
              <GapSection /> here again (the import is kept for that). ── */}
 
-        {/* ── Works / Success stories — hidden for now; drop `hidden` to
-             restore it. ─────────────────────────────────────────── */}
-        <section id="works" className="shell hidden py-20 md:py-28">
+        {/* ── Selected work — the copy document's four subjects. Each row
+             is an image with its blurb beside it, leading to where that
+             work lives on the site. ─────────────────────────────── */}
+        <section id="works" className="shell py-20 md:py-28">
           <div className="grid-12 gap-y-10">
-            <Reveal className="col-span-12 md:col-span-3">
-              <SectionLabel>Success Stories</SectionLabel>
-            </Reveal>
+            <div className="col-span-12 md:col-span-4 flex flex-col gap-6">
+              <Reveal>
+                <SectionLabel>Selected work</SectionLabel>
+              </Reveal>
+              <Reveal>
+                <h2 className="text-[clamp(1.5rem,2.6vw,2.25rem)] font-semibold leading-[1.15] tracking-[-0.03em]">
+                  A few projects that have been particularly special
+                </h2>
+              </Reveal>
+              <Reveal>
+                <p className="text-[17px] leading-[1.5] text-muted">
+                  I&rsquo;ve had the opportunity to work on some fascinating subjects over the
+                  years. Here are a few that I&rsquo;ve really enjoyed exploring.
+                </p>
+              </Reveal>
+            </div>
 
-            <div className="col-span-12 flex flex-col gap-10 md:gap-6">
-              {WORKS.map((work, i) => (
-                <Reveal key={work.title} delay={i * 80}>
-                  <div className="grid-12 gap-y-6 items-start">
+            <div className="col-span-12 flex flex-col gap-14 md:gap-16">
+              {WORKS.map((work) => (
+                <Reveal key={work.title}>
+                  {/* The whole row is the link, so the image and its blurb
+                      lead to the same place. */}
+                  <a href={work.href} className="group/work grid-12 gap-y-6 items-start">
                     <div className="col-span-12 md:col-start-4 md:col-span-6">
                       <MediaFrame ratio="726 / 415" src={work.image} parallax={48} />
                     </div>
 
                     <div className="col-span-12 md:col-start-10 md:col-span-3 flex flex-col gap-4">
-                      <span className="text-[13px] font-medium text-muted">{work.index}</span>
-                      <h3 className="text-[22px] font-semibold tracking-[-0.03em]">
+                      <span className="text-[13px] font-medium tabular-nums text-muted">
+                        {work.index}
+                      </span>
+                      <h3 className="text-[22px] font-semibold tracking-[-0.03em] transition-opacity duration-300 group-hover/work:opacity-60">
                         {work.title}
                       </h3>
-                      <p className="text-[15px] leading-[1.55] text-muted">
-                        {work.blurb}
-                      </p>
-                      <div className="pt-2">
-                        <span className="inline-block bg-chip px-3 py-1.5 text-[22px] font-semibold tracking-[-0.03em]">
-                          {work.stat}
-                        </span>
-                        <p className="pt-3 text-[15px] font-medium">{work.statLabel}</p>
-                      </div>
+                      <p className="text-[15px] leading-[1.55] text-muted">{work.blurb}</p>
+                      <span className="flex items-center gap-2 pt-1 text-[15px] font-medium">
+                        {work.cta}
+                        <CornerArrow
+                          tight
+                          className="w-3 shrink-0 transition-transform duration-300 group-hover/work:translate-x-0.5 group-hover/work:-translate-y-0.5"
+                        />
+                      </span>
                     </div>
-                  </div>
+                  </a>
                 </Reveal>
               ))}
             </div>
           </div>
-
-          <Reveal className="mt-4">
-            {/* The anchor is the row itself, so the fill wipes across the whole
-                line rather than one cell of it. Same row interaction as the
-                footer and FAQ: label slides +10px, marker counters -10px. */}
-            <a
-              href="#works"
-              className="footer_hover_row grid-12 items-center py-3"
-            >
-              <span className="footer_hover_label col-span-3 text-statement font-semibold md:col-span-3">
-                [10]
-              </span>
-              <span className="footer_hover_label col-span-6 text-statement font-semibold md:col-start-4 md:col-span-6">
-                View All Works
-              </span>
-              <span className="footer_hover_marker col-span-3 flex items-center text-statement md:col-start-10 md:col-span-3">
-                <CornerArrow className="w-[0.85em]" />
-              </span>
-            </a>
-          </Reveal>
         </section>
 
         {/* ── In numbers — shared with the About page; even padding both
@@ -598,23 +606,26 @@ export default function Home() {
           </div>
         </section>
 
-        {/* ── Closing CTA ────────────────────────────────────────── */}
-        {/* ── Closing CTA — hidden for now; restore by uncommenting. ──
+        {/* ── Work with me — the copy document's invitation, on the black
+             band. Restored from the commented-out version: it also carries
+             #contact, which the header and footer link to. ───────── */}
         <ClosingCta>
-          <h2 className="sr-only">Let&apos;s create something worth being remembered.</h2>
+          <h2 className="sr-only">Have an interesting idea? I&rsquo;d love to hear about it.</h2>
           <Reveal className="flex w-full flex-col items-center gap-10 px-[var(--grid-margin)]">
             <HighlightText className="text-lede font-semibold text-center max-w-[600px]">
-              I uncover the people, purpose and stories behind the work — and turn them into
-              photography, films, documentaries and experiences that make your impact understood,
-              felt and remembered.
+              I enjoy working with people who are passionate about what they do. It could be a
+              photography assignment, a documentary, a book, a campaign or a cultural project
+              you&rsquo;ve been wanting to explore.
             </HighlightText>
           </Reveal>
 
-          <Reveal className="mt-10 flex justify-center md:mt-16" delay={120}>
-            <CtaPill label="Book a call" href="mailto:hello@amarramesh.com" />
+          <Reveal className="mt-10 flex justify-center md:mt-16">
+            <CtaPill label="Start a Conversation" href="#contact" />
           </Reveal>
         </ClosingCta>
-        */}
+        {/* ── Contact — the document's form. Sits after the band, so the
+             band's invitation leads straight into it. ──────────── */}
+        <ContactSection />
       </main>
 
       {/* ── Footer ───────────────────────────────────────────────────

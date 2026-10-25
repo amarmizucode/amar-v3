@@ -17,11 +17,10 @@ import { AI_SERVICES, AiIcon, aiHref } from "@/components/AiIcons";
  * smoothly once on it.
  */
 const NAV = [
-  { label: "Documentary", href: "/documentary" },
+  { label: "About", href: "/about" },
   { label: "Photography", href: "/photography" },
+  { label: "Documentary", href: "/documentary" },
   { label: "Books", href: "/books" },
-  // About is hidden for now — restore by adding
-  // { label: "About", href: "/about" } back here.
 ];
 
 /*

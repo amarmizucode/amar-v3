@@ -98,19 +98,29 @@ export default function About() {
 
             <div className="col-span-12 flex flex-col gap-12 md:col-start-5 md:col-span-7 md:gap-20">
               <HighlightText className="text-statement font-semibold">
-                I grew up in Chennai, studied engineering, and spent years writing software in the
-                United States — until a camera, bought to record weekend travels, quietly took over.
+                I started my career as an engineer in the US. Somewhere along the way, I realised
+                photography was what I really wanted to pursue. So I made the switch. What followed
+                has been quite a journey.
               </HighlightText>
               <HighlightText className="text-statement font-semibold">
-                In 2010 I came home with a one-way ticket and began photographing the temples I grew
-                up around. That project became Studio A, and Studio A became a way of telling
-                stories — of couples, weavers, musicians, dancers and the living culture of South
-                India.
+                Studio A began with wedding photography, and we&rsquo;ve since photographed over 750
+                weddings across 22 countries. I&rsquo;ve had the chance to be part of some wonderful
+                celebrations, meet people from different cultures and build a team that shares my
+                love for photography.
               </HighlightText>
               <HighlightText className="text-statement font-semibold">
-                Today that work spans photography, documentary film, publishing and mentorship. The
-                medium changes. The job does not: find the story, and give it a form people can
-                see, feel and remember.
+                But my interests didn&rsquo;t stop there. I&rsquo;ve always been curious about our
+                temples, architecture, art and the people who dedicate their lives to keeping our
+                traditions alive. One project led to another — documenting artists, craftspeople and
+                communities, making films, creating books and exploring ideas that eventually grew
+                into new ventures.
+              </HighlightText>
+              <HighlightText className="text-statement font-semibold">
+                Today, my work takes me across photography, films, publishing, cultural
+                documentation and mentorship. I enjoy the variety. One day I could be photographing
+                a musician, another day exploring the carvings of an old temple or working on a film
+                about a business that&rsquo;s been around for generations. Every experience teaches
+                me something. And I think that&rsquo;s what keeps me going.
               </HighlightText>
             </div>
           </div>
@@ -177,10 +187,11 @@ export default function About() {
           <div className="grid-12">
             <div className="col-span-12 md:col-start-4 md:col-span-6 flex flex-col items-center gap-10 text-center">
               <HighlightText className="text-lede font-semibold max-w-[600px]">
-                If you have built something worth talking about — a culture worth preserving, an
-                idea worth sharing — I would love to hear the story behind it.
+                I enjoy working with people who are passionate about what they do. Tell me a little
+                about what you have in mind, and my team and I would be happy to take the
+                conversation forward.
               </HighlightText>
-              <CtaPill label="Tell me your story" href="mailto:hello@amarramesh.com" />
+              <CtaPill label="Start a Conversation" href="/#contact" />
             </div>
           </div>
         </section>
