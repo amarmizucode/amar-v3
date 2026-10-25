@@ -1,4 +1,5 @@
 import { Reveal } from "@/components/Reveal";
+import { RightArrow } from "@/components/Arrows";
 import { SectionLabel } from "@/components/SectionLabel";
 
 /**
@@ -123,25 +124,25 @@ export function Recognition({ className = "pb-24 md:pb-36" }: { className?: stri
         </div>
 
         <div className="col-span-12 md:col-start-6 md:col-span-7">
-          <Reveal>
-            <p className="text-[15px] font-medium text-muted">
-              Some of the awards associated with my work include:
-            </p>
-          </Reveal>
-          <ul className="mt-5 md:mt-6">
+          {/* The footer nav's row interaction, class for class: the fill
+              inverts behind the row, the title slides right, and the arrow
+              rests blurred and offset until the hover eases it in. The li
+              carries the type size so the arrow's 0.72em cap resolves
+              against it. Not links — the classes only animate on hover. */}
+          <ul>
             {AWARDS.map((title, i) => (
               <Reveal
                 as="li"
                 key={title}
                 delay={i * 60}
-                className="grid grid-cols-[2.5rem_1fr] items-baseline gap-x-4 border-b border-rule py-4 first:border-t md:py-5"
+                className="footer_hover_row flex items-center justify-between gap-6 border-b border-rule py-4 text-[clamp(1.35rem,2.4vw,2rem)] first:border-t md:py-5"
               >
-                <span className="text-[13px] font-medium tabular-nums text-muted">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <h3 className="text-[clamp(1.35rem,2.4vw,2rem)] font-semibold leading-[1.2] tracking-[-0.03em]">
+                <h3 className="footer_hover_label font-semibold leading-[1.2] tracking-[-0.03em]">
                   {title}
                 </h3>
+                <span aria-hidden className="footer_nav_arrow">
+                  <RightArrow className="inline-arrow" />
+                </span>
               </Reveal>
             ))}
           </ul>
