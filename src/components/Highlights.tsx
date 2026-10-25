@@ -1,5 +1,5 @@
 import { Reveal } from "@/components/Reveal";
-import { CornerArrow } from "@/components/Arrows";
+import { RightArrow } from "@/components/Arrows";
 import { SectionLabel } from "@/components/SectionLabel";
 
 /**
@@ -128,17 +128,18 @@ export function Recognition({ className = "pb-24 md:pb-36" }: { className?: stri
               right, the arrow eases in from its blur) — but at the type of
               the section above: text-statement, the size and weight the
               About statements are set in, in place of the nav's --f-h3 at
-              500. The arrow is the navigation's own CornerArrow, `tight` so
-              its glyph reads at the row's size rather than half of it. Only
-              the element differs from the footer: a div, not an anchor,
-              since an award is not a destination. */}
+              500. The arrow is the footer navigation's RightArrow, and the
+              row takes its inline padding so the inverted fill insets from
+              the label the same way. Only the element differs from the
+              footer: a div, not an anchor, since an award is not a
+              destination. */}
           <ul>
             {AWARDS.map((title, i) => (
               <Reveal as="li" key={title} delay={i * 60} className="footer_nav_li">
                 <div className="footer_nav_text footer_hover_row !py-4 !text-statement !font-semibold md:!py-5">
                   <span className="footer_hover_label">{title}</span>
                   <span aria-hidden className="footer_nav_arrow">
-                    <CornerArrow tight className="inline-arrow" />
+                    <RightArrow className="inline-arrow" />
                   </span>
                 </div>
               </Reveal>
