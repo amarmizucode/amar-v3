@@ -5,7 +5,6 @@ import { AI_SERVICES, AiIcon, aiHref } from "@/components/AiIcons";
 /* The copy document's footer navigation, in its order. Work and Ventures are
    home-page sections; the rest are pages. */
 const NAV_FOOTER = [
-  "About",
   "Work",
   "Photography",
   "Films",
@@ -16,7 +15,6 @@ const NAV_FOOTER = [
 
 /** Where each footer nav item points. Most are home-page anchors. */
 const NAV_HREF: Record<string, string> = {
-  About: "/about",
   Work: "/#works",
   Photography: "/photography",
   Films: "/documentary",
