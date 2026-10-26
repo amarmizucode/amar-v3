@@ -5,6 +5,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { PageTransition } from "@/components/PageTransition";
 import { PrintRequestProvider } from "@/components/PrintRequest";
 import { PrintRequestDock } from "@/components/PrintRequestDock";
+import { AppControls } from "@/components/AppControls";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -37,13 +38,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           }}
         />
       </head>
-      {/* The theme is fixed at stop 16 — pure white — rather than being
-          driven by the slider. The 17-stop ramp and the grid overlay live in
-          AppControls (and their CSS in globals.css); both are kept but no
-          longer mounted, so restoring them is re-rendering <AppControls />
-          here. Stop 16 is the ramp's own white, so the palette is unchanged
-          from what the slider's default produced; the difference is that the
-          OS preferring dark no longer moves it to stop 00. */}
+      {/* data-theme is the server's starting stop only. AppControls owns the
+          attribute from mount on, so 16 — the ramp's white, its own
+          DEFAULT_STOP — is what the first paint shows before the slider or
+          prefers-color-scheme moves it. */}
       <body className="min-h-full flex flex-col font-sans" data-theme="16">
         {/* Header and curtain live here so they persist across routes; the
             preloader inside PageTransition plays once per visit. The print
@@ -55,6 +53,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             {children}
           </PageTransition>
           <PrintRequestDock />
+          {/* The theme ramp and grid overlay, fixed to the viewport. */}
+          <AppControls />
         </PrintRequestProvider>
       </body>
     </html>
