@@ -3451,16 +3451,6 @@ html.preloaded .preloader {
 }
 
 /*
- * The cover is hidden for now (DISABLED in Preloader.tsx). That flag is only
- * read after hydration, which would let the server-rendered cover flash on a
- * cold load, so it is also hidden here from the first frame. Remove this rule
- * when restoring the preloader.
- */
-.preloader {
-  display: none;
-}
-
-/*
  * Route curtain: twelve strips on the page grid, so the wipe reads as the
  * site's own columns. Each middle strip is one column plus its gutter; the
  * outer two take the margins (and whatever is beyond --grid-max), so the set

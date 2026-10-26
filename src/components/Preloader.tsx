@@ -7,15 +7,6 @@ import { gsap, DUR } from "@/lib/gsap";
 /** Session flag: the cover has played once this visit. */
 const SEEN_KEY = "amar:preloaded";
 
-/*
- * The cover is hidden for now. The component stays mounted and still calls
- * `onDone` on the first frame, because `ready` is what releases the hero's
- * intro and every route transition — dropping the component would leave the
- * page waiting on a signal that never comes. Flip this back to false to
- * restore the counter and the strips.
- */
-const DISABLED = true;
-
 /**
  * The cover is the same twelve strips the route curtain uses, so the first
  * load and every navigation afterwards clear the page the same way. Kept in
@@ -45,20 +36,6 @@ export function Preloader({ onDone }: { onDone: () => void }) {
 
   useGSAP(
     () => {
-      if (DISABLED) {
-        gsap.set(root.current, { autoAlpha: 0, display: "none" });
-        document.body.classList.remove("cover-is-visible");
-        // The session flag is still set, so the inline script in the layout
-        // keeps hiding the server-rendered cover on a reload.
-        try {
-          sessionStorage.setItem(SEEN_KEY, "1");
-        } catch {
-          // Storage unavailable: nothing to keep in step.
-        }
-        onDone();
-        return;
-      }
-
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       let seen = false;
       try {

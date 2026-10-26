@@ -45,6 +45,16 @@ const PRELOAD_MS = 1200;
  * hides strips as the grid's guide count steps down on smaller screens.
  */
 const STRIPS = 12;
+/*
+ * The striped wipe between pages is hidden for now. Everything the curtain
+ * does besides paint stays: it still gates `ready`, warms the next route's
+ * images, scrolls to the top and honours a hash. `strips()` simply returns
+ * nothing, so the GSAP timelines run empty and their onStart/onComplete
+ * callbacks fire on schedule — which is what keeps navigation working.
+ * Flip back to false to restore the wipe.
+ */
+const CURTAIN_HIDDEN = true;
+
 /** Total spread of the stagger across the strips, left to right. */
 const SWEEP = 0.385;
 
@@ -87,6 +97,7 @@ export function PageTransition({ children }: { children: ReactNode }) {
   // Strips collapsed until needed; hidden until hydrated so the server markup
   // never flashes a full-screen panel.
   useLayoutEffect(() => {
+    if (CURTAIN_HIDDEN) return;
     gsap.set(strips(), { scaleY: 0, transformOrigin: "50% 100%" });
     gsap.set(curtain.current, { autoAlpha: 1 });
   }, []);
@@ -98,6 +109,15 @@ export function PageTransition({ children }: { children: ReactNode }) {
     if (hash) {
       requestAnimationFrame(() => document.querySelector(hash)?.scrollIntoView());
     }
+    if (CURTAIN_HIDDEN) {
+      // No wipe to play, so release the page and finish on the next frame.
+      setReady(true);
+      requestAnimationFrame(() => {
+        busy.current = false;
+      });
+      return;
+    }
+
     const els = strips();
     gsap
       .timeline()
@@ -148,13 +168,7 @@ export function PageTransition({ children }: { children: ReactNode }) {
         PRELOAD_MS,
       );
 
-      const els = strips();
-      gsap
-        .timeline()
-        // Grow up from the bottom, left to right.
-        .set(els, { scaleY: 0, transformOrigin: "50% 100%" })
-        .to(els, { scaleY: 1, duration: 0.5, ease: "ease-menu", stagger: stagger(els.length) })
-        .add(() => {
+      const push = () => {
           router.push(href);
           // The last-resort lift bypasses the image wait: whatever has not
           // arrived by now is not worth holding a covered page for.
@@ -162,7 +176,21 @@ export function PageTransition({ children }: { children: ReactNode }) {
             warming.current = null;
             runReveal();
           }, STUCK_MS);
-        });
+      };
+
+      if (CURTAIN_HIDDEN) {
+        // Straight to the route; the reveal effect below handles the rest.
+        push();
+        return;
+      }
+
+      const els = strips();
+      gsap
+        .timeline()
+        // Grow up from the bottom, left to right.
+        .set(els, { scaleY: 0, transformOrigin: "50% 100%" })
+        .to(els, { scaleY: 1, duration: 0.5, ease: "ease-menu", stagger: stagger(els.length) })
+        .add(push);
     },
     [router, runReveal],
   );
@@ -178,7 +206,7 @@ export function PageTransition({ children }: { children: ReactNode }) {
       // Back/forward: nothing covered the page, so cover it now and lift.
       busy.current = true;
       setReady(false);
-      gsap.set(strips(), { scaleY: 1 });
+      if (!CURTAIN_HIDDEN) gsap.set(strips(), { scaleY: 1 });
     }
     reveal(hash);
   }, [pathname, reveal]);
@@ -213,11 +241,16 @@ export function PageTransition({ children }: { children: ReactNode }) {
     <ReadyContext.Provider value={ready}>
       <Preloader onDone={() => setReady(true)} />
       {children}
-      <div ref={curtain} aria-hidden className="pt-curtain" style={{ visibility: "hidden" }}>
-        {Array.from({ length: STRIPS }, (_, i) => (
-          <span key={i} className="pt-strip" />
-        ))}
-      </div>
+      {/* While CURTAIN_HIDDEN, the strips are not rendered at all: left in
+          the tree they sit at their default scaleY and would show the moment
+          anything made the container visible. */}
+      {!CURTAIN_HIDDEN && (
+        <div ref={curtain} aria-hidden className="pt-curtain" style={{ visibility: "hidden" }}>
+          {Array.from({ length: STRIPS }, (_, i) => (
+            <span key={i} className="pt-strip" />
+          ))}
+        </div>
+      )}
     </ReadyContext.Provider>
   );
 }
