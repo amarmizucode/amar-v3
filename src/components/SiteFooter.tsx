@@ -152,8 +152,8 @@ export function SiteFooter() {
         </div>
 
         <div className="grid-12">
-          <span className="display optical-A col-span-12 md:col-span-5">Amar</span>
-          <span className="display optical-R col-span-12 md:col-start-6 md:col-span-7">
+          <span className="display optical-A col-span-12 md:col-span-4">Amar</span>
+          <span className="display optical-R col-span-12 md:col-span-8">
             Ramesh
           </span>
         </div>

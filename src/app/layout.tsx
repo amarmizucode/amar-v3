@@ -1,15 +1,25 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import localFont from "next/font/local";
 import "./globals.css";
 import { SiteHeader } from "@/components/SiteHeader";
 import { PageTransition } from "@/components/PageTransition";
 import { PrintRequestProvider } from "@/components/PrintRequest";
 import { PrintRequestDock } from "@/components/PrintRequestDock";
 import { AppControls } from "@/components/AppControls";
+import { CursorBubble } from "@/components/CursorBubble";
 
-const inter = Inter({
-  variable: "--font-inter",
-  subsets: ["latin"],
+// KH Teka ships as static instances, not a variable font, so each weight is
+// its own file. There is no semibold: the family steps Medium (500) straight
+// to Bold (700), and `font-semibold` is declared at 500 so Tailwind's 600
+// utilities land on Medium instead of letting the browser synthesize a face.
+const khTeka = localFont({
+  src: [
+    { path: "./fonts/KHTekaTRIAL-Light.woff2", weight: "300", style: "normal" },
+    { path: "./fonts/KHTekaTRIAL-Regular.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/KHTekaTRIAL-Medium.woff2", weight: "500 600", style: "normal" },
+  ],
+  variable: "--font-kh-teka",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
@@ -24,7 +34,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     // React must accept the class the DOM has rather than the one it rendered.
     <html
       lang="en"
-      className={`${inter.variable} h-full antialiased`}
+      className={`${khTeka.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>
@@ -53,6 +63,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             {children}
           </PageTransition>
           <PrintRequestDock />
+          {/* Last in the body: it hit-tests `elementFromPoint`, so it has to
+              sit above the content it reads — and being outside the header
+              lets any `[data-cursor-hover]` on the page raise it. */}
+          <CursorBubble />
           {/* The theme ramp and grid overlay, fixed to the viewport. */}
           <AppControls />
         </PrintRequestProvider>

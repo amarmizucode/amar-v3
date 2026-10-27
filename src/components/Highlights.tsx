@@ -67,7 +67,7 @@ export function InNumbers({ className = "py-20 md:py-28" }: { className?: string
   return (
     <section className={`shell ${className}`}>
       <div className="grid-12">
-        <ul className="col-span-12 flex flex-col gap-3 md:col-start-6 md:col-span-7 md:gap-4">
+        <ul className="col-span-12 flex flex-col gap-3 md:col-span-8 md:gap-4">
           {NUMBERS.map((item, i) => (
             <Reveal
               as="li"
@@ -121,7 +121,7 @@ export function Recognition({ className = "pb-24 md:pb-36" }: { className?: stri
           </Reveal>
         </div>
 
-        <div className="col-span-12 md:col-start-6 md:col-span-7">
+        <div className="col-span-12 md:col-span-8">
           {/* The footer navigation's rows — the dotted-rule li
               (.footer_nav_li), the .footer_nav_text row inside it, the
               .footer_hover_row interaction (fill inverts, label slides

@@ -2,24 +2,26 @@
  * Optical left alignment per initial.
  *
  * A glyph's outline starts inset from its box by its left side bearing, so a
- * word set flush to a grid line still looks indented. Measured from the Inter
- * 600 `glyf` table (unitsPerEm 2048) by reading each glyph's xMin:
+ * word set flush to a grid line still looks indented. Measured from the
+ * KH Teka Medium OTF (unitsPerEm 1000) by reading each glyph's xMin:
  *
- *   A V W (diagonals)                    50  -> 0.0244em
- *   C G O Q (round)                     103  -> 0.0503em
- *   T                                    83  -> 0.0405em
- *   S                                    95  -> 0.0464em
- *   B D E F H I L M N P R (flat-sided)  150  -> 0.0732em
+ *   A V W X Y (diagonals)                 6-10 -> 0.0080em
+ *   J T                                     21 -> 0.0210em
+ *   Z                                       30 -> 0.0300em
+ *   C G O Q S (round)                       34 -> 0.0340em
+ *   U                                       63 -> 0.0630em
+ *   B D E F H I K L M N P R (flat-sided)    68 -> 0.0680em
  *
  * The correction has to follow the initial rather than being one constant: a
- * round cap needs ~31% less pull than a flat-sided one, so a single value
- * leaves some glyphs overhanging and others still indented.
+ * round cap needs half the pull of a flat-sided one, so a single value leaves
+ * some glyphs overhanging and others still indented.
  */
 
-const NARROW = new Set(["A", "V", "W"]);
-const ROUND = new Set(["C", "G", "O", "Q"]);
-const T_LIKE = new Set(["T"]);
-const S_LIKE = new Set(["S"]);
+const NARROW = new Set(["A", "V", "W", "X", "Y"]);
+const ROUND = new Set(["C", "G", "O", "Q", "S"]);
+const T_LIKE = new Set(["T", "J"]);
+const U_LIKE = new Set(["U"]);
+const Z_LIKE = new Set(["Z"]);
 
 /** Returns the optical-* class that sets `text` flush to its grid line. */
 export function opticalClass(text: string) {
@@ -27,6 +29,7 @@ export function opticalClass(text: string) {
   if (NARROW.has(initial)) return "optical-A";
   if (ROUND.has(initial)) return "optical-round";
   if (T_LIKE.has(initial)) return "optical-T";
-  if (S_LIKE.has(initial)) return "optical-S";
+  if (U_LIKE.has(initial)) return "optical-U";
+  if (Z_LIKE.has(initial)) return "optical-Z";
   return "optical-flat";
 }

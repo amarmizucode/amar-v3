@@ -3,7 +3,10 @@
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
+import { usePageReady } from "@/components/PageTransition";
 import { CtaPill } from "@/components/CtaPill";
+import { SoundToggle } from "@/components/SoundToggle";
 import { PrintRequestTrigger } from "@/components/PrintRequestDock";
 import { CornerArrow } from "@/components/Arrows";
 import { SOCIALS } from "@/components/SiteFooter";
@@ -31,16 +34,28 @@ const NAV = [
  */
 const MOBILE_NAV = [{ label: "Home", href: "/" }, ...NAV, { label: "Contact", href: "/#contact" }];
 
+/* Relative luminance of a computed `rgb(...)` colour; null if unparseable. */
+function luminance(color: string): number | null {
+  const m = color.match(/[\d.]+/g);
+  if (!m || m.length < 3) return null;
+  const [r, g, b] = m.slice(0, 3).map((v) => {
+    const c = Number(v) / 255;
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
+  });
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b;
+}
+
+/*
+ * The bar: bymonolog.com's navbar, markup for markup. Its grid, type scale,
+ * colours, link fill, sound toggle, CTA surfaces, intro and footer fade live
+ * in the `.navbar_*` rules in globals.css and the effects below.
+ */
 export function SiteHeader() {
   const pathname = usePathname();
+  const ready = usePageReady();
   const root = useRef<HTMLElement>(null);
+  const isHome = pathname === "/";
 
-  /*
-   * Sticky, on every page: the bar is fixed and stays put while the page
-   * scrolls under it. (It used to ride the first stretch of scroll up and
-   * out like an in-flow header; that ride was removed when the header went
-   * sticky, so the GSAP scrub and the inner-scroll listener went with it.)
-   */
   /*
    * A link that leaves the page would otherwise leave the sheet open behind
    * the route transition. Rather than closing it from an effect — which
@@ -86,92 +101,160 @@ export function SiteHeader() {
     return () => window.removeEventListener("keydown", onKey);
   }, [open, setOpen]);
 
+  /*
+   * Intro, the reference's timeline: the bar flips visible at 0.3s as the
+   * wordmark rises out of the row's clip from a full height below, and the
+   * links, then the CTA cluster, follow at a 0.0525s stagger (0.0625s off the
+   * home page), each a 0.95s ease-transition. The bar persists across routes
+   * here, so it plays once, on the first page the visitor sees — the
+   * reference re-runs it per page only because its header is inside the
+   * swapped container.
+   */
+  const played = useRef(false);
+  useEffect(() => {
+    const bar = root.current;
+    if (!ready || played.current || !bar) return;
+    played.current = true;
+    const stagger = isHome ? 0.0525 : 0.0625;
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline({ defaults: { ease: "ease-transition" } });
+      tl.from(".navbar_home", { yPercent: 100, duration: 0.95, rotate: 0.001 }, isHome ? 0.3 : 0.25)
+        .to(bar, { autoAlpha: 1, duration: 0 }, "<")
+        .from(".navbar_links_li", { yPercent: 100, duration: 0.95, rotate: 0.001, stagger }, "<")
+        .from(
+          // The reference tweens `.navbar_cta_wrap > *`; the print-request
+          // trigger also lives in that cell and runs its own reveal, so the
+          // three that do rise are named instead.
+          [".navbar_left_sound_wrap", ".navbar_cta_contain", ".navbar_menu_btn"],
+          { yPercent: 100, rotate: 0.001, duration: 0.95, stagger },
+          "<",
+        );
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) tl.progress(1);
+    }, root);
+    return () => ctx.revert();
+  }, [ready, isHome]);
+
+  /*
+   * Nav theme, the reference's section watcher: on every scroll, the section
+   * whose box contains the bar's mid-line (`data-theme-section="light|dark"`)
+   * sets `data-theme-nav` on the header, and the colours switch with it.
+   *
+   * Where no section claims the point — this site's pages mostly carry none
+   * — the theme falls back to the page background's luminance, so the bar
+   * also follows the ramp as the slider moves it (body's `data-theme`).
+   */
+  useEffect(() => {
+    const bar = root.current;
+    if (!bar) return;
+    let frame = 0;
+
+    const resolve = () => {
+      frame = 0;
+      const y = bar.offsetHeight / 2;
+      let theme: string | null = null;
+      document.querySelectorAll<HTMLElement>("[data-theme-section]").forEach((section) => {
+        const r = section.getBoundingClientRect();
+        if (r.top <= y && r.bottom >= y) theme = section.dataset.themeSection ?? null;
+      });
+      if (!theme) {
+        const l = luminance(getComputedStyle(document.body).backgroundColor);
+        theme = l !== null && l < 0.5 ? "dark" : "light";
+      }
+      if (bar.dataset.themeNav !== theme) bar.dataset.themeNav = theme;
+    };
+    const schedule = () => {
+      if (!frame) frame = requestAnimationFrame(resolve);
+    };
+
+    resolve();
+    document.addEventListener("scroll", schedule, { passive: true });
+    window.addEventListener("resize", schedule);
+    const observer = new MutationObserver(schedule);
+    observer.observe(document.body, { attributes: true, attributeFilter: ["data-theme"] });
+    return () => {
+      document.removeEventListener("scroll", schedule);
+      window.removeEventListener("resize", schedule);
+      observer.disconnect();
+      if (frame) cancelAnimationFrame(frame);
+    };
+  }, [pathname]);
+
+  /*
+   * Footer fade, the reference's: once the footer's top enters the viewport
+   * the bar fades out (0.4s power2.out) and stops taking clicks, and comes
+   * back the moment the footer leaves again. Re-armed per route, since the
+   * footer is part of the page that swaps.
+   */
+  useEffect(() => {
+    const bar = root.current;
+    const footer = document.querySelector(".footer_wrap_main");
+    if (!bar || !footer) return;
+    const row = bar.querySelector<HTMLElement>(".navbar_contain");
+    const trigger = ScrollTrigger.create({
+      trigger: footer,
+      start: "top bottom",
+      onEnter: () => {
+        gsap.to(bar, { opacity: 0, duration: 0.4, ease: "power2.out" });
+        if (row) row.style.pointerEvents = "none";
+      },
+      onLeaveBack: () => {
+        gsap.to(bar, { opacity: 1, duration: 0.4, ease: "power2.out" });
+        if (row) row.style.pointerEvents = "";
+      },
+    });
+    return () => trigger.kill();
+  }, [pathname, ready]);
+
   return (
     <header
       ref={root}
-      /*
-       * pointer-events-none: once the bar has ridden away, this fixed strip
-       * must not swallow clicks on the content scrolled under it. The bar and
-       * the sheet switch theirs back on. The root itself is never
-       * transformed, so the sheet's `position: fixed` keeps the viewport as
-       * its containing block.
-       */
-      /* Block padding lives in .navbar_wrap's CSS. */
-      className="navbar_wrap pointer-events-none fixed inset-x-0 top-0 z-[999] w-full"
+      data-theme-nav="light"
+      data-navigation-status={open ? "is-open" : "is-closed"}
+      className="navbar_wrap"
     >
-      <div className="navbar_contain pointer-events-auto shell relative z-20 grid-12 items-center bg-transparent">
-        {/* Wordmark: columns 1-5. */}
-        <div
-          className="navbar_left_contain col-span-6 flex items-center justify-start md:col-span-5"
-          style={{ columnGap: "var(--nav-space-6)" }}
-        >
-          {/* The clip each reveal slides out of. */}
-          <span className="inline-flex overflow-hidden">
-            <Link
-              href="/"
-              aria-label="Return to home"
-              className="navbar_home relative flex items-center justify-center text-[15px] font-semibold uppercase tracking-[-0.01em]"
-            >
-              Amar Ramesh
-            </Link>
-          </span>
+      <div className="navbar_contain grid-site">
+        <div className="navbar_left_contain">
+          <Link href="/" aria-label="Return to home" className="navbar_home">
+            Amar Ramesh
+          </Link>
         </div>
 
-        {/* Primary nav: one group from column 6, matching the copy below. */}
-        <nav className="navbar_links pointer-events-auto hidden md:col-start-6 md:col-span-5 md:block">
-          <ul
-            className="navbar_links_ul flex items-center"
-            style={{
-              columnGap: "2px",
-              // Negate the links’ own inline padding so the first glyph edge
-              // lands exactly on the column-6 line.
-              marginInline: "calc(var(--nav-space-1) * -1)",
-            }}
-          >
+        <nav className="navbar_links text-style-small text-trim-off" aria-label="Primary">
+          <ul className="navbar_links_ul">
             {NAV.map((item) => (
-              <li key={item.label} className="navbar_links_li relative flex overflow-hidden">
-                <a
-                  href={item.href}
-                  className="navbar_link nav-link flex w-fit items-center justify-start text-[15px] font-medium tracking-[-0.03em]"
-                  style={{ padding: "0.5rem var(--nav-space-1)" }}
-                >
-                  {item.label}
+              <li key={item.label} className="navbar_links_li">
+                <a href={item.href} data-link-hover className="navbar_link">
+                  <div className="navbar_link_text text-style-main">{item.label}</div>
                 </a>
               </li>
             ))}
           </ul>
         </nav>
 
-        {/* CTA at columns 11-12, plus the mobile menu toggle. */}
-        <div
-          className="navbar_cta_wrap col-span-6 flex items-center justify-end md:col-start-11 md:col-span-2"
-          style={{ columnGap: "var(--nav-space-2)" }}
-        >
-          {/* The print-request trigger, before the CTA; zero-width until
-              a print is saved. Both it and the CTA refuse to shrink: the
-              cell is two columns, so with the trigger open the pair grows
-              left into the empty grid instead of squeezing the CTA. */}
+        <div className="navbar_cta_wrap text-style-small text-trim-off">
+          {/* The print-request trigger: zero-width until a print is saved. */}
           <PrintRequestTrigger />
 
-          <div className="navbar_cta_contain hidden shrink-0 overflow-hidden md:block">
-            <CtaPill label="Get in Touch" href="/#contact" />
+          <SoundToggle />
+
+          <div className="navbar_cta_contain">
+            <CtaPill label="Get in Touch" href="/#contact" size="" />
           </div>
 
           {/* The label animates Menu -> Close, so it is both the opener and
-              the closer. `-mr` pulls the enlarged tap area back to the grid
-              line so the text still aligns with the edge. */}
+              the closer. Shown below 48rem by the `.navbar_menu_btn` rules. */}
           <button
             type="button"
+            data-menu-btn
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-controls="mobile-menu"
             aria-label={open ? "Close menu" : "Open menu"}
-            className="navbar_menu_btn relative -mr-[var(--nav-space-1)] flex min-h-[44px] items-center justify-center overflow-hidden text-[15px] font-medium tracking-[-0.03em] md:hidden"
-            style={{ padding: "0.25rem var(--nav-space-1)" }}
+            className="navbar_menu_btn"
           >
-            <span className="menu-toggle-track">
-              <span>Menu</span>
-              <span className="is-close" aria-hidden>
+            <span className="navbar_menu_span-wrap">
+              <span className="navbar_menu_span">Menu</span>
+              <span className="navbar_menu_span is-close" aria-hidden>
                 Close
               </span>
             </span>
@@ -293,7 +376,6 @@ export function SiteHeader() {
           </div>
         </div>
       </div>
-
     </header>
   );
 }

@@ -15,7 +15,7 @@
   --color-rule: var(--palette-rule);
   --color-chip: var(--palette-chip);
 
-  --font-sans: var(--font-inter);
+  --font-sans: var(--font-kh-teka);
 
   /* Editorial scale from the Figma frame (1536px artboard) */
   --text-display: 102px;
@@ -240,24 +240,36 @@ body::after {
  *
  * A glyph's outline starts inset from its box by the font's left side bearing,
  * so text set flush to a grid line still looks indented. Measured from the
- * Inter 600 TTF (unitsPerEm 2048): "A" lsb=50 (0.0244em), "R" lsb=150
- * (0.0732em) — hence a per-initial value rather than one constant.
+ * KH Teka Medium OTF (unitsPerEm 1000) by reading each glyph's xMin — hence a
+ * per-initial value rather than one constant.
  *
  * Expressed in em so the correction scales with the fluid font size.
+ *
+ *   A              8   -> 0.0080em  (also V W X Y, 6-10)
+ *   T J           21   -> 0.0210em
+ *   Z             30   -> 0.0300em
+ *   C G O Q S     34   -> 0.0340em
+ *   U             63   -> 0.0630em
+ *   B D E F H I K L M N P R  68 -> 0.0680em
+ *
+ * KH Teka's bearings run far tighter than Inter's, which these values were
+ * previously measured from, so the whole set shrank when the family changed.
  */
 :root {
-  --lsb-A: 0.0244em;
-  --lsb-R: 0.0732em;
+  --lsb-A: 0.008em;
+  --lsb-R: 0.068em;
 
   /*
-   * Additional initials, measured the same way from the Inter 600 glyf table.
-   * Flat-sided caps (B D E F H I L M N P R) share xMin 150; round caps (C G O)
-   * are 103; the diagonals (A V W) are 50.
+   * Additional initials, measured the same way from the KH Teka Medium CFF
+   * outlines. Flat-sided caps (B D E F H I K L M N P R) share xMin 68; round
+   * caps (C G O Q S) are 34; the diagonals (A V W X Y) are 6-10.
    */
-  --lsb-flat: 0.0732em;
-  --lsb-round: 0.0503em;
-  --lsb-T: 0.0405em;
-  --lsb-S: 0.0464em;
+  --lsb-flat: 0.068em;
+  --lsb-round: 0.034em;
+  --lsb-T: 0.021em;
+  --lsb-S: 0.034em;
+  --lsb-U: 0.063em;
+  --lsb-Z: 0.03em;
 }
 
 .optical-A {
@@ -288,6 +300,14 @@ body::after {
   margin-left: calc(var(--lsb-S) * -1);
 }
 
+.optical-U {
+  margin-left: calc(var(--lsb-U) * -1);
+}
+
+.optical-Z {
+  margin-left: calc(var(--lsb-Z) * -1);
+}
+
 /* Fluid display type so the 102px headline scales instead of overflowing. */
 .display {
   font-weight: 600;
@@ -295,6 +315,28 @@ body::after {
   line-height: 0.95;
   letter-spacing: -0.03em;
   font-size: clamp(2.75rem, 6.64vw, 6.375rem);
+}
+
+/*
+ * Hero statement type. Takes the reference's treatment — sentence case, tight
+ * leading so the lines stack as a block — at a size that suits a longer
+ * sentence: the reference's heading is three short words per line, this one is
+ * a full clause, so it is set nearer the display scale than to the reference's
+ * own 11vw.
+ *
+ * Leading is 0.9, not the 0.78 this carried under Inter. KH Teka's ink spans
+ * 0.88em (ascender +0.700em on "j" to descender -0.180em on "g", measured from
+ * the Medium CFF outlines), so a line box under that clips descenders outright
+ * — and the hero runs its lines through SplitText masks, which crop to exactly
+ * that box. 0.9 clears the ink with a little air.
+ */
+.display-statement {
+  font-weight: 500;
+  text-transform: none;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  font-size: clamp(2rem, 6vw, 6.375rem);
+  text-wrap: balance;
 }
 
 /* Monolog-style link underline that wipes in from the left on hover. */
@@ -342,12 +384,37 @@ body::after {
  * ---------------------------------------------------------------------------
  */
 :root {
-  /* clamp(0.75rem, …, 1.75rem) across a 20rem→100rem viewport, as in the reference. */
-  --site-margin: clamp(0.75rem, 0.4375rem + 1.25vw, 1.75rem);
+  /*
+   * The reference's fluid tokens, each a clamp over its 320→1600px viewport
+   * range (`min/16rem` → `max/16rem`, slope `(max-min)/1280 * 100vw`):
+   *   site-margin 12→28, space-1 6→8, space-2 10→12, space-3 14→16,
+   *   space-6 32→40; text-small 14→16, text-main 16→18, text-large 18→20.
+   */
+  --site-margin: clamp(0.75rem, 0.5rem + 1.25vw, 1.75rem);
   --nav-space-1: clamp(0.375rem, 0.34375rem + 0.15625vw, 0.5rem);
   --nav-space-2: clamp(0.625rem, 0.59375rem + 0.15625vw, 0.75rem);
+  --nav-space-3: clamp(0.875rem, 0.84375rem + 0.15625vw, 1rem);
   --nav-space-6: clamp(2rem, 1.875rem + 0.625vw, 2.5rem);
+  --nav-text-small: clamp(0.875rem, 0.84375rem + 0.15625vw, 1rem);
+  --nav-text-main: clamp(1rem, 0.96875rem + 0.15625vw, 1.125rem);
+  --nav-text-large: clamp(1.125rem, 1.09375rem + 0.15625vw, 1.25rem);
+  --nav-site-gutter: 1rem;
   --nav-radius: 0.15rem;
+
+  /*
+   * The reference palette, used by the bar alone. Its nav is coloured per
+   * section theme from these fixed stops rather than from the page, so the
+   * bar carries them itself and stays identical whatever the ramp is doing.
+   */
+  --nav-beige-50: #fafaf9;
+  --nav-beige-100: #e8e8e3;
+  --nav-beige-200: #ddddd5;
+  --nav-beige-400: #bfbfb1;
+  --nav-black-50: #938f8a;
+  --nav-black-200: #524d47;
+  --nav-black-300: #393632;
+  --nav-black-400: #080807;
+  --nav-card-bg: #181715;
 
   /*
    * Section rhythm from the reference (`_spacing---section-space--*` and
@@ -358,77 +425,6 @@ body::after {
   --section-space-large: clamp(5.5rem, 4.375rem + 5.625vw, 10rem);
   --nav-ease: cubic-bezier(0.16, 1, 0.35, 1);
   --nav-expo-out: cubic-bezier(0.2, 1, 0.36, 1);
-}
-
-/*
- * Nav link hover, ported from the reference's `[data-link-hover]` rules.
- *
- * Despite being commented "underline fill" there, it is a full-height block:
- * height 100% at z-index -1, so it wipes in *behind* the label across the
- * link's whole padded box, right-origin at rest and left-origin on hover so
- * the fill enters from the side it will later exit toward. 900ms expo-out.
- *
- * Gated on a real pointer, as the reference gates it — on touch there is no
- * hover to leave, so the fill would stick after a tap.
- */
-.nav-link {
-  position: relative;
-  isolation: isolate;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .nav-link::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: 0;
-    z-index: -1;
-    width: 100%;
-    height: 100%;
-    background: var(--color-hover-fill);
-    transform: scaleX(0);
-    transform-origin: right;
-    transition: transform 900ms var(--nav-expo-out);
-  }
-
-  .nav-link:hover::before,
-  .nav-link:focus-visible::before {
-    transform: scaleX(1);
-    transform-origin: left;
-  }
-
-  /* Label sits on the filled row, so it takes the opposite ink. */
-  .nav-link:hover,
-  .nav-link:focus-visible {
-    color: var(--color-hover-ink);
-  }
-}
-
-/* Menu/Close: same clipped-slide mechanic, driven by aria-expanded. */
-.menu-toggle-track {
-  position: relative;
-  display: inline-flex;
-  overflow: hidden;
-  line-height: 0.85;
-}
-
-.menu-toggle-track > span {
-  display: block;
-  transition: transform 0.35s var(--nav-ease);
-}
-
-.menu-toggle-track > .is-close {
-  position: absolute;
-  inset: 0;
-  transform: translateY(105%);
-}
-
-[aria-expanded="true"] .menu-toggle-track > span {
-  transform: translateY(-105%);
-}
-
-[aria-expanded="true"] .menu-toggle-track > .is-close {
-  transform: translateY(0);
 }
 
 /*
@@ -624,64 +620,52 @@ body::after {
 }
 
 /*
- * CTA pill (`g_btn_main` + `g_btn_aside_*`), matching the reference exactly.
- *
- * Three things move on hover, and none of them is opacity on the label:
- *  - the text slides up 1.2em, its duplicate supplied by a text-shadow sitting
- *    exactly one 1.2em step below, so the copy rises into the vacated slot;
- *  - the two arrows travel diagonally, +100%/-100% out and the clone in from
- *    -100%/+100%;
- *  - the aside background scales to 0.8.
- * The button itself dips to 0.9 opacity and scales to 0.95 while held, on an
- * overshoot ease.
+ * CTA pill — the reference's `.button_wrap`, declaration for declaration.
+ * The hover motion is described at its media block below.
  */
 .btn-pill {
-  --active-ease: cubic-bezier(0.48, 1.68, 0.64, 1);
-  --active-speed: 0.35s;
-  --btn-slide: 0.65s cubic-bezier(0.16, 1, 0.35, 1);
+  /*
+   * The reference's `--button-surface/--button-ink/--button-aside`: a context
+   * (the nav, per theme) recolours the pill by setting these. Unset, the pill
+   * is the page's inversion, as before.
+   */
+  --_surface: var(--button-surface, var(--palette-foreground));
+  --_ink: var(--button-ink, var(--palette-background));
+  --_aside: var(--button-aside, var(--palette-muted));
+  --_arrow: var(--button-arrow, var(--palette-background));
 
-  display: inline-flex;
+  position: relative;
+  display: flex;
   align-items: center;
   justify-content: center;
   width: fit-content;
-  gap: var(--nav-space-1);
+  max-width: 100%;
+  gap: var(--nav-space-2) var(--nav-space-1);
   padding: 0.25em 0.25em 0.25em var(--nav-space-1);
+  border: none;
   border-radius: var(--nav-radius);
-  background: var(--palette-foreground);
-  color: var(--palette-background);
+  background-color: var(--_surface);
+  color: var(--_ink);
+  text-decoration: none;
   /* Never wraps: the label's hover slide leans on a text-shadow duplicate
      exactly one line-step below, which a second line would expose. */
   white-space: nowrap;
   overflow: clip;
   transition:
-    transform var(--active-speed) var(--active-ease),
-    opacity var(--active-speed) cubic-bezier(0.16, 1, 0.35, 1),
-    color 0.25s ease,
-    background-color 0.25s ease;
-}
-
-.btn-pill:hover {
-  opacity: 0.9;
-}
-
-.btn-pill:active {
-  transform: scale(0.95);
+    color 0.25s,
+    background-color 0.25s;
 }
 
 .btn-pill_text_contain {
+  display: block;
   overflow: clip;
 }
 
-/* The shadow copy is the second label — it must match the pill background. */
+/* The shadow copy is the second label — the reference's `--button-text-shadow`. */
 .btn-pill_text {
   display: block;
   line-height: 1;
-  text-shadow: 0 1.2em 0 var(--palette-background);
-  transition: transform var(--btn-slide);
-}
-
-.btn-pill:hover .btn-pill_text {
-  transform: translateY(-1.2em);
+  text-shadow: 0 1.2em 0 var(--button-text-shadow, var(--_ink));
 }
 
 .btn-pill_aside {
@@ -701,20 +685,17 @@ body::after {
   position: absolute;
   inset: 0;
   border-radius: var(--nav-radius);
-  background: var(--palette-muted);
-  transition: transform var(--btn-slide);
-}
-
-.btn-pill:hover .btn-pill_aside_bg {
-  transform: scale(0.8);
+  background-color: var(--_aside);
+  transition:
+    color 0.25s,
+    background-color 0.25s;
 }
 
 .btn-pill_icon {
   position: relative;
   z-index: 1;
   width: 1em;
-  color: var(--palette-background);
-  transition: transform var(--btn-slide);
+  color: var(--_arrow);
 }
 
 .btn-pill_icon.is-absolute {
@@ -722,12 +703,59 @@ body::after {
   transform: translate(-100%, 100%);
 }
 
-.btn-pill:hover .btn-pill_icon {
-  transform: translate(100%, -100%);
-}
+/*
+ * Hover, pointer-only as the reference gates it. Three things move, none of
+ * them the label's opacity: the text slides up 1.2em and its shadow copy
+ * rises into the slot; the arrow pair travels diagonally, +100%/-100% out and
+ * the clone in from -100%/+100%; the aside background scales to 0.8. The pill
+ * dips to 0.9 opacity, and to 0.95 scale while held, on an overshoot ease.
+ */
+@media (hover: hover) and (pointer: fine) {
+  .btn-pill {
+    --active-ease: cubic-bezier(0.48, 1.68, 0.64, 1);
+    --active-speed: 0.35s;
+    transition:
+      transform var(--active-speed) var(--active-ease),
+      opacity var(--active-speed) cubic-bezier(0.16, 1, 0.35, 1),
+      color 0.25s ease,
+      background-color 0.25s ease;
+  }
 
-.btn-pill:hover .btn-pill_icon.is-absolute {
-  transform: translate(0%);
+  .btn-pill_text,
+  .btn-pill_icon {
+    transition: transform 0.65s cubic-bezier(0.16, 1, 0.35, 1);
+  }
+
+  .btn-pill_aside_bg {
+    transition:
+      transform 0.65s cubic-bezier(0.16, 1, 0.35, 1),
+      color 0.25s,
+      background-color 0.25s;
+  }
+
+  .btn-pill:hover {
+    opacity: 0.9;
+  }
+
+  .btn-pill:hover .btn-pill_text {
+    transform: translateY(-1.2em);
+  }
+
+  .btn-pill:hover .btn-pill_icon {
+    transform: translate(100%, -100%);
+  }
+
+  .btn-pill:hover .btn-pill_icon.is-absolute {
+    transform: translate(0%);
+  }
+
+  .btn-pill:hover .btn-pill_aside_bg {
+    transform: scale(0.8);
+  }
+
+  .btn-pill:active {
+    transform: scale(0.95);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -735,8 +763,6 @@ body::after {
   .pg-side_text,
   .pg-side_aside_bg,
   .pg-side_icon,
-  .nav-link::before,
-  .menu-toggle-track > span,
   .btn-pill,
   .btn-pill_text,
   .btn-pill_aside_bg,
@@ -2011,6 +2037,519 @@ body {
  * ------------------------------------------------------------------------ */
 .navbar_wrap {
   padding-block: var(--site-margin);
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * Navbar — bymonolog.com's `.navbar_*`, rule for rule.
+ *
+ * The bar is a 12-column grid padded by the site margin on every side (not
+ * the page shell): wordmark cell spanning 4, links spanning 3, the CTA cluster
+ * spanning 5 and pushed to the end. Below 62rem it collapses to a flex row;
+ * below 48rem the links hide and the Menu/Close toggle appears; below 30rem
+ * the links column goes entirely.
+ *
+ * Every label in the bar is the reference's `text-style-small`: text-small
+ * (14→16px), weight 500, line-height 1.25, -0.01em, bumped one step at ≥120rem.
+ *
+ * Colour is not the page's. `data-theme-nav` on the header is "light" or
+ * "dark" and selects the reference's fixed stops — black-400 ink on light,
+ * beige-100 on dark — with the sound chip, the link fill and the CTA's three
+ * surfaces each switching with it. SiteHeader writes the attribute from the
+ * section under the bar (`data-theme-section`), falling back to the page
+ * background's luminance.
+ *
+ * The one reference rule left out is its `[data-theme-nav=light]
+ * [data-navigation-status=is-open]` reset, which un-sets the light colours
+ * while its dark menu overlay is up. This site's sheet is the page colour,
+ * so the light ink is the right ink there.
+ * ------------------------------------------------------------------------ */
+.navbar_wrap {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 999;
+  width: 100%;
+  padding: var(--site-margin);
+  /* Hidden until the intro timeline flips autoAlpha, as on the reference. */
+  visibility: hidden;
+  opacity: 0;
+  /* The strip must not swallow clicks beside the bar; the row switches
+     pointer-events back on. */
+  pointer-events: none;
+}
+
+.navbar_contain {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-rows: auto;
+  grid-auto-columns: minmax(0, 1fr);
+  gap: var(--nav-site-gutter);
+  place-items: center stretch;
+  justify-content: space-between;
+  background-color: transparent;
+  /* The clip the intro rise happens inside: each item starts a full height
+     below its slot and travels up, so without this the whole row would hang
+     under the bar before its delay elapsed. */
+  overflow: hidden;
+  pointer-events: auto;
+  /* Above the mobile sheet (z-10), which is a sibling in the same header. */
+  position: relative;
+  z-index: 20;
+}
+
+/*
+ * A control surface, not prose: a sloppy swipe across the links must neither
+ * highlight a label nor start a native link drag, either of which leaves the
+ * hover fill stranded mid-wipe once the browser stops sending pointer events.
+ */
+.navbar_contain,
+.navbar_menu_btn {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.navbar_home,
+.navbar_link {
+  -webkit-user-drag: none;
+  -webkit-touch-callout: none;
+}
+
+/* ── Wordmark ─────────────────────────────────────────────────────────── */
+.navbar_left_contain {
+  grid-column: span 4 / span 4;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  column-gap: var(--nav-space-6);
+  color: var(--nav-black-50);
+}
+
+.navbar_home {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  max-width: 100%;
+  color: var(--nav-beige-50);
+  /* The reference wordmark is an SVG; this one is set in type, on the bar's
+     own scale. */
+  font-size: var(--nav-text-main);
+  line-height: 1.25;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* ── Links ────────────────────────────────────────────────────────────── */
+.navbar_links {
+  grid-column: span 3 / span 3;
+  pointer-events: auto;
+  font-size: var(--nav-text-small);
+  line-height: 1.25;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.navbar_links_ul {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.navbar_links_li {
+  position: relative;
+  display: flex;
+}
+
+.navbar_link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  width: fit-content;
+  max-width: 100%;
+  padding: 0.5rem var(--nav-space-1);
+  color: inherit;
+  text-decoration: none;
+  pointer-events: auto;
+}
+
+.navbar_link_text {
+  pointer-events: none;
+  font-size: var(--nav-text-small);
+  line-height: 1.25;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+/*
+ * The link fill. A block the link's full height, at z-index -1 so it paints
+ * behind the label, wiping in from the left on hover — right-origin at rest,
+ * left-origin on hover, so it exits toward the side it entered from. Note
+ * the ink does not invert: the fill is one tone off the page (black-300 on
+ * dark, beige-400 on light). Pointer-only, as the reference gates it.
+ */
+@media (hover: hover) and (pointer: fine) {
+  [data-link-hover]::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%;
+    background-color: var(--nav-black-300);
+    transform: scaleX(0);
+    transform-origin: 100%;
+    transition: transform 0.9s var(--nav-expo-out);
+  }
+
+  [data-theme-nav="light"] [data-link-hover]::before {
+    background-color: var(--nav-beige-400);
+  }
+
+  [data-link-hover]:hover::before {
+    transform: scaleX(1);
+    transform-origin: 0;
+  }
+}
+
+/* ── CTA cluster ──────────────────────────────────────────────────────── */
+.navbar_cta_wrap {
+  grid-area: span 1 / span 5 / span 1 / span 5;
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  column-gap: var(--nav-space-2);
+  overflow: visible;
+  pointer-events: auto;
+  font-size: var(--nav-text-small);
+  line-height: 1.25;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.navbar_cta_contain {
+  will-change: transform;
+}
+
+/*
+ * The CTA's label is the reference's `text-style-small` — text-small, weight
+ * 500, -0.01em — not the site pill's tighter tracking; the pill's em-based
+ * padding and aside scale off the cluster's font size.
+ */
+.navbar_cta_contain .btn-pill {
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.navbar_cta_contain .btn-pill_text {
+  font-size: var(--nav-text-small);
+}
+
+/* Sound toggle: a 2em chip holding a 1.1em speaker. */
+.navbar_left_sound_btn {
+  aspect-ratio: 1;
+  width: 2em;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.navbar_left_sound_container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  border-radius: var(--nav-radius);
+  background-color: var(--nav-card-bg);
+  overflow: hidden;
+}
+
+.navbar_left_sound_on {
+  width: 1.1em;
+}
+
+/* ── Menu / Close ─────────────────────────────────────────────────────── */
+.navbar_menu_btn {
+  display: none;
+  will-change: transform;
+}
+
+.navbar_menu_span {
+  position: relative;
+  display: inline-flex;
+  transform: translateY(0%);
+  transition: transform 0.35s var(--nav-ease);
+}
+
+.navbar_menu_span.is-close {
+  position: absolute;
+  inset: 0;
+  transform: translateY(120%);
+}
+
+.navbar_menu_span-wrap {
+  position: relative;
+  transition: transform 0.35s var(--nav-ease);
+}
+
+[data-navigation-status="is-open"] .navbar_menu_span {
+  transform: translateY(-120%);
+}
+
+[data-navigation-status="is-open"] .navbar_menu_span.is-close {
+  transform: translateY(0%);
+}
+
+/* ── Breakpoints ──────────────────────────────────────────────────────── */
+@media (min-width: 120rem) {
+  .navbar_links,
+  .navbar_cta_wrap {
+    font-size: var(--nav-text-main);
+  }
+
+  .navbar_cta_contain .btn-pill_text {
+    font-size: var(--nav-text-large);
+  }
+
+  .navbar_link_text {
+    font-size: var(--nav-text-large);
+  }
+
+  .navbar_home {
+    font-size: var(--nav-text-large);
+  }
+}
+
+@media not (min-width: 62rem) {
+  .navbar_contain {
+    display: flex;
+    flex-flow: row;
+    justify-content: space-between;
+  }
+
+  .navbar_cta_wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    column-gap: 0;
+    row-gap: 0;
+  }
+
+  .navbar_menu_btn {
+    position: relative;
+    display: none;
+    flex-flow: column;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: 0.25rem 0 0.25rem 0.25rem;
+    border: 0;
+    border-radius: 0.15rem;
+    overflow: hidden;
+    transform: translate(0);
+  }
+}
+
+@media not (min-width: 48rem) {
+  .navbar_links_li {
+    display: none;
+  }
+
+  .navbar_menu_btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding-inline: var(--nav-space-3);
+    background-color: transparent;
+    color: var(--nav-beige-100);
+    cursor: pointer;
+    transform: none;
+  }
+}
+
+@media not (min-width: 30rem) {
+  .navbar_links {
+    display: none;
+  }
+
+  .navbar_link {
+    order: -1;
+  }
+}
+
+/* ── Theme ────────────────────────────────────────────────────────────── */
+.navbar_contain,
+.navbar_home,
+.navbar_left_sound_container,
+.navbar_menu_span {
+  transition:
+    color 0.25s,
+    background-color 0.25s;
+}
+
+[data-theme-nav="light"] .navbar_contain,
+[data-theme-nav="light"] .navbar_home,
+[data-theme-nav="light"] .navbar_menu_span {
+  color: var(--nav-black-400);
+}
+
+[data-theme-nav="light"] .navbar_left_sound_container {
+  background-color: var(--nav-beige-400);
+}
+
+[data-theme-nav="light"] .navbar_cta_contain {
+  --button-surface: var(--nav-card-bg);
+  --button-ink: var(--nav-beige-100);
+  --button-aside: var(--nav-black-200);
+  --button-arrow: var(--nav-beige-100);
+}
+
+[data-theme-nav="dark"] .navbar_contain,
+[data-theme-nav="dark"] .navbar_home,
+[data-theme-nav="dark"] .navbar_menu_span {
+  color: var(--nav-beige-100);
+}
+
+[data-theme-nav="dark"] .navbar_left_sound_container {
+  background-color: var(--nav-card-bg);
+}
+
+[data-theme-nav="dark"] .navbar_cta_contain {
+  --button-surface: var(--nav-beige-100);
+  --button-ink: var(--nav-black-400);
+  --button-aside: var(--nav-black-400);
+  --button-arrow: var(--nav-beige-100);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-link-hover]::before,
+  .navbar_menu_span,
+  .navbar_menu_span-wrap,
+  .navbar_contain,
+  .navbar_home,
+  .navbar_left_sound_container {
+    transition: none;
+  }
+}
+
+/*
+ * Selection colours, from the reference's `::selection`: its own pair rather
+ * than the browser's blue, on dedicated tokens. They default to the hover
+ * pair so they follow the ramp and the footer band's flip (`::selection`
+ * resolves against its originating element). Images opt out — a tinted block
+ * over a photograph is noise.
+ */
+:root {
+  --selection-background: var(--color-hover-fill);
+  --selection-text: var(--color-hover-ink);
+}
+
+::selection {
+  background-color: var(--selection-background);
+  color: var(--selection-text);
+}
+
+img::selection {
+  background: transparent;
+}
+
+/*
+ * ---------------------------------------------------------------------------
+ * Cursor bubble — the reference's `.cursor_wrap` / `.cursor-bubble`.
+ *
+ * A pill that trails the pointer and names what it is over, raised by any
+ * `[data-cursor-hover]` on the page (its `data-cursor-text` is the label).
+ * The reference raises it on its process videos and the footer canvas, not
+ * on the bar — so the bar carries none. The wrapper's offsets hang the pill
+ * below and right of the hot point; `data-cursor` on the wrapper drives every
+ * state. The reveal is a clip-path wipe from the left plus a 0.92 → 1 scale;
+ * `active-edge` is the same translated a full width left, for when the pill
+ * would cross the viewport's right edge.
+ * ------------------------------------------------------------------------ */
+.cursor_wrap {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 25;
+  pointer-events: none;
+  padding-top: 1em;
+  padding-left: 0.5em;
+  padding-right: 1em;
+}
+
+.cursor-bubble {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2em;
+  padding-inline: var(--nav-space-3);
+  border-radius: var(--nav-radius);
+  background-color: var(--nav-beige-200);
+  color: #000;
+  opacity: 0;
+}
+
+.cursor-bubble__text {
+  font-size: 1em;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-cursor] .cursor-bubble {
+    opacity: 0;
+    clip-path: inset(0% 100% 0% 0% round 6px);
+    /* The 0.001deg keeps the pill on its own compositor layer, as the
+       reference does throughout, so clip-path and transform don't
+       re-rasterise together mid-wipe. */
+    transform: translate(0%) scale(0.92) rotate(0.001deg);
+    transition:
+      clip-path 0.45s cubic-bezier(0.16, 1, 0.3, 1),
+      opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  [data-cursor="active"] .cursor-bubble {
+    opacity: 1;
+    clip-path: inset(0% round 6px);
+    transform: translate(0%) scale(1) rotate(0.001deg);
+  }
+
+  [data-cursor="active-edge"] .cursor-bubble {
+    opacity: 1;
+    clip-path: inset(0% round 6px);
+    transform: translate(-100%) scale(1) rotate(0.001deg);
+  }
+
+  [data-cursor] .cursor-bubble [data-cursor-text-target] {
+    opacity: 0;
+    transform: translateY(4px);
+    transition:
+      opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+      transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  [data-cursor="active"] .cursor-bubble [data-cursor-text-target],
+  [data-cursor="active-edge"] .cursor-bubble [data-cursor-text-target] {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .cursor_wrap {
+    display: none;
+  }
 }
 
 /*

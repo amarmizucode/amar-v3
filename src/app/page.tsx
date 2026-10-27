@@ -337,7 +337,7 @@ export default function Home() {
               </p>
             </Reveal>
 
-            <div className="col-span-12 md:col-start-6 md:col-span-6 flex flex-col gap-6">
+            <div className="col-span-12 md:col-start-5 md:col-span-6 flex flex-col gap-6">
               {/* All three set alike: statement size, 600 weight, 120%
                   leading, -3% tracking. The column sets the measure. */}
               <HighlightText className="text-statement font-semibold">
@@ -548,7 +548,7 @@ export default function Home() {
 
             {/* Sits to the right of the testimonial. Hover a row to reveal
                 its image. */}
-            <div className="col-span-12 md:col-start-6 md:col-span-7">
+            <div className="col-span-12 md:col-span-8">
               <Reveal className="mb-8">
                 <SectionLabel>Here&rsquo;s what I enjoy working on</SectionLabel>
               </Reveal>
@@ -600,7 +600,7 @@ export default function Home() {
               </Reveal>
             </div>
 
-            <div className="col-span-12 md:col-start-6 md:col-span-7 flex flex-col gap-10">
+            <div className="col-span-12 md:col-span-8 flex flex-col gap-10">
               <Reveal>
                 <h2 className="text-[clamp(2rem,3.4vw,3.25rem)] font-semibold leading-[1.15] tracking-[-0.03em]">
                   A few things you might want to know.

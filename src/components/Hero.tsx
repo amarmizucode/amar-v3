@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, SplitText, DUR } from "@/lib/gsap";
 import { createDotShader, type DotShaderHandle } from "@/lib/dotShader";
+import { CtaPill } from "@/components/CtaPill";
 
 /** Reads a theme custom property off <body>, falling back when unset. */
 function readThemeColor(prop: string, fallback: string) {
@@ -77,6 +78,7 @@ export function Hero({ start }: { start: boolean }) {
 
       if (reduced) {
         gsap.set([...allLines, ...displayLines], { yPercent: 0 });
+        gsap.set(".hero_content_cta", { autoAlpha: 1, y: 0 });
         gsap.set(".hero_canvas_wrap", { autoAlpha: 0.32 });
         gsap.set(document.querySelectorAll(".navbar_wrap"), { autoAlpha: 1 });
         return;
@@ -98,6 +100,7 @@ export function Hero({ start }: { start: boolean }) {
       // JS (not markup) so a script failure leaves the page readable.
       gsap.set(allLines, { yPercent: 110 });
       gsap.set(displayLines, { yPercent: 110 });
+      gsap.set(".hero_content_cta", { autoAlpha: 0, y: 16 });
       gsap.set(".hero_canvas_wrap", { autoAlpha: 0 });
       gsap.set(navWrap, { autoAlpha: 0 });
 
@@ -107,7 +110,8 @@ export function Hero({ start }: { start: boolean }) {
 
       tl.to(allLines, { yPercent: 0, duration: DUR.slow, stagger: 0.05 })
         .to(displayLines, { yPercent: 0, duration: DUR.slow, stagger: 0.065 }, "-=0.85")
-        .to(".hero_canvas_wrap", { autoAlpha: 0.32, duration: DUR.slow }, "<");
+        .to(".hero_canvas_wrap", { autoAlpha: 0.32, duration: DUR.slow }, "<")
+        .to(".hero_content_cta", { autoAlpha: 1, y: 0, duration: DUR.slow }, "-=0.7");
 
       // Navbar entrance, exactly as the reference sequences it: the wordmark
       // leads, then the links and CTA rise out of their own clips in stagger.
@@ -152,27 +156,31 @@ export function Hero({ start }: { start: boolean }) {
         <canvas ref={canvasRef} data-hero-canvas className="h-full w-full" />
       </div>
 
-      <div className="grid-12 my-auto shrink-0 gap-y-8">
-        <div className="col-span-12 md:col-span-4">
-          <p className="hero_content_p text-lede font-semibold">
-            The camera was just the beginning.
-          </p>
-        </div>
-        <div className="col-span-12 md:col-start-6 md:col-span-4">
+      {/* One row, vertically centred: a narrow copy column with its CTA on
+          the left, and the statement filling the rest at display size. */}
+      <div className="grid-12 my-auto shrink-0 items-center gap-y-12">
+        <div className="col-span-12 md:col-span-3">
           <p className="hero_content_p text-lede font-semibold">
             What started with photography has taken me into the fascinating worlds of art,
-            architecture, culture, films and books. And there&rsquo;s still so much more I want to
-            discover.
+            architecture, culture, films and books. I&rsquo;ve met some incredible people along the
+            way, discovered places I might never have visited otherwise, and found myself exploring
+            things I never imagined I&rsquo;d be doing. And there&rsquo;s still so much more I want
+            to discover.
           </p>
+          <div className="hero_content_cta mt-8">
+            <CtaPill label="Explore My Work" href="/#works" />
+          </div>
+        </div>
+
+        <div className="col-span-12 md:col-start-5 md:col-span-8">
+          <p className="hero_display display-statement">The camera was just the beginning</p>
         </div>
       </div>
 
       <div className="grid-12 shrink-0 pt-20 md:pt-32">
         <h1 className="contents">
-          <span className="hero_display display optical-A col-span-12 md:col-span-5">Amar</span>
-          <span className="hero_display display optical-R col-span-12 md:col-start-6 md:col-span-7">
-            Ramesh
-          </span>
+          <span className="hero_display display optical-A col-span-12 md:col-span-4">Amar</span>
+          <span className="hero_display display optical-R col-span-12 md:col-span-8">Ramesh</span>
         </h1>
       </div>
     </section>

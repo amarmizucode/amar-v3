@@ -107,7 +107,7 @@ export function ContactSection() {
         </div>
 
         {/* The form the doc specifies. */}
-        <Reveal className="col-span-12 md:col-start-6 md:col-span-7">
+        <Reveal className="col-span-12 md:col-span-8">
           <h3 className="text-[17px] font-semibold leading-[1.3] tracking-[-0.03em]">
             Tell me a little about your idea
           </h3>

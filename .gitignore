@@ -48,3 +48,13 @@ next-env.d.ts
 # rebuilds the derivatives from originals if they are restored locally.
 /public/assets/photography/
 /public/assets/photography-web/
+
+# Font source downloads. The three woff2 faces the site actually serves are
+# committed under src/app/fonts/, where next/font fingerprints and self-hosts
+# them. This holds the rest of the vendor download — desktop OTFs, the full
+# WOFF/WOFF2 set, specimen and EULA — which is trial-licensed and must not be
+# web-served, so it is kept out of the repo and out of /public.
+/design/fonts/
+
+# Copy decks and other working documents.
+*.docx
