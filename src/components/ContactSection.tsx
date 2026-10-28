@@ -80,7 +80,7 @@ export function ContactSection() {
   };
 
   return (
-    <section id="contact" className="shell pb-20 md:pb-28">
+    <section id="contact" className="shell py-20 md:py-28">
       <div className="grid-12 gap-y-10">
         {/* The invitation, in the label column. */}
         <div className="col-span-12 md:col-span-4 flex flex-col gap-6">

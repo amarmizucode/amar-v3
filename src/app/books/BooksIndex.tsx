@@ -574,7 +574,7 @@ function TextCol({ book }: { book: Book }) {
           href={book.buyUrl}
           target="_blank"
           rel="noreferrer"
-          className="btn-pill text-[15px] font-medium tracking-[-0.03em]"
+          className="btn-pill"
         >
           <span className="btn-pill_text_contain">
             <span className="btn-pill_text">

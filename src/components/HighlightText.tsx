@@ -37,6 +37,10 @@ export function HighlightText({
       SplitText.create(target, {
         type: "lines, words, chars",
         autoSplit: true,
+        // Links inside the copy (the About statement's disciplines) never
+        // straddle a line, so there is nothing to slice — and slicing left
+        // an empty clone of each link behind, an extra stop in the tab order.
+        deepSlice: false,
         onSplit(self) {
           return gsap.context(() => {
             // Group chars by the line that contains them, then stagger per line.

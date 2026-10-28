@@ -12,11 +12,14 @@ import { CursorBubble } from "@/components/CursorBubble";
 // its own file. There is no semibold: the family steps Medium (500) straight
 // to Bold (700), and `font-semibold` is declared at 500 so Tailwind's 600
 // utilities land on Medium instead of letting the browser synthesize a face.
+// Bold is loaded for the reference-matched type (`about_statement`,
+// `works_title`, `works_all_text`), which is set at 700.
 const khTeka = localFont({
   src: [
     { path: "./fonts/KHTekaTRIAL-Light.woff2", weight: "300", style: "normal" },
     { path: "./fonts/KHTekaTRIAL-Regular.woff2", weight: "400", style: "normal" },
     { path: "./fonts/KHTekaTRIAL-Medium.woff2", weight: "500 600", style: "normal" },
+    { path: "./fonts/KHTekaTRIAL-Bold.woff2", weight: "700", style: "normal" },
   ],
   variable: "--font-kh-teka",
   display: "swap",
@@ -52,7 +55,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           attribute from mount on, so 16 — the ramp's white, its own
           DEFAULT_STOP — is what the first paint shows before the slider or
           prefers-color-scheme moves it. */}
-      <body className="min-h-full flex flex-col font-sans" data-theme="16">
+      <body className="min-h-full flex flex-col font-sans" data-theme="16" data-theme-nav="light">
         {/* Header and curtain live here so they persist across routes; the
             preloader inside PageTransition plays once per visit. The print
             request selection wraps both so a pick made inside a gallery is

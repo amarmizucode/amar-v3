@@ -4,15 +4,19 @@ import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, DUR } from "@/lib/gsap";
 import { MEDIA } from "@/lib/media";
-import { opticalClass } from "@/lib/optical";
 
 /**
- * Service list, following the reference's `services_home_service_item`.
+ * Service list, a port of the reference's `services_home_content` handler
+ * (`of`).
  *
- * Each row carries its own image, absolutely placed against the row's right
- * edge and hidden until that row is hovered. The heading sits above it with
- * `mix-blend-mode: difference`, so the type inverts wherever it crosses the
- * photograph — the effect that makes the pattern read.
+ * One frame per service, stacked against the list's right edge. Hovering a
+ * row makes it the active one: its frame fades in, the others fade out, every
+ * other row drops to 30%, and the frame stack glides to the row's centre.
+ *
+ * Unlike the reference, nothing is lit until a row is hovered — every
+ * heading sits at full strength with no frame showing — and leaving the
+ * list returns it to that rest state. The stack drifts in, unblurring, as
+ * the band scrolls up.
  */
 export type ServiceItem = { label: string; href?: string; image?: string };
 
@@ -21,112 +25,128 @@ export function Services({ items }: { items: ServiceItem[] }) {
 
   useGSAP(
     () => {
-      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      if (reduced) return;
+      const content = root.current;
+      if (!content) return;
+      const wrap = content.querySelector<HTMLElement>("[data-img-wrap]");
+      const triggers = gsap.utils.toArray<HTMLElement>("[data-content-trigger]", content);
+      const images = gsap.utils.toArray<HTMLElement>("[data-content-image]", content);
+      if (!wrap || !triggers.length) return;
 
-      const rows = gsap.utils.toArray<HTMLElement>("[data-content-trigger]", root.current);
-      if (!rows.length) return;
+      const band = content.closest("section") ?? content;
+      gsap.fromTo(
+        wrap,
+        { yPercent: -50, opacity: 0, filter: "blur(4px)" },
+        {
+          yPercent: 0,
+          opacity: 1,
+          filter: "blur(0px)",
+          ease: "none",
+          scrollTrigger: { trigger: band, start: "top bottom", end: "center bottom", scrub: true },
+        },
+      );
 
-      // Hover is pointer-only: on touch there is nothing to leave, so the
-      // image would stay open after a tap.
-      gsap.matchMedia().add("(hover: hover) and (pointer: fine)", () => {
-        const cleanups = rows.map((row) => {
-          const img = row.querySelector<HTMLElement>("[data-content-image]");
-          if (!img) return () => {};
+      const centre = (row: HTMLElement) => {
+        const box = content.getBoundingClientRect();
+        const r = row.getBoundingClientRect();
+        return r.top - box.top + r.height / 2;
+      };
 
-          gsap.set(img, { autoAlpha: 0, scale: 1.06 });
+      let first = true;
+      let active = -1;
+      const move = (row: HTMLElement) => {
+        const y = centre(row);
+        if (first) {
+          first = false;
+          gsap.set(wrap, { y });
+        } else {
+          gsap.to(wrap, { y, duration: DUR.slow, ease: "ease-transition" });
+        }
+      };
 
-          const enter = () => {
-            gsap.to(img, {
-              autoAlpha: 1,
-              scale: 1,
-              duration: DUR.normal,
-              ease: "ease-transition",
-              overwrite: true,
-            });
-            gsap.to(
-              rows.filter((r) => r !== row),
-              { opacity: 0.35, duration: DUR.normal, ease: "ease-transition", overwrite: true },
-            );
-          };
-
-          const leave = () => {
-            gsap.to(img, {
-              autoAlpha: 0,
-              scale: 1.06,
-              duration: DUR.normal,
-              ease: "ease-transition",
-              overwrite: true,
-            });
-            gsap.to(rows, {
-              opacity: 1,
-              duration: DUR.normal,
-              ease: "ease-transition",
-              overwrite: true,
-            });
-          };
-
-          row.addEventListener("mouseenter", enter);
-          row.addEventListener("mouseleave", leave);
-
-          return () => {
-            row.removeEventListener("mouseenter", enter);
-            row.removeEventListener("mouseleave", leave);
-          };
+      const activate = (i: number) => {
+        active = i;
+        images.forEach((img, n) => {
+          img.classList.toggle("active", n === i);
+          gsap.to(img, { opacity: n === i ? 1 : 0, duration: 0.2, ease: "ease-fade" });
         });
+        triggers.forEach((row, n) => {
+          gsap.to(row, { opacity: n === i ? 1 : 0.3, duration: 0.2, ease: "ease-fade" });
+        });
+      };
 
-        return () => {
-          cleanups.forEach((fn) => fn());
-          gsap.set(rows, { clearProps: "opacity" });
+      // Rest: every row full strength, no frame.
+      const reset = () => {
+        active = -1;
+        images.forEach((img) => {
+          img.classList.remove("active");
+          gsap.to(img, { opacity: 0, duration: 0.2, ease: "ease-fade" });
+        });
+        gsap.to(triggers, { opacity: 1, duration: 0.2, ease: "ease-fade" });
+      };
+
+      const list = content.querySelector<HTMLElement>("[role=list]");
+      list?.addEventListener("mouseleave", reset);
+
+      const listeners = triggers.map((row, i) => {
+        const onEnter = () => {
+          activate(i);
+          move(row);
         };
+        row.addEventListener("mouseenter", onEnter);
+        return () => row.removeEventListener("mouseenter", onEnter);
       });
+
+      // Headings rewrap as the viewport changes, which moves the rows; keep
+      // the stack on the active one.
+      const onResize = () => {
+        if (active >= 0) gsap.set(wrap, { y: centre(triggers[active]) });
+      };
+      window.addEventListener("resize", onResize);
+
+      return () => {
+        listeners.forEach((off) => off());
+        list?.removeEventListener("mouseleave", reset);
+        window.removeEventListener("resize", onResize);
+      };
     },
-    { scope: root },
+    { scope: root, dependencies: [items.length] },
   );
 
   return (
-    <div ref={root}>
-      <div className="flex flex-col gap-0 md:gap-1">
-        {items.map(({ label, href, image }, i) => {
-          // A plain anchor, so the route curtain's document-level click
-          // handler picks it up like the header links.
-          const Row = href ? "a" : "div";
-          return (
-            <Row
-              key={`${label}-${i}`}
-              href={href}
-              data-content-trigger
-              className="services_home_service_item relative block cursor-pointer"
-            >
-              {/* Sits against the row's right edge, revealed on hover. */}
-              <div
-                data-content-image
-                className="services_home_service_image pointer-events-none absolute right-0 top-1/2 z-0 hidden aspect-[4/5] w-[9rem] -translate-y-1/2 overflow-hidden md:block"
-              >
-                <img
-                  src={image ?? MEDIA.services[i % MEDIA.services.length]}
-                  alt=""
-                  className="absolute inset-0 h-full w-full object-cover"
-                />
-              </div>
+    <div ref={root} className="svc_content">
+      <div className="svc_services">
+        <div role="list" className="svc_list">
+          {items.map(({ label, href }, i) => (
+            <div key={`${label}-${i}`} role="listitem" data-content-trigger className="svc_item">
+              {/* A plain anchor, so the route curtain's document-level click
+                  handler picks it up like the header links. */}
+              {href ? (
+                <a href={href} className="block">
+                  <h3 className="svc_heading">{label}</h3>
+                </a>
+              ) : (
+                <h3 className="svc_heading">{label}</h3>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
 
-              {/* Type sits above its image; the image is inset from the left
-                  so the heading stays legible where they overlap. */}
-              {/* `display` sets the hero's size; the labels here are two words
-                  each ("Commercial Photography"), which at that size wrap
-                  to two lines apiece and run the list across two screens.
-                  The override caps it so every label sits on one line in
-                  its column, with a little room between rows. */}
-              <h3
-                className={`services_home_heading display relative z-[1] !normal-case !text-[clamp(1.75rem,4.2vw,4rem)] !leading-[1.1] py-[0.12em] ${opticalClass(
-                  label,
-                )}`}
-              >
-                {label}
-              </h3>
-            </Row>
-          );
-        })}
+      <div data-img-wrap aria-hidden className="svc_img_wrap">
+        <div className="relative">
+          {items.map(({ label, image }, i) => (
+            <div key={`${label}-${i}`} className="svc_img_item">
+              <img
+                data-content-image
+                src={image ?? MEDIA.services[i % MEDIA.services.length]}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                className="svc_img"
+              />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

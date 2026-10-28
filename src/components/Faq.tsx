@@ -1,57 +1,49 @@
 "use client";
 
-import { useState } from "react";
-
-import { opticalClass } from "@/lib/optical";
+import { useId, useState } from "react";
 
 export type FaqItem = { q: string; a: string };
 
+/**
+ * The reference's accordion (`g_faq_list` / `accordion_css_*`): dotted rows
+ * over a solid foot, each a full-width button whose ground fills beige on
+ * hover or when open, with the question nudged right and the square marker
+ * nudged left. One row open at a time, as its close-siblings setting.
+ * Styles are the `faq_*` rules in globals.css.
+ */
 export function Faq({ items }: { items: FaqItem[] }) {
   const [open, setOpen] = useState<number | null>(null);
+  const baseId = useId();
 
   return (
-    <div className="border-t border-rule">
+    <div role="list" className="faq_list">
       {items.map((item, i) => {
         const isOpen = open === i;
+        const panelId = `${baseId}-${i}`;
         return (
-          <div key={`${item.q}-${i}`} className="border-b border-rule">
+          <div
+            key={`${item.q}-${i}`}
+            role="listitem"
+            data-open={isOpen || undefined}
+            className="faq_item"
+          >
             <button
               type="button"
               onClick={() => setOpen(isOpen ? null : i)}
               aria-expanded={isOpen}
-              className={`footer_hover_row group flex w-full items-center justify-between gap-4 py-4 text-left sm:gap-6${
-                isOpen ? " is-active" : ""
-              }`}
+              aria-controls={panelId}
+              className="faq_top"
             >
-              {/* Flush to the column edge, with the initial's left side
-                  bearing corrected so it reads on the line optically too. */}
-              <span
-                className={`footer_hover_label flex-1 text-left text-[17px] font-semibold tracking-[-0.03em] md:text-[19px] ${opticalClass(
-                  item.q,
-                )}`}
-              >
-                {item.q}
-              </span>
-              <span
-                aria-hidden
-                className={`footer_hover_marker shrink-0 text-[18px] leading-none text-muted ${
-                  isOpen ? "is-open" : ""
-                }`}
-              >
-                +
-              </span>
+              <span aria-hidden className="faq_bg" />
+              <h3 className="faq_q">{item.q}</h3>
+              <span aria-hidden className="faq_square" />
             </button>
 
-            {/* Grid-rows trick animates to the content's natural height. */}
-            <div
-              className={`grid transition-[grid-template-rows] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
-                isOpen ? "grid-rows-[1fr]" : "grid-rows-[0fr]"
-              }`}
-            >
-              <div className="overflow-hidden">
-                <p className="p-4 max-w-[60ch] text-[15px] leading-[1.6] text-muted">
-                  {item.a}
-                </p>
+            <div id={panelId} inert={!isOpen} className="faq_bottom">
+              <div className="faq_bottom_wrap">
+                <div className="faq_contain">
+                  <p className="faq_a">{item.a}</p>
+                </div>
               </div>
             </div>
           </div>

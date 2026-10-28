@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
-import { gsap, DUR } from "@/lib/gsap";
+import { gsap, ScrollTrigger, SplitText, DUR } from "@/lib/gsap";
 import { RightArrow } from "@/components/Arrows";
 
 export type Testimonial = {
@@ -24,156 +24,277 @@ const initials = (name: string) => {
   return (first + last).toUpperCase();
 };
 
-/** How long each testimonial holds before advancing, in ms. */
-const HOLD = 11000;
+/** Seconds each testimonial holds — the reference's `Jd`. */
+const HOLD = 16;
 
-const reducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const pad = (n: number) => String(n).padStart(2, "0");
 
 /**
- * Testimonial slider, following the reference's `problems_stats_navigation`:
- * a 1px track whose fill runs the length of each hold, arrows and a `0n/0N`
- * index beneath it, and the quote cross-fading on change.
+ * Testimonial slider, a port of the reference's `data-slider` handler (`Xd`)
+ * inside `services_home_stats`.
  *
- * Advancing is automatic; the arrows step manually and reset the timer.
+ * Two fills share the 1px track: the live one runs the hold, and on a change
+ * it slides off to the right while the other starts from the left, so the
+ * track never empties. The slides share one grid cell; the outgoing quote
+ * lifts away line by line, its byline after it, and the incoming one rises
+ * in the same way. Advancing is automatic, paused while the band is off
+ * screen; the arrows step manually and restart the hold.
  */
-export function Testimonials({ items }: { items: Testimonial[] }) {
+export function Testimonials({
+  items,
+  descriptor,
+}: {
+  items: Testimonial[];
+  /** The mono line under each byline — the reference's `heading-inner`. */
+  descriptor?: string;
+}) {
   const root = useRef<HTMLDivElement>(null);
-  const bar = useRef<HTMLDivElement>(null);
-  const [index, setIndex] = useState(0);
-  const [paused, setPaused] = useState(false);
-  // Bumped on every advance, manual or automatic. The hold timer and the
-  // progress fill key off this rather than off `index` alone, so stepping to a
-  // slide that happens to be the current one still restarts both from zero.
-  const [tick, setTick] = useState(0);
-
-  const go = useCallback(
-    (next: number) => {
-      setIndex((next + items.length) % items.length);
-      setTick((t) => t + 1);
-    },
-    [items.length],
-  );
-
-  // The progress fill IS the timer: the slide advances when the bar finishes,
-  // so the two can never drift apart. Restarted per step, and pausing on hover
-  // holds the fill — and therefore the advance — in place rather than letting
-  // one run on without the other.
-  const fill = useRef<gsap.core.Tween | null>(null);
 
   useGSAP(
     () => {
-      if (!bar.current) return;
-      if (reducedMotion()) {
-        gsap.set(bar.current, { scaleX: 1 });
-        return;
+      const el = root.current;
+      if (!el) return;
+      const count = items.length;
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      const slides = Array.from(el.querySelectorAll<HTMLElement>("[data-slider-item]"), (s) => ({
+        root: s,
+        headshot: s.querySelector<HTMLElement>("[data-slider-headshot]"),
+        message: s.querySelector<HTMLElement>("[data-slider-message]")!,
+        details: Array.from(s.querySelectorAll<HTMLElement>("[data-slider-details]")),
+        lines: [] as Element[],
+      }));
+      const next = el.querySelector<HTMLButtonElement>("[data-slider-next]");
+      const prev = el.querySelector<HTMLButtonElement>("[data-slider-prev]");
+      const current = el.querySelector<HTMLElement>("[data-dynamic-value]");
+      const barA = el.querySelector<HTMLElement>("[data-progress-bar-start]")!;
+      const barB = el.querySelector<HTMLElement>("[data-progress-bar-end]")!;
+
+      // Masked lines, so each one rises out of its own slot.
+      const splits = slides.map((s) =>
+        SplitText.create(s.message, {
+          type: "lines",
+          mask: "lines",
+          autoSplit: true,
+          onSplit(self) {
+            s.lines = self.lines;
+          },
+        }),
+      );
+
+      let index = 0;
+      let cycle: gsap.core.Timeline | null = null;
+      let swap: gsap.core.Timeline | null = null;
+      let live = barA;
+      let idle = barB;
+
+      const showIndex = () => {
+        if (current) current.textContent = pad(index + 1);
+        slides.forEach((s, i) => {
+          s.root.setAttribute("aria-hidden", String(i !== index));
+          s.root.inert = i !== index;
+        });
+      };
+
+      const hide = (s: (typeof slides)[number]) => {
+        gsap.set(s.root, { opacity: 0, yPercent: 150 });
+        if (s.headshot) gsap.set(s.headshot, { opacity: 0, yPercent: 100 });
+        if (s.details.length) gsap.set(s.details, { opacity: 0 });
+      };
+
+      const kill = (s: (typeof slides)[number]) => {
+        gsap.killTweensOf(s.root);
+        if (s.headshot) gsap.killTweensOf(s.headshot);
+        if (s.details.length) gsap.killTweensOf(s.details);
+      };
+
+      const leave = (s: (typeof slides)[number]) => {
+        const t = DUR.fast;
+        const tl = gsap.timeline();
+        tl.to(s.lines, { yPercent: -150, opacity: 0, stagger: 0.03, ease: "ease-primary", duration: t });
+        if (s.headshot)
+          tl.to(s.headshot, { yPercent: -50, opacity: 0, ease: "ease-primary", duration: t }, `-=${t * 1.2}`);
+        if (s.details.length)
+          tl.to(s.details, { yPercent: -150, opacity: 0, ease: "ease-primary", duration: t, stagger: 0.03 }, "<");
+        return tl;
+      };
+
+      const enter = (s: (typeof slides)[number]) => {
+        const tl = gsap.timeline();
+        tl.set(s.root, { opacity: 1, yPercent: 0 }).fromTo(
+          s.lines,
+          { yPercent: 150, opacity: 0 },
+          { yPercent: 0, opacity: 1, stagger: 0.03, ease: "ease-transition", duration: DUR.slow },
+        );
+        if (s.headshot)
+          tl.fromTo(
+            s.headshot,
+            { yPercent: 50, opacity: 0 },
+            { yPercent: 0, opacity: 1, ease: "ease-transition", duration: DUR.slow },
+            "-=1",
+          );
+        if (s.details.length)
+          tl.fromTo(
+            s.details,
+            { yPercent: 150, opacity: 0 },
+            { yPercent: 0, opacity: 1, ease: "ease-transition", duration: DUR.slow, stagger: 0.03 },
+            "<",
+          );
+        return tl;
+      };
+
+      const goTo = (target: number) => {
+        swap?.kill();
+        const from = slides[index];
+        const to = slides[target];
+        index = target;
+        showIndex();
+        if (reduced) {
+          hide(from);
+          gsap.set(to.root, { opacity: 1, yPercent: 0 });
+          if (to.headshot) gsap.set(to.headshot, { opacity: 1, yPercent: 0 });
+          if (to.details.length) gsap.set(to.details, { opacity: 1, yPercent: 0 });
+          gsap.set(to.lines, { opacity: 1, yPercent: 0 });
+          return;
+        }
+        const out = leave(from);
+        const at = out.duration() * 0.6;
+        swap = gsap.timeline({ onComplete: () => void (swap = null) });
+        swap
+          .add(out, 0)
+          .call(() => {
+            kill(from);
+            hide(from);
+          }, undefined, at)
+          .add(enter(to), at);
+      };
+
+      // Hand the track to the other fill: the live one exits right while the
+      // idle one runs the new hold from the left.
+      const handOff = (delay: number, onSwap: () => void) => {
+        const leaving = live;
+        const entering = idle;
+        live = entering;
+        idle = leaving;
+        gsap.set(entering, { xPercent: -100 });
+        cycle = gsap.timeline({ onComplete: auto });
+        cycle.add(onSwap, 0);
+        cycle.to(leaving, { xPercent: 100, duration: 0.5, ease: "power2.inOut" }, 0);
+        cycle.to(entering, { xPercent: 0, duration: HOLD, ease: "none" }, delay);
+      };
+
+      const start = () => {
+        cycle?.kill();
+        cycle = gsap.timeline({ onComplete: auto });
+        cycle.to(live, { xPercent: 0, duration: HOLD, ease: "none" });
+      };
+
+      function auto() {
+        cycle?.kill();
+        const target = (index + 1) % count;
+        handOff(0.4, () => goTo(target));
       }
-      fill.current = gsap.fromTo(
-        bar.current,
-        { scaleX: 0 },
-        {
-          scaleX: 1,
-          duration: HOLD / 1000,
-          ease: "none",
-          onComplete: () => go(index + 1),
-        },
-      );
+
+      const step = (dir: 1 | -1) => {
+        cycle?.kill();
+        cycle = null;
+        swap?.kill();
+        swap = null;
+        const target = (index + dir + count) % count;
+        handOff(0.2, () => goTo(target));
+      };
+
+      const onNext = () => step(1);
+      const onPrev = () => step(-1);
+      next?.addEventListener("click", onNext);
+      prev?.addEventListener("click", onPrev);
+
+      slides.forEach(hide);
+      // `x: 0` drops the pixel offset GSAP reads from the stylesheet's
+      // pre-script translateX(-100%), so only xPercent moves the fills.
+      gsap.set([barA, barB], { x: 0, xPercent: -100 });
+      showIndex();
+      if (reduced) {
+        goTo(0);
+        gsap.set(barA, { xPercent: 0 });
+      } else {
+        enter(slides[0]);
+        start();
+      }
+
+      // Hold still while the band is off screen.
+      const pause = () => cycle?.pause();
+      const resume = () => (cycle ? cycle.resume() : start());
+      const watch = ScrollTrigger.create({
+        trigger: el,
+        start: "top bottom",
+        end: "bottom top",
+        onEnter: resume,
+        onEnterBack: resume,
+        onLeave: pause,
+        onLeaveBack: pause,
+      });
+
+      return () => {
+        next?.removeEventListener("click", onNext);
+        prev?.removeEventListener("click", onPrev);
+        watch.kill();
+        splits.forEach((s) => s.revert());
+      };
     },
-    { dependencies: [index, tick] },
+    { scope: root, dependencies: [items.length] },
   );
-
-  // Pause/resume the fill without restarting it.
-  useEffect(() => {
-    const tween = fill.current;
-    if (!tween) return;
-    if (paused) tween.pause();
-    else tween.resume();
-  }, [paused, index, tick]);
-
-  // Under reduced motion the fill is drawn complete and never runs, so it
-  // cannot drive the advance — a plain hold timer stands in for it.
-  useEffect(() => {
-    if (!reducedMotion() || paused) return;
-    const id = window.setTimeout(() => go(index + 1), HOLD);
-    return () => window.clearTimeout(id);
-  }, [index, tick, paused, go]);
-
-  // Quote swap.
-  useGSAP(
-    () => {
-      const live = root.current?.querySelector("[data-slide]");
-      if (!live) return;
-      if (reducedMotion()) return;
-
-      gsap.fromTo(
-        live,
-        { autoAlpha: 0, y: 12 },
-        { autoAlpha: 1, y: 0, duration: DUR.normal, ease: "ease-transition" },
-      );
-    },
-    { dependencies: [index] },
-  );
-
-  const current = items[index];
-  const pad = (n: number) => String(n).padStart(2, "0");
 
   return (
-    <div
-      ref={root}
-      className="flex flex-col gap-8"
-      onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => setPaused(false)}
-    >
-      {/* Progress track and controls. */}
-      <div>
-        <div className="relative h-px w-full overflow-hidden bg-rule">
-          <div ref={bar} className="absolute inset-0 origin-left bg-foreground" />
-        </div>
-
-        <div className="mt-3 flex items-center justify-between">
-          <div className="flex gap-3">
-            <button
-              type="button"
-              onClick={() => go(index - 1)}
-              aria-label="Previous testimonial"
-              className="w-4 transition-opacity hover:opacity-60"
-            >
-              <RightArrow back />
-            </button>
-            <button
-              type="button"
-              onClick={() => go(index + 1)}
-              aria-label="Next testimonial"
-              className="w-4 transition-opacity hover:opacity-60"
-            >
-              <RightArrow />
-            </button>
-          </div>
-
-          <p className="text-[13px] font-medium tabular-nums text-muted">
-            {pad(index + 1)}/{pad(items.length)}
-          </p>
-        </div>
+    <div ref={root}>
+      <div className="svc_track">
+        <div data-progress-bar-start className="svc_track_fill" />
+        <div data-progress-bar-end className="svc_track_fill" />
       </div>
 
-      <div className="flex flex-col gap-8">
-        <p className="text-[13px] font-medium text-muted">(Real client stories)</p>
+      <div className="svc_nav">
+        <div className="svc_nav_buttons">
+          <button type="button" data-slider-prev aria-label="Previous testimonial" className="svc_nav_button">
+            <RightArrow back />
+          </button>
+          <button type="button" data-slider-next aria-label="Next testimonial" className="svc_nav_button">
+            <RightArrow />
+          </button>
+        </div>
+        <p className="svc_mono flex tabular-nums">
+          <span data-dynamic-value>01</span>/<span>{pad(items.length)}</span>
+        </p>
+      </div>
 
-        <div key={index} data-slide className="flex flex-col gap-8">
-          <p className="text-[15px] leading-[1.6]">{current.quote}</p>
-          <div className="flex items-center gap-4">
-            {/* A monogram rather than a photograph: the avatars were stock
-                faces that matched neither the name nor each other. */}
-            <span
-              aria-hidden
-              className="flex size-[54px] shrink-0 items-center justify-center rounded-full bg-chip text-[15px] font-semibold tracking-[-0.02em]"
-            >
-              {initials(current.name)}
-            </span>
-            <div className="text-[15px] leading-[1.35]">
-              <p className="font-medium">{current.name}</p>
-              <p className="text-muted">{current.role}</p>
+      <div className="svc_collection">
+        <div role="list" className="svc_slides">
+          {items.map((item, i) => (
+            <div key={`${item.name}-${i}`} role="listitem" data-slider-item className="svc_slide">
+              <p data-slider-message className="svc_message">
+                {`"${item.quote}"`}
+              </p>
+              <div className="svc_byline">
+                {/* A monogram rather than a photograph: the avatars were stock
+                    faces that matched neither the name nor each other. */}
+                <span aria-hidden data-slider-headshot className="svc_headshot">
+                  {initials(item.name)}
+                </span>
+                <div className="svc_byline_text">
+                  <p data-slider-details className="svc_name">
+                    {item.name}
+                  </p>
+                  <p data-slider-details className="svc_role">
+                    {item.role}
+                  </p>
+                </div>
+              </div>
+              {descriptor && (
+                <p data-slider-details className="svc_mono svc_descriptor">
+                  {descriptor}
+                </p>
+              )}
             </div>
-          </div>
+          ))}
         </div>
       </div>
     </div>

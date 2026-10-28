@@ -23,8 +23,10 @@ const NAV = [
   // About is removed for now — restore by adding
   // { label: "About", href: "/about" } back here, with the route.
   { label: "Photography", href: "/photography" },
-  { label: "Documentary", href: "/documentary" },
-  { label: "Books", href: "/books" },
+  { label: "Films", href: "/documentary" },
+  { label: "Publications", href: "/books" },
+  { label: "Ventures", href: "/#ventures" },
+  { label: "Work With Me", href: "/#work-with-me" },
 ];
 
 /*
@@ -160,7 +162,10 @@ export function SiteHeader() {
         const l = luminance(getComputedStyle(document.body).backgroundColor);
         theme = l !== null && l < 0.5 ? "dark" : "light";
       }
+      // Header and body both, as the reference sets every `[data-theme-nav]`:
+      // the body's copy is what themes the pills across the page.
       if (bar.dataset.themeNav !== theme) bar.dataset.themeNav = theme;
+      if (document.body.dataset.themeNav !== theme) document.body.dataset.themeNav = theme;
     };
     const schedule = () => {
       if (!frame) frame = requestAnimationFrame(resolve);
@@ -238,7 +243,7 @@ export function SiteHeader() {
           <SoundToggle />
 
           <div className="navbar_cta_contain">
-            <CtaPill label="Get in Touch" href="/#contact" size="" />
+            <CtaPill label="Get in Touch" href="/#contact" />
           </div>
 
           {/* The label animates Menu -> Close, so it is both the opener and
@@ -316,12 +321,7 @@ export function SiteHeader() {
           </nav>
 
           <div className="mobile-menu_foot mobile-menu_fade">
-            <CtaPill
-              label="Get in Touch"
-              href="/#contact"
-              size="text-[17px]"
-              onClick={() => setOpen(false)}
-            />
+            <CtaPill label="Get in Touch" href="/#contact" onClick={() => setOpen(false)} />
 
             {/* The footer's three blocks, in its order and wording. */}
             <div className="mobile-menu_details">

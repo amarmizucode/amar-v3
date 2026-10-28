@@ -11,9 +11,10 @@ import type { CSSProperties, ReactNode } from "react";
  * The palette variables are pinned to a white-on-black ramp here because the
  * body's theme ramp re-points them per scroll stop: without the local
  * override, `text-muted`, rules and the pill's fill/ink would follow the page
- * theme and could vanish against the fixed black backdrop.
+ * theme and could vanish against the fixed black backdrop. Exported for the
+ * other black band on the page, the About section, so both pin identically.
  */
-const BLACK_PALETTE = {
+export const BLACK_PALETTE = {
   "--palette-background": "#000000",
   "--palette-foreground": "#ffffff",
   "--palette-muted": "rgb(255 255 255 / 0.5)",
@@ -28,6 +29,9 @@ export function ClosingCta({ children }: { children: ReactNode }) {
     <section
       id="work-with-me"
       style={BLACK_PALETTE}
+      // A dark section: the bar turns beige over it and the pill inside takes
+      // the dark pair (see the `[data-theme-section]` rules in globals.css).
+      data-theme-section="dark"
       className="relative isolate flex min-h-[70svh] flex-col items-center justify-center overflow-clip bg-black text-white py-16 sm:py-20 md:py-24"
     >
       {children}

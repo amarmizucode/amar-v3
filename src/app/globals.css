@@ -363,6 +363,13 @@ body::after {
   transform-origin: left;
 }
 
+/* At the About statements' size a 1px rule disappears: scale it with the
+   type, and sit it just under the baseline. */
+.about_statement .link-wipe::after {
+  bottom: 0.02em;
+  height: 0.06em;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -420,6 +427,7 @@ body::after {
    * Section rhythm from the reference (`_spacing---section-space--*` and
    * `space--*`), kept as clamps over the same 20–100rem viewport range.
    */
+  --space-4: clamp(1.25rem, 1.1875rem + 0.3125vw, 1.5rem);
   --space-5: clamp(1.75rem, 1.6875rem + 0.3125vw, 2rem);
   --section-space-small: clamp(3rem, 2.5rem + 2.5vw, 5rem);
   --section-space-large: clamp(5.5rem, 4.375rem + 5.625vw, 10rem);
@@ -647,6 +655,11 @@ body::after {
   background-color: var(--_surface);
   color: var(--_ink);
   text-decoration: none;
+  /* `text-style-small`, as in the nav: text-small, 500, -0.01em. The em-based
+     padding and aside scale off this. */
+  font-size: var(--nav-text-small);
+  font-weight: 500;
+  letter-spacing: -0.01em;
   /* Never wraps: the label's hover slide leans on a text-shadow duplicate
      exactly one line-step below, which a second line would expose. */
   white-space: nowrap;
@@ -664,8 +677,43 @@ body::after {
 /* The shadow copy is the second label — the reference's `--button-text-shadow`. */
 .btn-pill_text {
   display: block;
+  font-size: var(--nav-text-small);
   line-height: 1;
   text-shadow: 0 1.2em 0 var(--button-text-shadow, var(--_ink));
+}
+
+@media (min-width: 120rem) {
+  .btn-pill {
+    font-size: var(--nav-text-main);
+  }
+
+  .btn-pill_text {
+    font-size: var(--nav-text-large);
+  }
+}
+
+/*
+ * The pill's three surfaces per theme, the reference's `[data-theme-nav]`
+ * pairs: card-bg with beige-100 ink and a black-200 aside on light, beige-100
+ * with black-400 on dark. SiteHeader writes `data-theme-nav` onto the header
+ * and onto <body> (as the reference does), so every pill on the page follows
+ * the bar; a section that declares its own `data-theme-section` recolours the
+ * pills inside it — the black closing band, for one.
+ */
+[data-theme-nav="light"],
+[data-theme-section="light"] {
+  --button-surface: var(--nav-card-bg);
+  --button-ink: var(--nav-beige-100);
+  --button-aside: var(--nav-black-200);
+  --button-arrow: var(--nav-beige-100);
+}
+
+[data-theme-nav="dark"],
+[data-theme-section="dark"] {
+  --button-surface: var(--nav-beige-100);
+  --button-ink: var(--nav-black-400);
+  --button-aside: var(--nav-black-400);
+  --button-arrow: var(--nav-beige-100);
 }
 
 .btn-pill_aside {
@@ -809,6 +857,809 @@ body::after {
 @media (width >= 768px) {
   .media_frame {
     aspect-ratio: var(--ratio-desktop);
+  }
+}
+
+/*
+ * Home About statement, from the reference's `problems_home_heading`
+ * (`text-style-h1 weight-bold`): h3 (32→56) at 700, -3% tracking, 1.1
+ * leading, 24ch measure, ink trimmed to the glyphs. Leading tightens to 1.0
+ * from 90rem; from 120rem it steps up to h2 (48→76) on a 27ch measure;
+ * under 30rem it drops to h4 (24→48) at 1.15. The reference sets its two
+ * paragraphs in one heading split by a blank line, so the gap between ours
+ * is that line: two line-heights baseline to baseline, less the trim.
+ */
+.about_statement {
+  display: flow-root;
+  max-width: 24ch;
+  color: #e8e8e3;
+  font-size: clamp(2rem, 1.625rem + 1.875vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-wrap: wrap;
+  font-feature-settings: "ss01", "ss07";
+}
+
+.about_statement::before,
+.about_statement::after {
+  content: "";
+  display: table;
+  margin-bottom: calc(-0.5lh + 0.38em);
+}
+
+/* The statements' face — weight, tracking, alternates — without their size
+   or measure, for the About numerals and award rows. Doubled on
+   .footer_nav_text so it outranks the award rows' own 500 weight. */
+.about_type,
+.footer_nav_text.about_type {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: normal;
+  font-feature-settings: "ss01", "ss07";
+}
+
+.about_statement + .about_statement {
+  margin-top: calc(2lh - 0.76em);
+}
+
+@media (min-width: 90rem) {
+  .about_statement {
+    line-height: 1;
+  }
+}
+
+@media (min-width: 120rem) {
+  .about_statement {
+    max-width: 27ch;
+    font-size: clamp(3rem, 2.5625rem + 2.1875vw, 4.75rem);
+  }
+}
+
+@media not (min-width: 30rem) {
+  .about_statement {
+    font-size: clamp(1.5rem, 1.125rem + 1.875vw, 3rem);
+    line-height: 1.15;
+  }
+}
+
+/*
+ * Selected work type, measured from the reference's `works_home_*` section
+ * and its `text-style-*` classes. Sizes are its fluid tokens (`--ref-*`
+ * below), each a clamp over the 320→1600px viewport: micro 9.6→10.4,
+ * xsmall 10.4→12, small 14→16, main 16→18, large 18→20, h5 22→24,
+ * h4 24→48, h3 32→56, h2 48→76, h1 80→96; display-small 64→128 over its
+ * own 320→1440px range. Breakpoints are its own (62 / 48 / 30rem).
+ *
+ * Colours are its beige/black stops on the default theme (16, which is the
+ * reference palette); every other stop falls back to the theme ramp so the
+ * section still reads on dark and tinted grounds.
+ */
+:root {
+  --ref-micro: clamp(0.6rem, 0.5875rem + 0.0625vw, 0.65rem);
+  --ref-xsmall: clamp(0.65rem, 0.625rem + 0.125vw, 0.75rem);
+  --ref-small: clamp(0.875rem, 0.84375rem + 0.15625vw, 1rem);
+  --ref-main: clamp(1rem, 0.96875rem + 0.15625vw, 1.125rem);
+  --ref-large: clamp(1.125rem, 1.09375rem + 0.15625vw, 1.25rem);
+  --ref-h5: clamp(1.375rem, 1.34375rem + 0.15625vw, 1.5rem);
+  --ref-h4: clamp(1.5rem, 1.125rem + 1.875vw, 3rem);
+  --ref-h3: clamp(2rem, 1.625rem + 1.875vw, 3.5rem);
+  --ref-h2: clamp(3rem, 2.5625rem + 2.1875vw, 4.75rem);
+  --ref-h1: clamp(5rem, 4.75rem + 1.25vw, 6rem);
+  --ref-display-small: clamp(4rem, 2.857rem + 5.714vw, 8rem);
+  --ref-space-1: clamp(0.375rem, 0.34375rem + 0.15625vw, 0.5rem);
+  --ref-space-2: clamp(0.625rem, 0.59375rem + 0.15625vw, 0.75rem);
+  --ref-space-3: clamp(0.875rem, 0.84375rem + 0.15625vw, 1rem);
+  --ref-space-4: clamp(1.25rem, 1.1875rem + 0.3125vw, 1.5rem);
+  --ref-space-5: clamp(1.75rem, 1.6875rem + 0.3125vw, 2rem);
+  --ref-space-6: clamp(2rem, 1.875rem + 0.625vw, 2.5rem);
+  --ref-space-7: clamp(2.25rem, 2.0625rem + 0.9375vw, 3rem);
+  --ref-space-8: clamp(2.5rem, 2.125rem + 1.875vw, 4rem);
+  --ref-section-medium: clamp(4rem, 3.25rem + 3.75vw, 7rem);
+  --ref-section-nav-overlap: clamp(7rem, 5.25rem + 8.75vw, 14rem);
+}
+
+.works {
+  --works-muted: var(--palette-muted);
+  --works-marker: var(--palette-muted);
+  --works-rule: var(--color--foreground--25);
+  --works-bar-rule: var(--color--foreground--15);
+}
+
+[data-theme="16"] .works {
+  --works-muted: #6b645c;
+  --works-marker: #938f8a;
+  --works-rule: #bfbfb1;
+  --works-bar-rule: #d1d1c7;
+}
+
+/* A `works` header on a black band keeps the band's muted tone. */
+[data-theme-section="dark"] .works {
+  --works-muted: var(--palette-muted);
+  --works-marker: var(--palette-muted);
+}
+
+/*
+ * The reference trims every text box to the glyphs (`--primary-trim-*`,
+ * 0.38em top and bottom), so its gaps are measured from ink, not from the
+ * line box. Same mechanism here, on the elements it applies to.
+ */
+:is(.works_eyebrow_text, .works_title, .works_p, .works_cta, .works_all_text) {
+  display: flow-root;
+}
+
+:is(.works_eyebrow_text, .works_title, .works_p, .works_cta, .works_all_text)::before,
+:is(.works_eyebrow_text, .works_title, .works_p, .works_cta, .works_all_text)::after {
+  content: "";
+  display: table;
+  margin-bottom: calc(-0.5lh + 0.38em);
+}
+
+/* `works_home_left` eyebrow: grey dot, text-large at 500. */
+.works_eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--ref-space-2);
+  width: fit-content;
+}
+
+.works_eyebrow_marker {
+  flex: none;
+  width: 0.85rem;
+  height: 0.85rem;
+  border-radius: 9999px;
+  background-color: var(--works-marker);
+}
+
+.works_eyebrow_text {
+  font-size: var(--ref-large);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  text-wrap: pretty;
+  font-feature-settings: "ss01", "ss07";
+}
+
+.works_list {
+  display: flex;
+  flex-direction: column;
+  row-gap: var(--space-5);
+}
+
+.works_item {
+  padding-bottom: var(--space-5);
+  border-bottom: 1px dotted var(--works-rule);
+}
+
+.works_item:last-child {
+  padding-bottom: 0;
+  border: 0;
+}
+
+/* Sized in text-main so its 39ch measure and the micrographic's em gap
+   resolve against the same font size as the reference's. */
+.works_content {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-width: 39ch;
+  padding-bottom: var(--ref-space-2);
+  font-size: var(--ref-main);
+  letter-spacing: -0.01em;
+}
+
+.works_micrographic {
+  display: flex;
+  align-items: center;
+  gap: 0.25em;
+}
+
+/* text-style-micro: its tracking is inherited from text-main in px, not
+   re-derived at the micro size. */
+.works_micro {
+  display: flex;
+  font-size: var(--ref-micro);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: calc(var(--ref-main) * -0.01);
+  font-feature-settings: "ss01", "ss07";
+}
+
+.works_micro_box {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  padding: 0.05rem 0.15rem;
+  border: 1px solid var(--palette-foreground);
+  border-radius: 0.15rem;
+}
+
+.works_title {
+  font-size: var(--ref-h5);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+  font-feature-settings: "ss01", "ss07";
+}
+
+.works_p {
+  color: var(--works-muted);
+  font-size: var(--ref-main);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  font-feature-settings: "ss01", "ss07";
+}
+
+/* Takes the slot of the reference's result label: text-main in full ink.
+   Block, not flex, so the trim pseudo-elements stay out of the row. */
+.works_cta {
+  font-size: var(--ref-main);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  font-feature-settings: "ss01", "ss07";
+}
+
+/* `works_home_cta_link`: h3 at 700, set solid. */
+.works_all {
+  padding-block: var(--space-5);
+  border-top: 1px solid var(--works-bar-rule);
+}
+
+.works_all_text {
+  font-size: var(--ref-h3);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  font-feature-settings: "ss01", "ss07";
+}
+
+/* ss09 swaps in the font's tall brackets around the arrow. */
+.works_all_arrow {
+  text-align: right;
+  font-feature-settings: "ss01", "ss09";
+}
+
+@media not (min-width: 48rem) {
+  .works_eyebrow_marker {
+    width: 0.65rem;
+    height: 0.65rem;
+  }
+
+  .works_eyebrow_text {
+    font-size: var(--ref-main);
+  }
+
+  /* text-style-h6 at medium weight */
+  .works_p {
+    font-size: var(--ref-main);
+    line-height: 1.1;
+  }
+
+  .works_all_text {
+    font-size: var(--ref-h4);
+  }
+}
+
+@media not (min-width: 30rem) {
+  .works_list {
+    row-gap: var(--space-4);
+  }
+
+  .works_item {
+    padding-bottom: 0;
+    border-bottom: 0;
+  }
+
+  /* text-style-h6, kept at bold */
+  .works_title {
+    font-size: var(--ref-main);
+    letter-spacing: -0.01em;
+  }
+
+  /* text-style-small */
+  .works_p {
+    font-size: var(--ref-small);
+    line-height: 1.25;
+  }
+}
+
+/*
+ * Services band, the reference's `services_home_*` ("What we can help
+ * with") rule for rule: a black-400 band, the testimonial slider in the
+ * left three columns and the service list from the fifth, its headings at
+ * h2 → h1 → display-small, 700, solid, -3%. One 4:5 frame rides the list's
+ * right edge to whichever row is active; the list sits above it in
+ * `difference`, so a heading inverts where it crosses the photograph.
+ *
+ * The band pins its own palette (the reference's beige/black stops) so
+ * it reads the same whatever theme the page is on.
+ */
+.svc_wrap {
+  --palette-background: #080807;
+  --palette-foreground: #e8e8e3;
+  --palette-muted: #938f8a;
+  --palette-rule: #393632;
+  --palette-chip: rgb(232 232 227 / 0.08);
+  --works-marker: #938f8a;
+
+  position: relative;
+  z-index: 2;
+  isolation: isolate;
+  background-color: #080807;
+  color: #e8e8e3;
+}
+
+/* Even padding: the bottom matches the top. */
+.svc_contain {
+  padding-top: var(--ref-section-nav-overlap);
+  padding-bottom: var(--ref-section-nav-overlap);
+}
+
+/* `services_home_stats`: three columns, capped at 28rem. */
+.svc_stats {
+  max-width: 28rem;
+}
+
+/* `problems_stats_navigation` */
+.svc_track {
+  position: relative;
+  height: 1px;
+  overflow: hidden;
+  background-color: #393632;
+}
+
+.svc_track_fill {
+  position: absolute;
+  inset: 0;
+  background-color: #e8e8e3;
+  transform: translateX(-100%);
+}
+
+.svc_nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: var(--ref-space-2);
+}
+
+.svc_nav_buttons {
+  display: flex;
+  gap: var(--ref-space-2);
+}
+
+.svc_nav_button {
+  display: flex;
+  width: 1rem;
+}
+
+/* `text-mono text-style-xsmall`. The reference sets Suisse Mono, which is
+   not licensed here; the system monospace stands in, as elsewhere. */
+.svc_mono {
+  color: #938f8a;
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: var(--ref-xsmall);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: calc(var(--ref-main) * -0.01);
+  text-transform: uppercase;
+  font-feature-settings: "ss01", "ss07";
+}
+
+.svc_collection {
+  margin-top: var(--ref-space-6);
+}
+
+/* Slides share one grid cell, so the tallest sets the height and a swap
+   never shifts what follows. */
+.svc_slides {
+  display: grid;
+}
+
+.svc_slide {
+  grid-area: 1 / 1;
+  display: flex;
+  flex-direction: column;
+  row-gap: var(--space-5);
+}
+
+/* Only the first slide shows before the slider script takes over. */
+.svc_slide:not(:first-child) {
+  opacity: 0;
+}
+
+.svc_message {
+  max-width: 30ch;
+  font-size: var(--ref-main);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  font-feature-settings: "ss01", "ss07";
+}
+
+.svc_byline {
+  display: flex;
+  align-items: center;
+  gap: var(--ref-space-2);
+  font-size: var(--ref-main);
+}
+
+/* `services_home_headshot`: a 2.5em disc. A monogram fills it here — the
+   site has no portraits of these clients. */
+.svc_headshot {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.5em;
+  height: 2.5em;
+  border-radius: 9999px;
+  background-color: #393632;
+  color: #e8e8e3;
+  font-size: 1em;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.svc_byline_text {
+  display: flex;
+  flex-direction: column;
+  row-gap: var(--ref-space-1);
+}
+
+.svc_name,
+.svc_role {
+  max-width: 25ch;
+  font-size: var(--ref-small);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  text-wrap: pretty;
+  font-feature-settings: "ss01", "ss07";
+}
+
+.svc_role {
+  color: #938f8a;
+}
+
+.svc_descriptor {
+  max-width: 54ch;
+  text-wrap: balance;
+}
+
+.svc_eyebrow {
+  margin-bottom: var(--ref-space-7);
+}
+
+.svc_content {
+  position: relative;
+}
+
+.svc_services {
+  position: relative;
+  z-index: 10;
+  mix-blend-mode: difference;
+}
+
+.svc_list {
+  display: flex;
+  flex-direction: column;
+  row-gap: var(--space-4);
+}
+
+.svc_item {
+  position: relative;
+  display: block;
+}
+
+.svc_heading {
+  position: relative;
+  z-index: 1;
+  mix-blend-mode: difference;
+  font-size: var(--ref-h2);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  font-feature-settings: "ss01", "ss07";
+}
+
+/* Text trim, as the reference's text styles. */
+:is(.svc_message, .svc_name, .svc_role, .svc_heading) {
+  display: flow-root;
+}
+
+:is(.svc_message, .svc_name, .svc_role, .svc_heading)::before,
+:is(.svc_message, .svc_name, .svc_role, .svc_heading)::after {
+  content: "";
+  display: table;
+  margin-bottom: calc(-0.5lh + 0.38em);
+}
+
+/* `services_home_img-wrap`: spans the list; GSAP moves it so its top sits
+   at the active row's centre, and each frame hangs from there by half its
+   height. */
+.svc_img_wrap {
+  position: absolute;
+  inset: 0 0 auto auto;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.svc_img_item {
+  position: absolute;
+  inset: 0 0 auto 0;
+  display: flex;
+  flex-direction: column;
+  transform: translateY(-50%);
+}
+
+.svc_img {
+  align-self: flex-end;
+  width: calc((100% - 11 * var(--grid-gutter)) / 12 * 3 + 2 * var(--grid-gutter));
+  aspect-ratio: 4 / 5;
+  border-radius: 0.15rem;
+  object-fit: cover;
+  opacity: 0;
+}
+
+@media (min-width: 90rem) {
+  .svc_heading {
+    font-size: var(--ref-h1);
+  }
+}
+
+@media (min-width: 120rem) {
+  .svc_heading {
+    font-size: var(--ref-display-small);
+  }
+
+  .svc_message {
+    font-size: var(--ref-h5);
+  }
+}
+
+/* Below 62rem the slider drops under the list, half width, after a
+   medium section gap. */
+@media not (min-width: 62rem) {
+  .svc_stats {
+    padding-top: var(--ref-section-medium);
+  }
+}
+
+@media not (min-width: 30rem) {
+  .svc_list {
+    row-gap: var(--ref-space-3);
+  }
+
+  .svc_heading {
+    font-size: var(--ref-h3);
+  }
+
+  .svc_message {
+    max-width: 35ch;
+    font-size: var(--ref-small);
+  }
+}
+
+/*
+ * Venture cards. Name and line are the reference's principles list
+ * (`about_values_heading` / `about_values_p`): h6 (16→18) at 700, 1.1
+ * leading, -1%; text-small (14→16) at 500, 1.25 leading, -1%, black-100,
+ * balanced — both trimmed to the glyphs, a space-4 gap between. The card
+ * ground is the reference's beige-200 on the default theme and the theme's
+ * chip tint elsewhere.
+ */
+.venture_cards {
+  --venture-ground: var(--palette-chip);
+  --venture-ground-hover: var(--color--foreground--5);
+  --venture-muted: var(--palette-muted);
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--grid-gutter);
+}
+
+[data-theme="16"] .venture_cards {
+  --venture-ground: #ddddd5;
+  --venture-ground-hover: #d1d1c7;
+  --venture-muted: #6b645c;
+}
+
+/* On a black band (the Ventures section) the cards take the band's own
+   ramp whatever the page theme: a faint white chip that lifts on hover. */
+[data-theme-section="dark"] .venture_cards {
+  --venture-ground: rgb(255 255 255 / 0.06);
+  --venture-ground-hover: rgb(255 255 255 / 0.1);
+  --venture-muted: var(--palette-muted);
+}
+
+.venture_card {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: var(--space-5);
+  border-radius: 0.15rem;
+  background-color: var(--venture-ground);
+  transition: background-color 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.venture_card:hover {
+  background-color: var(--venture-ground-hover);
+}
+
+/* A fixed-height slot, so every card's copy starts on the same line
+   whatever its mark's shape. */
+.venture_logo {
+  display: flex;
+  align-items: center;
+  height: 3.5rem;
+  margin-bottom: var(--ref-space-6);
+}
+
+.venture_logo img {
+  max-height: 100%;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.venture_body {
+  display: flex;
+  flex-direction: column;
+  row-gap: var(--space-4);
+}
+
+.venture_title {
+  font-size: var(--ref-main);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  font-feature-settings: "ss01", "ss07";
+}
+
+.venture_p {
+  color: var(--venture-muted);
+  font-size: var(--ref-small);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  font-feature-settings: "ss01", "ss07";
+}
+
+:is(.venture_title, .venture_p) {
+  display: flow-root;
+}
+
+:is(.venture_title, .venture_p)::before,
+:is(.venture_title, .venture_p)::after {
+  content: "";
+  display: table;
+  margin-bottom: calc(-0.5lh + 0.38em);
+}
+
+.venture_link {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: auto;
+  padding-top: var(--ref-space-6);
+  font-size: var(--ref-small);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+@media (min-width: 30rem) {
+  .venture_cards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 62rem) {
+  .venture_cards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 80rem) {
+  .venture_cards {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+}
+
+/* The marks are full colour on the light themes; on the dark stops they go
+   monochrome light, as the brand wall's do. */
+:is(
+    [data-theme="00"],
+    [data-theme="01"],
+    [data-theme="02"],
+    [data-theme="03"],
+    [data-theme="04"],
+    [data-theme="05"],
+    [data-theme="06"],
+    [data-theme="07"],
+    [data-theme="08"]
+  )
+  .venture_logo img {
+  filter: grayscale(1) invert(1) contrast(1.15);
+  mix-blend-mode: screen;
+}
+
+/* A dark mark set in plain white on the black band, whatever the theme.
+   After the rule above so it wins at equal specificity. */
+.venture_logo img.is-white {
+  filter: brightness(0) invert(1);
+}
+
+/*
+ * Selected work hover, from the reference's `works_home_overlay` and
+ * `reel_home_cover`: the cover darkens and blurs while a second frame swings
+ * up into it on a tilted plane. Fixed ink rather than the foreground token,
+ * so the dimming reads the same in either theme. Pointer devices only, as
+ * the reference; touch gets the plain cover.
+ */
+.works_overlay {
+  position: absolute;
+  inset: 0;
+  background-color: color-mix(in srgb, #080807 80%, transparent);
+  opacity: 0;
+  transition:
+    opacity 0.2s cubic-bezier(0.25, 0, 0.25, 1),
+    backdrop-filter 0.85s var(--nav-expo-out);
+}
+
+.works_reel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--section-space-small);
+  pointer-events: none;
+}
+
+.works_reel_card {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  overflow: clip;
+  border-radius: 0.15rem;
+  opacity: 0;
+  transform-style: preserve-3d;
+  transform: scale(0.95) perspective(600px) translateY(75%) perspective(500px) rotateX(18deg);
+  transition:
+    opacity 0.15s cubic-bezier(0.25, 0, 0.25, 1),
+    transform 0.85s var(--nav-expo-out);
+}
+
+.works_reel_card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .works_item:hover .works_overlay {
+    opacity: 1;
+    backdrop-filter: blur(2px) sepia();
+  }
+
+  .works_item:hover .works_reel_card {
+    opacity: 1;
+    transform: translateY(0) rotateX(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .works_reel_card {
+    transform: none;
   }
 }
 
@@ -2182,6 +3033,8 @@ body {
   line-height: 1.25;
   font-weight: 500;
   letter-spacing: -0.01em;
+  /* Multi-word labels ("Work With Me") hold one line. */
+  white-space: nowrap;
 }
 
 /*
@@ -2234,20 +3087,6 @@ body {
 
 .navbar_cta_contain {
   will-change: transform;
-}
-
-/*
- * The CTA's label is the reference's `text-style-small` — text-small, weight
- * 500, -0.01em — not the site pill's tighter tracking; the pill's em-based
- * padding and aside scale off the cluster's font size.
- */
-.navbar_cta_contain .btn-pill {
-  font-weight: 500;
-  letter-spacing: -0.01em;
-}
-
-.navbar_cta_contain .btn-pill_text {
-  font-size: var(--nav-text-small);
 }
 
 /* Sound toggle: a 2em chip holding a 1.1em speaker. */
@@ -2313,10 +3152,6 @@ body {
   .navbar_links,
   .navbar_cta_wrap {
     font-size: var(--nav-text-main);
-  }
-
-  .navbar_cta_contain .btn-pill_text {
-    font-size: var(--nav-text-large);
   }
 
   .navbar_link_text {
@@ -2405,13 +3240,6 @@ body {
   background-color: var(--nav-beige-400);
 }
 
-[data-theme-nav="light"] .navbar_cta_contain {
-  --button-surface: var(--nav-card-bg);
-  --button-ink: var(--nav-beige-100);
-  --button-aside: var(--nav-black-200);
-  --button-arrow: var(--nav-beige-100);
-}
-
 [data-theme-nav="dark"] .navbar_contain,
 [data-theme-nav="dark"] .navbar_home,
 [data-theme-nav="dark"] .navbar_menu_span {
@@ -2420,13 +3248,6 @@ body {
 
 [data-theme-nav="dark"] .navbar_left_sound_container {
   background-color: var(--nav-card-bg);
-}
-
-[data-theme-nav="dark"] .navbar_cta_contain {
-  --button-surface: var(--nav-beige-100);
-  --button-ink: var(--nav-black-400);
-  --button-aside: var(--nav-black-400);
-  --button-arrow: var(--nav-beige-100);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -4463,10 +5284,22 @@ body:has(.pg-root.is-zoomed) .preq-trigger {
   transition: filter 0.45s ease;
 }
 
-li:hover > .brand-wall__logo {
+/* Descendant, not child: the collaborations marks sit inside a link. */
+li:hover .brand-wall__logo {
   filter: grayscale(0) opacity(1);
 }
 
+/* On a black band (the press mastheads inside About), multiply would sink
+   every mark into the ground: invert to light marks and screen them on, as
+   the dark themes below do. */
+[data-theme-section="dark"] .brand-wall__logo {
+  filter: grayscale(1) invert(1) contrast(1.15) opacity(0.65);
+  mix-blend-mode: screen;
+}
+
+[data-theme-section="dark"] li:hover .brand-wall__logo {
+  filter: grayscale(1) invert(1) contrast(1.15);
+}
 /*
  * The collaborations marquee: a track holding two copies of the logo run,
  * translating one copy's width on a linear loop. The strip is feathered at
@@ -4542,3 +5375,286 @@ li:hover > .brand-wall__logo {
   mix-blend-mode: screen;
 }
 
+
+/*
+ * FAQ, the reference's `faq_home_*` section and `accordion_css_*` rows rule
+ * for rule: a card-bg ground (#181715) on a 12-column grid — the eyebrow
+ * top-left, the headshot, line and CTA pinned to the foot of those four
+ * columns, the heading and accordion over the other eight. Rows sit on
+ * dotted rules over a solid foot; hovering or opening one fills it beige,
+ * pushes the question 10px right and the 6px square 10px left, filled. The
+ * answer opens on the grid-rows trick at the reference's curve.
+ *
+ * The palette is pinned like the other dark bands so the eyebrow marker,
+ * pill and muted copy read on the card whatever the page theme.
+ */
+.faq_wrap {
+  --palette-background: #181715;
+  --palette-foreground: #e8e8e3;
+  --palette-muted: #938f8a;
+  --palette-rule: #393632;
+  --palette-chip: rgb(232 232 227 / 0.08);
+  --faq-square: #524d47;
+  --faq-fill: #e8e8e3;
+  --faq-fill-ink: #080807;
+
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-template-rows: auto auto;
+  column-gap: var(--grid-gutter);
+  row-gap: 16px;
+  place-items: start;
+  padding: var(--ref-section-medium) var(--grid-margin) var(--ref-space-5);
+  background-color: #181715;
+  color: #e8e8e3;
+}
+
+.faq_left {
+  grid-area: span 1 / span 4;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  row-gap: var(--ref-space-2);
+}
+
+.faq_main {
+  grid-area: span 2 / span 8;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  row-gap: var(--ref-space-8);
+  width: 100%;
+}
+
+.faq_heading {
+  max-width: 16ch;
+  font-size: var(--ref-h2);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  font-feature-settings: "ss01", "ss07";
+}
+
+.faq_content {
+  grid-area: span 1 / span 4;
+  align-self: end;
+  justify-self: stretch;
+  display: flex;
+  flex-direction: column;
+  row-gap: var(--ref-space-4);
+}
+
+/* The reference's --column-width-4, which it resolves against the
+   headshot's own container (the four-column left block), not the page: a
+   third of that block, ~140px at 1440. */
+.faq_headshot {
+  width: calc((100% - 11rem) / 12 * 4 + 3rem);
+  aspect-ratio: 1;
+  border-radius: 0.15rem;
+  object-fit: cover;
+  object-position: 50% 20%;
+}
+
+.faq_p {
+  max-width: 15ch;
+  color: var(--palette-muted);
+  font-size: var(--ref-h5);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  text-wrap: balance;
+  font-feature-settings: "ss01", "ss07";
+}
+
+.faq_list {
+  width: 100%;
+  border-bottom: 1px solid var(--palette-rule);
+}
+
+.faq_item {
+  border-top: 1px dotted var(--palette-rule);
+}
+
+.faq_top {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding-block: var(--ref-space-3);
+  text-align: left;
+  cursor: pointer;
+}
+
+.faq_bg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition: background-color 0.65s cubic-bezier(0.16, 1, 0.35, 1);
+}
+
+.faq_q {
+  position: relative;
+  margin: 0;
+  font-size: var(--ref-large);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  font-feature-settings: "ss01", "ss07";
+  transition:
+    transform 0.65s cubic-bezier(0.16, 1, 0.35, 1),
+    color 0.65s cubic-bezier(0.16, 1, 0.35, 1);
+}
+
+.faq_square {
+  position: relative;
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border: 1px solid var(--faq-square);
+  border-radius: 100vw;
+  transition:
+    transform 0.65s cubic-bezier(0.16, 1, 0.35, 1),
+    background-color 0.65s cubic-bezier(0.16, 1, 0.35, 1);
+}
+
+.faq_bottom {
+  display: grid;
+  grid-template-rows: 0fr;
+  overflow: hidden;
+  transition: grid-template-rows 0.6s cubic-bezier(0.625, 0.05, 0, 1);
+}
+
+.faq_bottom_wrap {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.faq_contain {
+  display: flex;
+  column-gap: 5rem;
+  padding-block: clamp(1.25rem, 1.1875rem + 0.3125vw, 1.5rem);
+}
+
+.faq_a {
+  max-width: 55ch;
+  color: var(--palette-muted);
+  font-size: var(--ref-main);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  font-feature-settings: "ss01", "ss07";
+}
+
+.faq_item[data-open] .faq_bottom {
+  grid-template-rows: 1fr;
+}
+
+.faq_item[data-open] .faq_bg {
+  background-color: var(--faq-fill);
+}
+
+.faq_item[data-open] .faq_q {
+  color: var(--faq-fill-ink);
+  transform: translateX(10px);
+}
+
+.faq_item[data-open] .faq_square {
+  background-color: var(--faq-fill-ink);
+  transform: translateX(-10px);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .faq_top:hover .faq_bg {
+    background-color: var(--faq-fill);
+  }
+
+  .faq_top:hover .faq_q {
+    color: var(--faq-fill-ink);
+    transform: translateX(10px);
+  }
+
+  .faq_top:hover .faq_square {
+    background-color: var(--faq-fill-ink);
+    transform: translateX(-10px);
+  }
+}
+
+.faq_top:focus-visible .faq_bg {
+  background-color: var(--faq-fill);
+}
+
+.faq_top:focus-visible .faq_q {
+  color: var(--faq-fill-ink);
+}
+
+@media (min-width: 120rem) {
+  .faq_top {
+    padding-block: var(--ref-space-4);
+  }
+
+  .faq_q {
+    font-size: var(--ref-h5);
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -0.015em;
+  }
+}
+
+@media not (min-width: 62rem) {
+  .faq_wrap {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .faq_left {
+    margin-bottom: var(--ref-space-3);
+  }
+
+  /* Its --column-width-2, on the stacked full-width column. */
+  .faq_headshot {
+    width: calc((100% - 11rem) / 12 * 2 + 1rem);
+  }
+
+  .faq_content {
+    margin-top: var(--section-space-small);
+  }
+}
+
+@media not (min-width: 48rem) {
+  .faq_top {
+    padding-block: 1rem;
+  }
+
+  .faq_contain {
+    flex-direction: column;
+  }
+
+  .faq_p {
+    max-width: 23ch;
+  }
+}
+
+@media not (min-width: 30rem) {
+  .faq_heading {
+    font-size: var(--ref-h3);
+  }
+
+  .faq_q {
+    max-width: 29ch;
+    text-wrap: balance;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .faq_bg,
+  .faq_q,
+  .faq_square,
+  .faq_bottom {
+    transition: none;
+  }
+}

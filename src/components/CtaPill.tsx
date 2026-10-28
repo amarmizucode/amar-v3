@@ -5,30 +5,23 @@ import { CornerArrow } from "@/components/CornerArrow";
  * hover while a text-shadow duplicate rises into its place, and the arrow
  * pair travels diagonally; see the `.btn-pill*` rules in globals.css.
  *
- * Colour comes from `--button-surface` / `--button-ink` / `--button-aside` /
- * `--button-arrow` on any ancestor, as on the reference; unset, the pill is
- * the page's inversion.
+ * Colour and type are the nav's everywhere: the `--button-*` pairs keyed on
+ * `data-theme-nav` / `data-theme-section` in globals.css, and
+ * `text-style-small` metrics. Nothing is sized per call site.
  */
 export function CtaPill({
   label,
   href = "#contact",
-  /** Tailwind size class; the pill's padding and arrow are em-based so they scale with it. */
-  size = "text-[15px]",
   className = "",
   onClick,
 }: {
   label: string;
   href?: string;
-  size?: string;
   className?: string;
   onClick?: () => void;
 }) {
   return (
-    <a
-      href={href}
-      onClick={onClick}
-      className={`btn-pill font-medium tracking-[-0.03em] ${size} ${className}`}
-    >
+    <a href={href} onClick={onClick} className={`btn-pill ${className}`}>
       <span className="btn-pill_text_contain">
         <span className="btn-pill_text">{label}</span>
       </span>
