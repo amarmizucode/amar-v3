@@ -15,18 +15,19 @@ import { AI_SERVICES, AiIcon, aiHref } from "@/components/AiIcons";
 /*
  * Root-relative rather than bare hashes: the header renders on the
  * /photography routes too, where a plain `#ventures` would resolve against the
- * current page and go nowhere. SmoothScroll only intercepts `href^="#"`, so
- * these fall through to normal navigation off the home page and still scroll
- * smoothly once on it.
+ * current page and go nowhere. SmoothScroll matches `/#` hrefs while on the
+ * home page, so these scroll smoothly there and navigate from anywhere else.
  */
 const NAV = [
   // About is removed for now — restore by adding
   // { label: "About", href: "/about" } back here, with the route.
+  // Work With Me is removed too — restore with
+  // { label: "Work With Me", href: "/#work-with-me" }; the section itself
+  // still exists, and the footer's Contact entry still reaches the page.
   { label: "Photography", href: "/photography" },
   { label: "Films", href: "/documentary" },
   { label: "Publications", href: "/books" },
   { label: "Ventures", href: "/#ventures" },
-  { label: "Work With Me", href: "/#work-with-me" },
 ];
 
 /*

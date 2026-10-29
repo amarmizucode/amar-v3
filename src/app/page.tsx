@@ -475,10 +475,11 @@ export default function Home() {
              monochrome at rest. The header keeps the shell; the strip
              bleeds past it. Its eyebrow is Selected work's, so the wrapper
              takes `works` for the marker colour. Padding both sides: the
-             About band above is filled, so its own padding sits inside the
-             black. The bottom is deeper, to part the strip from Selected
-             work below. ────────────────────────────────────────────── */}
-        <section className="pt-20 pb-36 md:pt-28 md:pb-56">
+             About band above is filled, so its own padding already sits
+             inside the black and the top here only has to clear it. The
+             bottom stays deeper, to part the strip from Selected work
+             below. ──────────────────────────────────────────────────── */}
+        <section className="pt-12 pb-36 md:pt-16 md:pb-56">
           <div className="works shell">
             <Reveal>
               <h2 className="works_eyebrow">
@@ -685,7 +686,7 @@ export default function Home() {
              eyebrow, heading and intro), so the wrapper takes `works` for
              the marker colour. The three sit in one row from 62rem —
              eyebrow over the first three columns, heading 5–8, intro 10–12,
-             bottom-aligned — and stack below it. A black band continuing
+             top-aligned — and stack below it. A black band continuing
              the services band above, on its `svc_wrap` ground and palette;
              `data-theme-section="dark"` turns the bar beige and the cards to
              their dark ramp. ──────────────────────────────────────────── */}
@@ -698,7 +699,7 @@ export default function Home() {
           className="svc_wrap -mt-px py-20 md:py-28"
         >
           <div className="shell">
-            <div className="works grid-12 items-end gap-y-6">
+            <div className="works grid-12 items-start gap-y-6">
               <Reveal className="col-span-12 min-[62rem]:col-span-3">
                 <p className="works_eyebrow">
                   <span aria-hidden className="works_eyebrow_marker" />

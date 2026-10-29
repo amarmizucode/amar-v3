@@ -157,28 +157,60 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
     };
 
     /*
-     * In-page anchors, delegated. The smoother translates the content rather
-     * than really scrolling it, so a native hash jump has nothing to move —
+     * Scrolls to a hash target, or returns false if this page has no such
+     * element. The smoother translates the content rather than really
+     * scrolling it, so a native hash jump has nothing to move —
      * `smoother.scrollTo` is what actually gets there. `#top` has no offset to
      * resolve, so it goes straight to 0.
      */
+    const goToHash = (hash: string, animate: boolean) => {
+      if (hash.length < 2) return false;
+      const destination = hash === "#top" ? 0 : document.querySelector(hash);
+      if (destination === null) return false;
+      smoother.scrollTo(destination, animate, "top top");
+      return true;
+    };
+
+    /*
+     * In-page anchors, delegated. Both bare (`#ventures`) and root-relative
+     * (`/#ventures`) hrefs are caught: the header and footer use the latter so
+     * the links also work from /photography and the other routes, and on the
+     * home page those would otherwise fall through to a Next.js navigation
+     * that re-renders without ever moving the smoother.
+     */
     const onClick = (event: MouseEvent) => {
       if (event.defaultPrevented || event.metaKey || event.ctrlKey || event.shiftKey) return;
-      const link = (event.target as Element | null)?.closest?.('a[href^="#"]');
-      if (!link) return;
+      const anchor = (event.target as Element | null)?.closest?.("a");
+      const href = anchor?.getAttribute("href");
+      if (!href) return;
 
-      const hash = link.getAttribute("href")!;
-      if (hash.length < 2) return;
+      // Same-document only: a bare hash, or a root-relative one while we are
+      // on the page that owns it. Anything else is a real navigation.
+      let hash: string | null = null;
+      if (href.startsWith("#")) hash = href;
+      else if (href.startsWith("/#") && window.location.pathname === "/") hash = href.slice(1);
+      if (!hash) return;
 
-      const destination = hash === "#top" ? 0 : document.querySelector(hash);
-      if (destination === null) return;
-
+      if (!goToHash(hash, true)) return;
       event.preventDefault();
-      smoother.scrollTo(destination, true, "top top");
       history.pushState(null, "", hash);
     };
 
     document.addEventListener("click", onClick);
+
+    /*
+     * Arriving from another route with a hash (`/#ventures` from
+     * /photography). The browser's own jump happens before the smoother
+     * exists, and ScrollSmoother resets to the top on create, so the landing
+     * position has to be re-applied here. Unanimated: this is an arrival, not
+     * a gesture, and it waits a frame for layout to settle so the target's
+     * offset is final.
+     */
+    let arrival = 0;
+    if (window.location.hash) {
+      const hash = window.location.hash;
+      arrival = requestAnimationFrame(() => goToHash(hash, false));
+    }
 
     /*
      * Capture phase, and non-passive. `normalizeScroll: true` installs an
@@ -193,6 +225,7 @@ export function SmoothScroll({ children }: { children: ReactNode }) {
     window.addEventListener("touchcancel", release, true);
 
     return () => {
+      cancelAnimationFrame(arrival);
       document.removeEventListener("click", onClick);
       window.removeEventListener("touchstart", onTouchStart, { capture: true });
       window.removeEventListener("touchmove", onTouchMove, opts);

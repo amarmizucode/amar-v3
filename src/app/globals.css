@@ -252,8 +252,8 @@ body::after {
  *   U             63   -> 0.0630em
  *   B D E F H I K L M N P R  68 -> 0.0680em
  *
- * KH Teka's bearings run far tighter than Inter's, which these values were
- * previously measured from, so the whole set shrank when the family changed.
+ * These are measured from KH Teka's own outlines; its bearings run tight, so
+ * the whole set is smaller than a looser family would need.
  */
 :root {
   --lsb-A: 0.008em;
@@ -5406,7 +5406,10 @@ li:hover .brand-wall__logo {
   column-gap: var(--grid-gutter);
   row-gap: 16px;
   place-items: start;
-  padding: var(--ref-section-medium) var(--grid-margin) var(--ref-space-5);
+  /* Even top and bottom. The bottom was --ref-space-5 (under 2rem), a
+     quarter of the top, and `.faq_content` is align-self: end — so the
+     headshot and its CTA sat all but flush against the band's edge. */
+  padding: var(--ref-section-medium) var(--grid-margin);
   background-color: #181715;
   color: #e8e8e3;
 }

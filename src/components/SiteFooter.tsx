@@ -1,11 +1,10 @@
 import { CornerArrow, RightArrow } from "@/components/Arrows";
-import { SectionLabel } from "@/components/SectionLabel";
 import { AI_SERVICES, AiIcon, aiHref } from "@/components/AiIcons";
 
-/* The copy document's footer navigation, in its order. Work and Ventures are
-   home-page sections; the rest are pages. */
+/* The copy document's footer navigation, in its order. Ventures and Contact
+   are home-page sections; the rest are pages. Work is removed — restore by
+   putting "Work" back at the head of this list, with its `/#works` href. */
 const NAV_FOOTER = [
-  "Work",
   "Photography",
   "Films",
   "Books",
@@ -15,7 +14,6 @@ const NAV_FOOTER = [
 
 /** Where each footer nav item points. Most are home-page anchors. */
 const NAV_HREF: Record<string, string> = {
-  Work: "/#works",
   Photography: "/photography",
   Films: "/documentary",
   Books: "/books",
@@ -44,9 +42,17 @@ export function SiteFooter() {
   <footer className="footer_wrap_main relative">
     <div className="footer_wrap">
       <div className="footer_top">
-        {/* 6 columns: eyebrow above the nav list. */}
+        {/* 6 columns: eyebrow above the nav list. Set with the Contact
+            section's eyebrow classes rather than SectionLabel, so the two
+            titles match exactly — SectionLabel is shared with four other
+            sections, which keep their own smaller, tighter label. */}
         <div className="footer_eyebrow">
-          <SectionLabel>Navigation</SectionLabel>
+          {/* `works` carries the marker/muted tokens the eyebrow reads; on
+              the footer it resolves them from the inverted footer palette. */}
+          <p className="works works_eyebrow">
+            <span aria-hidden className="works_eyebrow_marker" />
+            <span className="works_eyebrow_text">Navigation</span>
+          </p>
 
           <nav>
             <ul className="footer_nav_ul">

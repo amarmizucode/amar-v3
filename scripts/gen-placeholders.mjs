@@ -59,7 +59,7 @@ function svg(w, h, seed, label) {
   <rect width="${w}" height="${h}" fill="url(#${id})"/>
   <g filter="url(#b${seed})">${blobs}</g>
   <rect width="${w}" height="${h}" fill="none" stroke="rgba(0,0,0,.18)" stroke-width="1"/>
-  ${label ? `<text x="24" y="${h - 24}" font-family="Inter,system-ui,sans-serif" font-size="${Math.max(12, Math.round(h * 0.035))}" fill="rgba(255,255,255,.72)" font-weight="500">${label}</text>` : ""}
+  ${label ? `<text x="24" y="${h - 24}" font-family="KH Teka,system-ui,sans-serif" font-size="${Math.max(12, Math.round(h * 0.035))}" fill="rgba(255,255,255,.72)" font-weight="500">${label}</text>` : ""}
 </svg>`;
 }
 
