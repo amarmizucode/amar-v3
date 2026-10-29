@@ -30,4 +30,12 @@ export const DUR = {
   stagger: 0.05,
 } as const;
 
+/**
+ * For `gsap.matchMedia`: devices where the site's hover effects can't run.
+ * The exact complement of the `(hover: hover) and (pointer: fine)` the CSS
+ * gates hover on, so a device gets the hover version or the scroll-driven
+ * stand-in, never both.
+ */
+export const NO_HOVER = "not all and (hover: hover) and (pointer: fine)";
+
 export { gsap, ScrollTrigger, ScrollSmoother, SplitText, CustomEase };

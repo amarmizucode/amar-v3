@@ -36,8 +36,9 @@ export function ClosingCta({ children }: { children: ReactNode }) {
       // the two read as the same kind of interruption. The image trail needs
       // room to travel, which a min-height used to force on top of the
       // padding — between them the band ran far taller than its neighbours,
-      // so the height comes from the padding alone now.
-      className="relative isolate flex flex-col items-center justify-center overflow-clip bg-black text-white py-28 md:py-44"
+      // so the height comes from the padding alone now. Desktop only: on a
+      // phone the band is dropped and the FAQ leads straight into Contact.
+      className="relative isolate hidden flex-col items-center justify-center overflow-clip bg-black text-white py-28 md:flex md:py-44"
     >
       {children}
     </section>

@@ -10,8 +10,16 @@ import type { Gallery } from "@/lib/photography";
 /** The slot the enlarged slide occupies: the 4th of seven, as the reference. */
 export const CENTER_SLOT = 3;
 
+/**
+ * On a phone the strip runs three slots to the screen instead of seven, so
+ * the enlarged slide — twice a slot — fills two thirds of it, with the
+ * neighbours showing half a slot either side. Its centre slot is the 2nd.
+ */
+const MOBILE_CENTER_SLOT = 1;
+
 /** Slides run at 100% of the row width, so the layout breakpoint is a viewport width. */
 const DESKTOP = "(min-width: 650px)";
+const MOBILE = "(max-width: 649.98px)";
 
 /**
  * Filmstrip carousel — a port of iamrossmason.com's HomeCarousel, kept
@@ -95,8 +103,13 @@ export function GalleryCarousel({
           .to(texts, { yPercent: 0, opacity: 1, stagger: 0.05 }, 0.1);
       }
 
-      /* ── Desktop strip ─────────────────────────────────────────────── */
-      mm.add(DESKTOP, () => {
+      /* ── Strip ─────────────────────────────────────────────────────── */
+      // One engine at every width; only the slot count (in CSS) and the
+      // centre slot change. Split by breakpoint so crossing it re-measures
+      // and re-centres from scratch.
+      mm.add({ desktop: DESKTOP, mobile: MOBILE }, (context) => {
+        const centerSlot = context.conditions?.desktop ? CENTER_SLOT : MOBILE_CENTER_SLOT;
+
         type Slot = {
           el: HTMLElement;
           b: { left: number; right: number; width: number };
@@ -255,7 +268,9 @@ export function GalleryCarousel({
           t -= dy;
           window.clearTimeout(snapTimer);
           snapTimer = window.setTimeout(() => {
-            t = doSnap(t);
+            // A finger held still mid-drag must not have the strip snap out
+            // from under it; the release re-arms the snap.
+            if (!dragging) t = doSnap(t);
           }, 100);
         };
 
@@ -318,8 +333,12 @@ export function GalleryCarousel({
           dragging = false;
           dragId = -1;
           wrap.classList.remove("is-grabbing");
+          if (!dragged) return;
+          // A pause before lifting the finger is a placement, not a throw.
+          if (performance.now() - velAt > 60) vel = 0;
           // Carry the throw: the tick decays this to nothing, then snaps.
-          if (dragged) fling = vel * 16;
+          fling = vel * 16;
+          scroll(0);
         };
 
         // A drag ends in a click on whichever slide was under the pointer.
@@ -333,7 +352,7 @@ export function GalleryCarousel({
         resize();
         // Open with the first slide in the centre slot: scroll the strip back
         // by the slots before it, so the wrapped tail fills the left side.
-        t = tc = -CENTER_SLOT * increase;
+        t = tc = -centerSlot * increase;
         transforms();
         classes();
         gsap.ticker.add(tick);

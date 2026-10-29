@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
-import { RightArrow } from "@/components/Arrows";
+import { useRouter } from "next/navigation";
 import { gsap, CustomEase } from "@/lib/gsap";
 import { usePageReady } from "@/components/PageTransition";
 import { usePrintRequest } from "@/components/PrintRequest";
@@ -25,15 +24,14 @@ import type { Frame, Gallery } from "@/lib/photography";
  * wheel, keys or a swipe move to the next/previous frame; closing flies the
  * hero back to that frame's nearest tile.
  */
-export function GalleryCanvas({
-  gallery,
-  next,
-  prev,
-}: {
-  gallery: Gallery;
-  next: Gallery;
-  prev: Gallery;
-}) {
+export function GalleryCanvas({ gallery }: { gallery: Gallery }) {
+  // Read through a ref inside the canvas effect, which runs once per gallery.
+  const router = useRouter();
+  const routerRef = useRef(router);
+  useEffect(() => {
+    routerRef.current = router;
+  }, [router]);
+
   const root = useRef<HTMLDivElement>(null);
   const vp = useRef<HTMLDivElement>(null);
   const cv = useRef<HTMLDivElement>(null);
@@ -231,7 +229,7 @@ export function GalleryCanvas({
 
     const onDown = (e: PointerEvent) => {
       if (mode !== "gallery") return;
-      if ((e.target as Element).closest(".pg-lg,.pg-nav,.pg-sides,.pg-hud,header")) return;
+      if ((e.target as Element).closest(".pg-lg,.pg-nav,.pg-hud,header")) return;
       isDrag = true;
       hasMoved = false;
       ancX = e.clientX;
@@ -865,10 +863,23 @@ export function GalleryCanvas({
 
     const onStackClick = (e: MouseEvent) => { if (e.target === stackEl) closeLarge(); };
     const onKey = (e: KeyboardEvent) => {
+      /*
+       * On the canvas itself Escape is the way back out to the index. Not
+       * while the mobile menu is open: its own Escape closes it, and this
+       * document listener would otherwise run first and leave the page as
+       * well.
+       */
+      if (mode === "gallery" && e.key === "Escape") {
+        if (document.querySelector('[data-navigation-status="is-open"]')) return;
+        routerRef.current.push("/photography");
+        return;
+      }
       if (mode !== "large") return;
       if (e.key === "Escape") closeLarge();
-      if (e.key === "ArrowDown" || e.key === "ArrowRight") navLg(1);
-      if (e.key === "ArrowUp" || e.key === "ArrowLeft") navLg(-1);
+      // Up is forward, as a swipe up is on a phone and as the viewer's hint
+      // says; right/left keep their usual next/previous.
+      if (e.key === "ArrowUp" || e.key === "ArrowRight") navLg(1);
+      if (e.key === "ArrowDown" || e.key === "ArrowLeft") navLg(-1);
     };
     const onClose = () => closeLarge();
 
@@ -996,76 +1007,20 @@ export function GalleryCanvas({
 
   return (
     <div ref={root} className="pg-root" data-mode="gallery">
-      {/* Behind the frames: the gallery name alone, centred on both axes. */}
-      <div className="pg-stage" aria-hidden>
-        <span className="pg-title-text">{gallery.title}</span>
-      </div>
-
       <div ref={vp} className="pg-vp">
         <div ref={cv} className="pg-cv" />
       </div>
       <div className="pg-vig" aria-hidden />
 
-      {/* Sibling galleries, one to each side: previous on the left, next on
-          the right. Each is built like the CTA pill — the label slides up to a
-          duplicate drawn by its own text-shadow, and the arrow pair travels
-          diagonally — so the interaction matches the buttons everywhere else
-          on the site. On a phone the label is hidden and these become icon
-          buttons, which is why each carries an explicit aria-label: it is the
-          only accessible name once the visible text is gone. */}
-      <nav className="pg-sides">
-        <Link
-          href={`/photography/${next.slug}`}
-          className="pg-side pg-side-next"
-          aria-label={`Next gallery: ${next.title}`}
-        >
-          <span className="pg-side_text_contain">
-            <span className="pg-side_text">
-              [{next.index}] {next.title}
-            </span>
-          </span>
-          <span className="pg-side_aside">
-            <span className="pg-side_aside_bg" />
-            <RightArrow className="pg-side_icon" />
-            <RightArrow className="pg-side_icon is-absolute" />
-          </span>
-        </Link>
-
-        <Link
-          href={`/photography/${prev.slug}`}
-          className="pg-side pg-side-prev"
-          aria-label={`Previous gallery: ${prev.title}`}
-        >
-          <span className="pg-side_aside">
-            <span className="pg-side_aside_bg" />
-            <RightArrow className="pg-side_icon" back />
-            <RightArrow className="pg-side_icon is-absolute" back />
-          </span>
-          <span className="pg-side_text_contain">
-            <span className="pg-side_text">
-              [{prev.index}] {prev.title}
-            </span>
-          </span>
-        </Link>
-      </nav>
-
       {/* The page's heading and its state line. The counter is also the
           viewer's frame readout, so it stays in the DOM in both modes. */}
-      {/* Heading and the way back out, centred along the bottom edge as plain
-          type — the filled cards are the edge-pinned next/previous buttons,
-          and repeating that treatment here would crowd the frames. */}
       <div className="pg-hud">
-        <h1 className="pg-hud-title">
+        {/* The page's heading, for the outline only: the viewer's bar shows
+            the name while a frame is open, and the canvas carries no title. */}
+        <h1 className="sr-only">
           [{gallery.index}] {gallery.title}
         </h1>
-
         <nav className="pg-nav grid text-[13px] font-medium uppercase leading-[1.3] tracking-[0.04em]">
-          <div className="pg-nav-links col-start-1 row-start-1 flex items-center justify-center gap-x-5">
-            <Link href="/photography" className="link-wipe text-muted transition-colors hover:text-foreground">
-              All photography
-            </Link>
-          </div>
-
           {/* Kept mounted but empty in gallery mode: the canvas effect returns
               early without this element, and it is the viewer's frame counter
               (see .pg-bar, which is where it actually shows). */}
@@ -1078,38 +1033,41 @@ export function GalleryCanvas({
       </div>
 
       {/*
-        The viewer's own top bar, which stands in for the site header while a
-        frame is open. It reuses the header's shell + 12-column grid and its
-        type sizes, so "[01] Weddings" lands exactly where "Amar Ramesh" sits
-        and Close lands on the menu button: the gallery name at columns 1-5,
-        the frame counter centred, Close at the right edge.
+        The viewer's own chrome while a frame is open (the site header is
+        hidden then): the gallery's name with the frame count at the top
+        left, where the wordmark sits, and Close at the top right — on a
+        phone the only way out besides tapping off the photograph; along the
+        bottom, the print-request toggle with the way to the next frame under
+        it, worded per input.
       */}
       <div className="pg-bar" aria-hidden={false}>
-        <div className="pg-bar_contain shell grid-12 items-center">
-          <p className="pg-bar_title col-span-8 flex min-w-0 items-center justify-start text-[15px] font-semibold uppercase tracking-[-0.01em] md:col-span-5">
-            [{gallery.index}] {gallery.title}
+        <div className="pg-bar_contain shell flex min-h-11 items-center justify-between gap-x-4">
+          <p className="pg-bar_meta flex min-w-0 items-baseline gap-x-3 text-[15px] tracking-[-0.01em]">
+            <span className="pg-bar_title min-w-0 font-semibold uppercase">
+              [{gallery.index}] {gallery.title}
+            </span>
+            <span className="pg-bar_count flex-none font-medium tracking-[-0.03em]">
+              <span ref={barCount} className="inline-block" />
+            </span>
           </p>
 
-          <div className="pg-bar_close col-start-9 col-span-4 flex items-center justify-end md:col-start-11 md:col-span-2">
+          <div className="pg-bar_close flex flex-none items-center">
             <button
               ref={closeBtn}
               type="button"
               aria-label="Close image"
-              className="pg-bar_close_btn relative -mr-[var(--nav-space-1)] flex min-h-[44px] items-center justify-center text-[15px] font-medium tracking-[-0.03em]"
+              className="pg-bar_close_btn relative -mr-(--nav-space-1) flex min-h-11 items-center justify-center gap-x-2 text-[15px] font-medium tracking-[-0.03em]"
               style={{ padding: "0.25rem var(--nav-space-1)" }}
             >
               Close
+              <kbd aria-hidden className="pg-bar_kbd">
+                esc
+              </kbd>
             </button>
           </div>
         </div>
 
-        {/* The frame counter with the print-request toggle beneath it, centred
-            along the bottom edge on every width — clear of the photograph
-            rather than sitting in the bar with the title and Close. */}
         <div className="pg-bar_foot">
-          <p className="pg-bar_count text-[15px] font-medium tracking-[-0.03em]">
-            <span ref={barCount} className="inline-block" />
-          </p>
           {openFrame && (
             <button
               type="button"
@@ -1121,6 +1079,10 @@ export function GalleryCanvas({
               {inRequests ? "✓ Saved for print" : "Request a print"}
             </button>
           )}
+          <p className="pg-bar_hint text-[13px] font-medium tracking-[-0.01em]">
+            <span className="pg-bar_hint-touch">Scroll up for next image</span>
+            <span className="pg-bar_hint-pointer">Scroll up or press ↑ for next image</span>
+          </p>
         </div>
       </div>
 

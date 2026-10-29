@@ -23,9 +23,10 @@ const isExternal = (href: string) => /^https?:\/\//i.test(href);
  * name and line set as the reference's principles list (`about_values_*`),
  * and the link to it at the foot. The whole card is the link.
  *
- * One column on a phone, two from 30rem, three from 62rem, all five in a row
- * from 80rem. External sites open in a new tab; an internal path stays a
- * plain same-tab anchor so the route curtain picks it up.
+ * A native snap carousel on a phone, two columns from 30rem, three from
+ * 62rem, all five in a row from 80rem. External sites open in a new tab; an
+ * internal path stays a plain same-tab anchor so the route curtain picks it
+ * up.
  */
 export function VentureCards({ ventures }: { ventures: VentureCard[] }) {
   return (

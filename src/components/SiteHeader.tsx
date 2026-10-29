@@ -8,9 +8,8 @@ import { usePageReady } from "@/components/PageTransition";
 import { CtaPill } from "@/components/CtaPill";
 import { SoundToggle } from "@/components/SoundToggle";
 import { PrintRequestTrigger } from "@/components/PrintRequestDock";
-import { CornerArrow } from "@/components/Arrows";
-import { SOCIALS } from "@/components/SiteFooter";
-import { AI_SERVICES, AiIcon, aiHref } from "@/components/AiIcons";
+import { RightArrow } from "@/components/Arrows";
+import { galleryBySlug } from "@/lib/photography";
 
 /*
  * Root-relative rather than bare hashes: the header renders on the
@@ -26,23 +25,33 @@ const NAV = [
   // still exists, and the footer's Contact entry still reaches the page.
   { label: "Photography", href: "/photography" },
   { label: "Films", href: "/documentary" },
-  { label: "Publications", href: "/books" },
+  { label: "Books", href: "/books" },
   { label: "Ventures", href: "/#ventures" },
 ];
 
 /*
- * The sheet lists what the footer lists — Home first, Contact last — so a
- * phone has everything the footer offers without scrolling down to it. The
- * bar keeps NAV: there the wordmark is Home and the CTA is Contact.
+ * The sheet lists NAV plus Contact, as the reference's menu does — its rows
+ * are its nav pages with Contact closing the list, no Home entry: the
+ * wordmark above the panel is Home, and the bar's CTA still reaches the
+ * contact section directly.
  */
-const MOBILE_NAV = [{ label: "Home", href: "/" }, ...NAV, { label: "Contact", href: "/#contact" }];
+const MOBILE_NAV = [...NAV, { label: "Contact", href: "/#contact" }];
 
-/* Relative luminance of a computed `rgb(...)` colour; null if unparseable. */
+/* Relative luminance of an `rgb(...)` or `#rgb` / `#rrggbb` colour (theme
+   tokens resolve to hex, computed colours to rgb); null if unparseable. */
 function luminance(color: string): number | null {
-  const m = color.match(/[\d.]+/g);
-  if (!m || m.length < 3) return null;
-  const [r, g, b] = m.slice(0, 3).map((v) => {
-    const c = Number(v) / 255;
+  let channels: number[];
+  const hex = color.trim().match(/^#([0-9a-f]{3}|[0-9a-f]{6})$/i);
+  if (hex) {
+    const h = hex[1].length === 3 ? hex[1].replace(/./g, "$&$&") : hex[1];
+    channels = [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16));
+  } else {
+    const m = color.match(/[\d.]+/g);
+    if (!m || m.length < 3) return null;
+    channels = m.slice(0, 3).map(Number);
+  }
+  const [r, g, b] = channels.map((v) => {
+    const c = v / 255;
     return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4;
   });
   return 0.2126 * r + 0.7152 * g + 0.0722 * b;
@@ -58,6 +67,8 @@ export function SiteHeader() {
   const ready = usePageReady();
   const root = useRef<HTMLElement>(null);
   const isHome = pathname === "/";
+  // On a gallery the wordmark continues as a breadcrumb: Photography / <name>.
+  const crumbGallery = galleryBySlug(pathname.match(/^\/photography\/([^/]+)/)?.[1] ?? "");
 
   /*
    * A link that leaves the page would otherwise leave the sheet open behind
@@ -118,6 +129,15 @@ export function SiteHeader() {
   useEffect(() => {
     const bar = root.current;
     if (!ready || !bar) return;
+    // The home hero owns the bar's entrance there: it hides the bar on mount
+    // and raises the wordmark, links and CTA inside its own timeline, so the
+    // header comes in step with the hero. Running this intro as well put two
+    // tweens on the same elements — on a reload the bar showed empty for
+    // ~0.7s, then filled in after the hero had settled.
+    if (isHome) {
+      played.current = true;
+      return;
+    }
     // Later pages: just make sure the bar is up. The home hero hides it for
     // its own entrance and, reverting on unmount, leaves it at the CSS
     // hidden state when the visitor navigates away.
@@ -126,10 +146,10 @@ export function SiteHeader() {
       return;
     }
     played.current = true;
-    const stagger = isHome ? 0.0525 : 0.0625;
+    const stagger = 0.0625;
     intro.current = gsap.context(() => {
       const tl = gsap.timeline({ defaults: { ease: "ease-transition" } });
-      tl.from(".navbar_home", { yPercent: 100, duration: 0.95, rotate: 0.001 }, isHome ? 0.3 : 0.25)
+      tl.from(".navbar_home", { yPercent: 100, duration: 0.95, rotate: 0.001 }, 0.25)
         .to(bar, { autoAlpha: 1, duration: 0 }, "<")
         .from(".navbar_links_li", { yPercent: 100, duration: 0.95, rotate: 0.001, stagger }, "<")
         .from(
@@ -170,7 +190,14 @@ export function SiteHeader() {
         if (r.top <= y && r.bottom >= y) theme = section.dataset.themeSection ?? null;
       });
       if (!theme) {
-        const l = luminance(getComputedStyle(document.body).backgroundColor);
+        // The stop's own ground token, not body's computed background: that
+        // fades for 0.3s on a theme change (`body[data-theme]` in globals.css),
+        // so read the moment the stop switches it still gave the old colour —
+        // a gallery's black page kept the white page's dark ink.
+        const body = getComputedStyle(document.body);
+        const ground =
+          body.getPropertyValue("--color--background--100").trim() || body.backgroundColor;
+        const l = luminance(ground);
         theme = l !== null && l < 0.5 ? "dark" : "light";
       }
       // Header and body both, as the reference sets every `[data-theme-nav]`:
@@ -233,6 +260,26 @@ export function SiteHeader() {
           <Link href="/" aria-label="Return to home" className="navbar_home">
             Amar Ramesh
           </Link>
+
+          {/* The wordmark is the trail's first step; the separators are drawn
+              by `.navbar_crumbs_li::before`. Keyed by gallery so the rise
+              replays when one gallery leads to another. */}
+          {crumbGallery && (
+            <nav key={crumbGallery.slug} aria-label="Breadcrumb" className="navbar_crumbs">
+              <ol className="navbar_crumbs_ol">
+                <li className="navbar_crumbs_li">
+                  <Link href="/photography" className="navbar_crumbs_link">
+                    Photography
+                  </Link>
+                </li>
+                <li className="navbar_crumbs_li">
+                  <span aria-current="page" className="navbar_crumbs_current">
+                    {crumbGallery.title}
+                  </span>
+                </li>
+              </ol>
+            </nav>
+          )}
         </div>
 
         <nav className="navbar_links text-style-small text-trim-off" aria-label="Primary">
@@ -279,10 +326,11 @@ export function SiteHeader() {
       </div>
 
       {/*
-       * The sheet and the bar are siblings inside the same fixed header, and
-       * the header paints no background of its own — so the sheet must cover
-       * the page (z-10) while the bar sits above it (z-20), keeping the
-       * wordmark and the toggle that closes it clickable.
+       * The sheet and the bar are siblings inside the same fixed header; the
+       * bar (z-20) stays above the sheet (z-10), so the wordmark, the CTA and
+       * the Menu/Close toggle stay visible and clickable over the panel — the
+       * reference's layering, where the open menu recolours the bar rather
+       * than hiding it (see the is-open rules in globals.css).
        *
        * Always mounted so it can animate out as well as in; `inert` keeps the
        * closed sheet out of the tab order and the accessibility tree. The
@@ -295,13 +343,23 @@ export function SiteHeader() {
         aria-label="Menu"
         data-open={open || undefined}
         inert={!open}
-        className="mobile-menu pointer-events-auto fixed inset-0 z-10 bg-background md:hidden"
+        className="mobile-menu fixed inset-0 z-10 md:hidden"
       >
-        <div className="mobile-menu_inner shell">
+        {/* The reference's `menu_overlay_close`: the page behind the panel,
+            dimmed and blurred, and one tap from closing the sheet. */}
+        <button
+          type="button"
+          aria-label="Close menu"
+          onClick={() => setOpen(false)}
+          className="mobile-menu_scrim"
+        />
+
+        {/* The reference's `menu_contain`: a black panel 55dvh deep under
+            the bar, its rows bottom-aligned and set like the footer's list. */}
+        <div className="mobile-menu_panel">
           <nav aria-label="Primary">
             <ul className="mobile-menu_ul">
               {MOBILE_NAV.map((item, i) => {
-                // Home matches itself alone: no other path starts with "//".
                 const current = pathname === item.href || pathname.startsWith(`${item.href}/`);
                 return (
                   <li
@@ -318,11 +376,8 @@ export function SiteHeader() {
                       <span className="mobile-menu_clip">
                         <span className="mobile-menu_label">{item.label}</span>
                       </span>
-                      <span className="mobile-menu_index">
-                        {current && (
-                          <span aria-hidden className="size-1.5 rounded-full bg-foreground" />
-                        )}
-                        {String(i + 1).padStart(2, "0")}
+                      <span aria-hidden className="mobile-menu_arrow">
+                        <RightArrow className="inline-arrow" />
                       </span>
                     </a>
                   </li>
@@ -330,61 +385,6 @@ export function SiteHeader() {
               })}
             </ul>
           </nav>
-
-          <div className="mobile-menu_foot mobile-menu_fade">
-            <CtaPill label="Get in Touch" href="/#contact" onClick={() => setOpen(false)} />
-
-            {/* The footer's three blocks, in its order and wording. */}
-            <div className="mobile-menu_details">
-              <div>
-                <p className="text-muted">(Personal details)</p>
-                <a href="mailto:hello@amarramesh.com" className="link-wipe">
-                  hello@amarramesh.com
-                </a>
-              </div>
-              <div>
-                <p className="text-muted">(Socials)</p>
-                <ul>
-                  {SOCIALS.map((social) => (
-                    <li key={social.label}>
-                      <a
-                        href={social.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-[0.3em]"
-                      >
-                        {social.label}
-                        <CornerArrow className="w-[0.75em]" />
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <p className="text-muted">(Ask AI About Me)</p>
-                {/* The footer's chips: 2.5em squares on their own font size. */}
-                <div className="footer_middle_wrap is-ai text-[16px]">
-                  {AI_SERVICES.map((service) => (
-                    <a
-                      key={service.name}
-                      href={aiHref(service.name)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      title={`Ask ${service.label} about Amar Ramesh`}
-                      className="footer_ai_link"
-                    >
-                      <span className="sr-only">Ask {service.label} about Amar Ramesh</span>
-                      <AiIcon name={service.name} instance="menu" className="h-full w-full" />
-                    </a>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <p className="mobile-menu_base text-muted">
-              <span>© 2026, Amar Ramesh</span>
-            </p>
-          </div>
         </div>
       </div>
     </header>

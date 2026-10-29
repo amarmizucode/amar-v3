@@ -7,6 +7,7 @@ import { PrintRequestProvider } from "@/components/PrintRequest";
 import { PrintRequestDock } from "@/components/PrintRequestDock";
 import { AppControls } from "@/components/AppControls";
 import { CursorBubble } from "@/components/CursorBubble";
+import { GALLERY_THEME_SCRIPT } from "@/lib/theme";
 
 // KH Teka ships as static instances, not a variable font, so each weight is
 // its own file. There is no semibold: the family steps Medium (500) straight
@@ -25,8 +26,29 @@ const khTeka = localFont({
   display: "swap",
 });
 
+// The hero statement's face: KH Teka Bold again, with its vertical metrics
+// overridden to tile the statement's 0.78 leading. The font's own ascent +
+// descent is 1.20em (0.953 + 0.250), and Chrome paints each line's selection
+// highlight and its text together, line by line — so at 0.78 every line's
+// highlight reached 0.42em up and painted over the line above. 60% + 18%
+// sums to exactly 0.78: the highlights tile edge to edge, never overlap, and
+// 18% still clears the lowest descender ink. A separate face so the override
+// touches nothing but the statement (`.display-statement` in globals.css).
+const khTekaStatement = localFont({
+  src: "./fonts/KHTekaTRIAL-Bold.woff2",
+  weight: "700",
+  style: "normal",
+  variable: "--font-kh-teka-statement",
+  display: "swap",
+  declarations: [
+    { prop: "ascent-override", value: "60%" },
+    { prop: "descent-override", value: "18%" },
+    { prop: "line-gap-override", value: "0%" },
+  ],
+});
+
 export const metadata: Metadata = {
-  title: "Amar Ramesh — The camera was just the beginning",
+  title: "Amar Ramesh — Camera was only the beginning of everything",
   description:
     "Photographer, filmmaker, author and mentor. What started with photography has taken me into the fascinating worlds of art, architecture, culture, films and books.",
 };
@@ -37,7 +59,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     // React must accept the class the DOM has rather than the one it rendered.
     <html
       lang="en"
-      className={`${khTeka.variable} h-full antialiased`}
+      className={`${khTeka.variable} ${khTekaStatement.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>
@@ -54,8 +76,20 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       {/* data-theme is the server's starting stop only. AppControls owns the
           attribute from mount on, so 16 — the ramp's white, its own
           DEFAULT_STOP — is what the first paint shows before the slider or
-          prefers-color-scheme moves it. */}
-      <body className="min-h-full flex flex-col font-sans" data-theme="16" data-theme-nav="light">
+          prefers-color-scheme moves it. The exception is a gallery page: the
+          script below puts it on black before the first paint, so the body
+          must accept the attributes the DOM has rather than the ones rendered
+          here, as <html> does for `preloaded`. */}
+      <body
+        className="min-h-full flex flex-col font-sans"
+        data-theme="16"
+        data-theme-nav="light"
+        suppressHydrationWarning
+      >
+        {/* First in the body, so it runs as soon as <body> exists: a gallery
+            otherwise painted white and faded to black once AppControls
+            hydrated. */}
+        <script dangerouslySetInnerHTML={{ __html: GALLERY_THEME_SCRIPT }} />
         {/* Header and curtain live here so they persist across routes; the
             preloader inside PageTransition plays once per visit. The print
             request selection wraps both so a pick made inside a gallery is

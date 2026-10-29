@@ -342,12 +342,61 @@ body::after {
  * sized to exactly that box), which is what was cropping the glyphs. The fix
  * is on the masks below, not on the leading.
  */
+/*
+ * The hero's left paragraph takes the reference's own type for this slot.
+ * Its `.hero_home_left-p` is `text-style-large`, which resolves to
+ * --text-large (18→20px fluid over a 320→1600px viewport),
+ * --line-height-large (1.25) and --letter-spacing-subtle (-0.01em).
+ *
+ * Size: 24px from 1280px up (the shared --text-lede, kept by decision — the
+ * reference's own is 18–20px), easing to 18px at 320px. The leading is the
+ * reference's --line-height-medium (1.1) rather than the 1.25 its own slot
+ * uses: at 24px a 1.25 ratio gives a 30px line box against the reference's
+ * 25px, which read loose; 1.1 recovers that compactness on the larger type.
+ * Tracking is the reference's --letter-spacing-subtle. The shared --text-lede
+ * tokens stay as they are for the other ledes (AboutHero, DocumentaryIndex).
+ *
+ * The measure is in em, so the paragraph keeps one shape at every size:
+ *
+ *   Photography opened doors to art,
+ *   culture, and new places. Every
+ *   discovery leads to another, and
+ *   there's still so much more
+ *   to explore.
+ *
+ * Measured from the Medium outlines at this tracking, that shape holds for
+ * 14.62em <= width < 15.76em (the widest of its lines, and the narrowest
+ * line-plus-next-word that must not fit); 15em sits mid-window. It needs
+ * "to explore." kept together — see the nowrap span in Hero.tsx.
+ *
+ * No `text-wrap: pretty` here, though the works_* text uses it: on this
+ * paragraph it changed nothing (it only guards single-word last lines),
+ * and with it set SplitText found no lines at 1536px, so the entrance
+ * animation skipped the paragraph there.
+ */
+.hero_content_p {
+  font-size: clamp(1.125rem, 1rem + 0.625vw, 1.5rem);
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  max-width: 15em;
+}
+
+/*
+ * The statement sets in its own metric-overridden face (see layout.tsx) so
+ * drag-selection highlights tile the 0.78 leading instead of each line's
+ * painting over the line above. With ascent 0.60 the glyphs sit 0.14em
+ * higher in each line box than under the font's own metrics; the top
+ * padding gives that back, so the type lands exactly where it did and still
+ * tops out level with the copy column.
+ */
 .display-statement {
+  font-family: var(--font-kh-teka-statement), var(--font-kh-teka), sans-serif;
   font-weight: 700;
   text-transform: none;
   line-height: 0.78;
   letter-spacing: -0.03em;
   font-size: clamp(2.75rem, 8.75vw, 9.25rem);
+  padding-top: 0.14em;
 }
 
 /*
@@ -362,6 +411,10 @@ body::after {
  * the clip-path alone then does the cropping. The lines' hidden position in
  * Hero.tsx starts at yPercent 140 (not the usual 110) so a line still clears
  * this taller window before its reveal.
+ *
+ * Intro-only: Hero.tsx reverts the split once the entrance has played, so
+ * none of this governs the settled page — selection, find-in-page and
+ * copying all see one intact paragraph.
  */
 .display-statement .split-line-mask {
   overflow: visible !important;
@@ -465,76 +518,117 @@ body::after {
 }
 
 /*
- * Mobile menu sheet.
+ * Mobile menu — the reference's `menu_wrap` below 48rem, markup for markup:
+ * a black-400 panel 55dvh deep under the bar (`menu_contain`), its rows
+ * bottom-aligned and set like the footer's nav list (f-h3, dotted rules,
+ * the arrow easing in), with the rest of the page dimmed and blurred behind
+ * `menu_overlay_close`, which closes on tap. The wrap itself takes no
+ * pointer events; the scrim and the panel re-enable their own while open,
+ * so the closed sheet never swallows a touch.
  *
- * Opening, the sheet wipes down from under the bar, then each row's label
- * rises out of its clip while its dotted rule draws in from the left, one row
- * after another; the contact block fades up last. Closing runs
- * the same moves in reverse with every delay dropped, so it gets out of the
- * way quickly. Delays live only on the open state for that reason.
+ * Opening, the panel wipes down from under the bar while each row's label
+ * rises out of its clip and its dotted rule draws in from the left, one row
+ * after another. Closing runs the same moves in reverse with every delay
+ * dropped, so it gets out of the way quickly. Delays live only on the open
+ * state for that reason.
  */
 .mobile-menu {
+  pointer-events: none;
+  color: var(--nav-beige-100);
   visibility: hidden;
-  clip-path: inset(0 0 100% 0);
-  transition:
-    clip-path 0.55s var(--nav-ease),
-    visibility 0s linear 0.55s;
+  transition: visibility 0s linear 0.6s;
 }
 
 .mobile-menu[data-open] {
   visibility: visible;
-  clip-path: inset(0);
-  transition:
-    clip-path 0.8s var(--nav-expo-out),
-    visibility 0s;
+  transition: none;
 }
 
-.mobile-menu_inner {
+.mobile-menu_scrim {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  border: 0;
+  background-color: color-mix(in srgb, var(--nav-black-400) 65%, transparent);
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 0.4s ease;
+}
+
+.mobile-menu[data-open] .mobile-menu_scrim {
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity 0.6s ease 0.1s;
+}
+
+.mobile-menu_panel {
+  position: relative;
   display: flex;
   flex-direction: column;
-  height: 100%;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  /* Clear the bar: its padding either side of the 44px toggle. */
-  padding-top: calc(var(--site-margin) * 2 + 44px + var(--f-space-4));
-  padding-bottom: calc(var(--site-margin) + env(safe-area-inset-bottom));
+  justify-content: flex-end;
+  align-items: flex-start;
+  width: 100%;
+  height: 55dvh;
+  /* The reference's pads: section-space above (under the bar), the page
+     margin either side, space-4 under the last rule. */
+  padding: var(--section-space-small) var(--grid-margin) var(--space-4);
+  background-color: var(--nav-black-400);
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 0.55s var(--nav-ease);
+}
+
+.mobile-menu[data-open] .mobile-menu_panel {
+  pointer-events: auto;
+  clip-path: inset(0);
+  transition: clip-path 0.8s var(--nav-expo-out);
+}
+
+/* The nav would otherwise shrink to its widest label under the panel's
+   align-items: flex-start, cutting the rules short of the margin. */
+.mobile-menu_panel nav {
+  width: 100%;
+}
+
+.mobile-menu_ul {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
 }
 
 .mobile-menu_li {
   --row-delay: calc(0.18s + var(--i) * 0.07s);
   position: relative;
+  width: 100%;
 }
 
-/* Dotted rule above every row, plus one closing off the last. */
-.mobile-menu_li::before,
-.mobile-menu_li:last-child::after {
+/* Dotted rule under every row and none above the first, as the reference's
+   rows carry a bottom border only — on the panel's own dark palette. */
+.mobile-menu_li::after {
   content: "";
   position: absolute;
   inset-inline: 0;
-  top: 0;
-  border-top: 1px dotted var(--color--foreground--25);
+  bottom: 0;
+  border-top: 1px dotted var(--nav-black-200);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.4s var(--nav-ease);
 }
 
-.mobile-menu_li:last-child::after {
-  top: auto;
-  bottom: 0;
-}
-
-.mobile-menu[data-open] .mobile-menu_li::before,
-.mobile-menu[data-open] .mobile-menu_li:last-child::after {
+.mobile-menu[data-open] .mobile-menu_li::after {
   transform: scaleX(1);
   transition: transform 1s var(--nav-expo-out) var(--row-delay);
 }
 
 .mobile-menu_link {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: var(--nav-space-2);
-  padding-block: clamp(0.75rem, 3.2vw, 1.125rem);
+  width: 100%;
+  /* The footer rows' pitch. */
+  padding-block: clamp(0.625rem, 0.5rem + 0.625vw, 0.875rem);
   -webkit-tap-highlight-color: transparent;
   transition: opacity 0.2s ease;
 }
@@ -546,18 +640,19 @@ body::after {
 .mobile-menu_clip {
   display: block;
   overflow: clip;
-  /* Room for the caps' overshoot inside the clip. */
-  padding-block: 0.04em;
+  /* Room for ascenders and descenders inside the clip. */
+  padding-block: 0.08em;
 }
 
 .mobile-menu_label {
   display: block;
-  font-size: min(11vw, 4.5rem);
-  font-weight: 600;
-  line-height: 0.95;
-  letter-spacing: -0.035em;
-  text-transform: uppercase;
-  transform: translateY(105%);
+  /* The footer rows' type, as the reference's menu reuses its footer list:
+     f-h3, 500, tight — sentence case, not caps. */
+  font-size: var(--f-h3);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  transform: translateY(115%);
   transition: transform 0.45s var(--nav-ease);
 }
 
@@ -566,81 +661,29 @@ body::after {
   transition: transform 1s var(--nav-expo-out) var(--row-delay);
 }
 
-/* The row's number, top-aligned to the caps like a footnote mark. */
-.mobile-menu_index {
-  display: inline-flex;
+/* The footer rows' arrow, resting offset and blurred. It eases in on hover
+   or focus, and sits settled on the current page's row — the one addition
+   over the reference, which marks no current page. */
+.mobile-menu_arrow {
+  display: flex;
   flex: none;
   align-items: center;
-  gap: 0.4em;
-  padding-top: 0.35em;
-  font-size: 13px;
-  font-weight: 500;
-  font-variant-numeric: tabular-nums;
-  color: var(--palette-muted);
+  font-size: var(--f-h3);
   opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.mobile-menu_link[aria-current="page"] .mobile-menu_index {
-  color: var(--palette-foreground);
-}
-
-.mobile-menu[data-open] .mobile-menu_index {
-  opacity: 1;
-  transition: opacity 0.6s ease calc(var(--row-delay) + 0.25s);
-}
-
-/* Contact block: pinned to the foot, or below the list if the screen is short. */
-.mobile-menu_foot {
-  display: flex;
-  flex-direction: column;
-  gap: var(--f-space-5);
-  margin-top: auto;
-  padding-top: var(--f-space-7);
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: -0.03em;
-}
-
-.mobile-menu_details {
-  display: flex;
-  flex-direction: column;
-  row-gap: var(--f-space-3);
-}
-
-.mobile-menu_details p {
-  margin-bottom: 0.25em;
-}
-
-.mobile-menu_details ul {
-  display: flex;
-  flex-wrap: wrap;
-  column-gap: var(--f-space-4);
-}
-
-.mobile-menu_base {
-  display: flex;
-  justify-content: space-between;
-  padding-top: var(--f-space-3);
-  border-top: 1px solid var(--palette-rule);
-  font-size: 13px;
-  text-transform: uppercase;
-}
-
-.mobile-menu_fade {
-  opacity: 0;
-  transform: translateY(0.75rem);
+  filter: blur(3px);
+  transform: translateX(-25px);
   transition:
-    opacity 0.25s ease,
-    transform 0.4s var(--nav-ease);
+    transform 0.65s var(--nav-ease),
+    opacity 0.3s var(--nav-ease),
+    filter 0.3s var(--nav-ease);
 }
 
-.mobile-menu[data-open] .mobile-menu_fade {
+.mobile-menu_link:hover .mobile-menu_arrow,
+.mobile-menu_link:focus-visible .mobile-menu_arrow,
+.mobile-menu_link[aria-current="page"] .mobile-menu_arrow {
   opacity: 1;
-  transform: translateY(0);
-  transition:
-    opacity 0.7s ease 0.45s,
-    transform 1s var(--nav-expo-out) 0.45s;
+  filter: blur(0);
+  transform: translateX(0);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -651,7 +694,7 @@ body::after {
     transition: none !important;
   }
 
-  .mobile-menu {
+  .mobile-menu_panel {
     clip-path: none;
   }
 }
@@ -836,10 +879,6 @@ body::after {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .pg-side,
-  .pg-side_text,
-  .pg-side_aside_bg,
-  .pg-side_icon,
   .btn-pill,
   .btn-pill_text,
   .btn-pill_aside_bg,
@@ -1176,8 +1215,9 @@ body::after {
 }
 
 @media not (min-width: 30rem) {
+  /* No divider between rows here, so the gap alone has to part them. */
   .works_list {
-    row-gap: var(--space-4);
+    row-gap: var(--section-space-small);
   }
 
   .works_item {
@@ -1492,7 +1532,6 @@ body::after {
   --venture-muted: var(--palette-muted);
 
   display: grid;
-  grid-template-columns: minmax(0, 1fr);
   gap: var(--grid-gutter);
 }
 
@@ -1586,6 +1625,31 @@ body::after {
   letter-spacing: -0.01em;
 }
 
+/*
+ * Below the two-column stop the row is a native snap carousel, as the
+ * photography strip's small mode: one card and a sliver of the next per
+ * screen, bled out of the shell's margin to the screen edge so swiped
+ * cards leave at the glass rather than dying at the padding.
+ */
+@media (width < 30rem) {
+  .venture_cards {
+    display: flex;
+    margin-inline: calc(-1 * var(--grid-margin));
+    padding-inline: var(--grid-margin);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: var(--grid-margin);
+    scrollbar-width: none;
+  }
+  .venture_cards::-webkit-scrollbar {
+    display: none;
+  }
+  .venture_cards > li {
+    flex: 0 0 78%;
+    scroll-snap-align: start;
+  }
+}
+
 @media (min-width: 30rem) {
   .venture_cards {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1604,26 +1668,13 @@ body::after {
   }
 }
 
-/* The marks are full colour on the light themes; on the dark stops they go
-   monochrome light, as the brand wall's do. */
-:is(
-    [data-theme="00"],
-    [data-theme="01"],
-    [data-theme="02"],
-    [data-theme="03"],
-    [data-theme="04"],
-    [data-theme="05"],
-    [data-theme="06"],
-    [data-theme="07"],
-    [data-theme="08"]
-  )
-  .venture_logo img {
-  filter: grayscale(1) invert(1) contrast(1.15);
-  mix-blend-mode: screen;
-}
+/* The marks stay full colour on every theme stop. They used to go monochrome
+   on the dark stops (00-08), as the brand wall's do, but the dark stops are
+   what a dark-mode device lands on, so phones showed them grey. The band is
+   black on every stop, so the light stops already set these colours on the
+   same ground. */
 
-/* A dark mark set in plain white on the black band, whatever the theme.
-   After the rule above so it wins at equal specificity. */
+/* A dark mark set in plain white on the black band, whatever the theme. */
 .venture_logo img.is-white {
   filter: brightness(0) invert(1);
 }
@@ -1633,7 +1684,7 @@ body::after {
  * `reel_home_cover`: the cover darkens and blurs while a second frame swings
  * up into it on a tilted plane. Fixed ink rather than the foreground token,
  * so the dimming reads the same in either theme. Pointer devices only, as
- * the reference; touch gets the plain cover.
+ * the reference; on touch, WorksActiveOnScroll plays it on scroll instead.
  */
 .works_overlay {
   position: absolute;
@@ -1684,6 +1735,18 @@ body::after {
     opacity: 1;
     transform: translateY(0) rotateX(0) scale(1);
   }
+}
+
+/* Touch has no hover, so there the same reveal follows scroll instead:
+   WorksActiveOnScroll sets `is-active` while a row's cover is mid-viewport. */
+.works_item.is-active .works_overlay {
+  opacity: 1;
+  backdrop-filter: blur(2px) sepia();
+}
+
+.works_item.is-active .works_reel_card {
+  opacity: 1;
+  transform: translateY(0) rotateX(0) scale(1);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2949,7 +3012,12 @@ body {
   inset: 0 0 auto;
   z-index: 999;
   width: 100%;
-  padding: var(--site-margin);
+  /* Block padding only, on --site-margin (the bar's own height rhythm, which
+     the intro and the scrolled state are tuned to). The inline margin belongs
+     to .navbar_contain below, so it sits INSIDE the capped width the way
+     `.shell` does — applying it here would push the bar 36px off the page
+     grid past --grid-max. */
+  padding-block: var(--site-margin);
   /* Hidden until the intro timeline flips autoAlpha, as on the reference. */
   visibility: hidden;
   opacity: 0;
@@ -2963,7 +3031,18 @@ body {
   grid-template-columns: repeat(12, minmax(0, 1fr));
   grid-template-rows: auto;
   grid-auto-columns: minmax(0, 1fr);
-  gap: var(--nav-site-gutter);
+  /* `.shell` exactly: capped, centred, and padded inside the cap — so past
+     --grid-max the bar stops widening and stays over the page's columns.
+     The reference's --site-margin is 8–12px tighter than this site's grid
+     on desktop, which left the wordmark and the CTA hanging outside the
+     first and last column rather than aligning to them. */
+  width: 100%;
+  max-width: var(--grid-max);
+  margin-inline: auto;
+  padding-inline: var(--grid-margin);
+  /* The page gutter, not the reference's 1rem: with a narrower gutter the
+     bar's columns drift from the page's the further right they sit. */
+  gap: var(--grid-gutter);
   place-items: center stretch;
   justify-content: space-between;
   background-color: transparent;
@@ -2998,9 +3077,8 @@ body {
 .navbar_left_contain {
   grid-column: span 4 / span 4;
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: flex-start;
-  column-gap: var(--nav-space-6);
   color: var(--nav-black-50);
 }
 
@@ -3019,6 +3097,84 @@ body {
   letter-spacing: -0.01em;
   text-transform: uppercase;
   white-space: nowrap;
+}
+
+/*
+ * Breadcrumb, on a gallery only: the wordmark continues as
+ * "Amar Ramesh / Photography / Weddings". Set in the nav links' type, the
+ * parent step dimmed until hovered, the current one at full ink. The cell is
+ * four columns wide, so the trail may not push past it into the links: the
+ * cell and every step can shrink, and the gallery name ellipses first.
+ */
+.navbar_left_contain {
+  min-width: 0;
+}
+
+.navbar_crumbs {
+  min-width: 0;
+  overflow: hidden;
+  font-size: var(--nav-text-small);
+  line-height: 1.25;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.navbar_crumbs_ol {
+  display: flex;
+  align-items: baseline;
+  min-width: 0;
+  animation: navbar-crumbs-in 0.95s var(--nav-expo-out) both;
+}
+
+/* Rises out of the row's clip, as the bar's own items do on the intro. */
+@keyframes navbar-crumbs-in {
+  from {
+    transform: translateY(100%);
+  }
+}
+
+/* Only the last step gives way: a parent step squeezed below its label
+   would spill it over the separator after it. */
+.navbar_crumbs_li {
+  display: flex;
+  flex: none;
+  align-items: baseline;
+}
+
+.navbar_crumbs_li:last-child {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.navbar_crumbs_li::before {
+  content: "/";
+  flex: none;
+  padding-inline: 0.5em;
+  opacity: 0.35;
+}
+
+.navbar_crumbs_link {
+  flex: none;
+  opacity: 0.55;
+  transition: opacity 0.25s ease;
+}
+
+.navbar_crumbs_link:hover,
+.navbar_crumbs_link:focus-visible {
+  opacity: 1;
+}
+
+.navbar_crumbs_current {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar_crumbs_ol {
+    animation: none;
+  }
 }
 
 /* ── Links ────────────────────────────────────────────────────────────── */
@@ -3199,6 +3355,10 @@ body {
     justify-content: space-between;
   }
 
+  .navbar_left_contain {
+    flex: 1 1 0;
+  }
+
   .navbar_cta_wrap {
     display: flex;
     align-items: center;
@@ -3223,6 +3383,27 @@ body {
 
 @media not (min-width: 48rem) {
   .navbar_links_li {
+    display: none;
+  }
+
+  .navbar_left_contain {
+    flex-direction: column;
+    align-items: flex-start;
+    row-gap: 0.125rem;
+  }
+
+  .navbar_crumbs {
+    max-width: 100%;
+  }
+
+  .navbar_crumbs_li:first-child::before {
+    display: none;
+  }
+
+  /* Phones carry the wordmark and Menu alone: the sound toggle and the
+     Get in Touch pill are desktop only. */
+  .navbar_left_sound_wrap,
+  .navbar_cta_contain {
     display: none;
   }
 
@@ -3252,6 +3433,7 @@ body {
 /* ── Theme ────────────────────────────────────────────────────────────── */
 .navbar_contain,
 .navbar_home,
+.navbar_crumbs,
 .navbar_left_sound_container,
 .navbar_menu_span {
   transition:
@@ -3261,6 +3443,7 @@ body {
 
 [data-theme-nav="light"] .navbar_contain,
 [data-theme-nav="light"] .navbar_home,
+[data-theme-nav="light"] .navbar_crumbs,
 [data-theme-nav="light"] .navbar_menu_span {
   color: var(--nav-black-400);
 }
@@ -3271,12 +3454,40 @@ body {
 
 [data-theme-nav="dark"] .navbar_contain,
 [data-theme-nav="dark"] .navbar_home,
+[data-theme-nav="dark"] .navbar_crumbs,
 [data-theme-nav="dark"] .navbar_menu_span {
   color: var(--nav-beige-100);
 }
 
 [data-theme-nav="dark"] .navbar_left_sound_container {
   background-color: var(--nav-card-bg);
+}
+
+/*
+ * Open menu: the bar sits over the panel's black, so it takes the dark
+ * theme's colours whatever section it was reading — the reference unsets its
+ * light pairs under `[data-navigation-status=is-open]` to the same end.
+ * Scoped heavier than the `[data-theme-nav]` pairs above so it wins while
+ * the section watcher keeps writing the underlying theme, and gated to the
+ * widths where the sheet exists at all.
+ */
+@media not (min-width: 48rem) {
+  .navbar_wrap[data-navigation-status="is-open"] .navbar_contain,
+  .navbar_wrap[data-navigation-status="is-open"] .navbar_home,
+  .navbar_wrap[data-navigation-status="is-open"] .navbar_crumbs,
+  .navbar_wrap[data-navigation-status="is-open"] .navbar_menu_span {
+    color: var(--nav-beige-100);
+  }
+
+  .navbar_wrap[data-navigation-status="is-open"] .navbar_left_sound_container {
+    background-color: var(--nav-card-bg);
+  }
+
+  .navbar_wrap[data-navigation-status="is-open"] {
+    --button-surface: var(--nav-beige-100);
+    --button-ink: var(--nav-black-400);
+    --button-aside: var(--nav-black-400);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -3291,15 +3502,16 @@ body {
 }
 
 /*
- * Selection colours, from the reference's `::selection`: its own pair rather
- * than the browser's blue, on dedicated tokens. They default to the hover
- * pair so they follow the ramp and the footer band's flip (`::selection`
- * resolves against its originating element). Images opt out — a tinted block
- * over a photograph is noise.
+ * Selection colours, the reference's own `::selection` pair: beige-300 on
+ * black-400, a muted tint rather than the browser's blue or an inverted
+ * flip. The reference keeps this one pair everywhere — its dark bands
+ * included, where the beige highlight reads as a light block — so these no
+ * longer follow the hover tokens through the ramp. Images opt out — a
+ * tinted block over a photograph is noise.
  */
 :root {
-  --selection-background: var(--color-hover-fill);
-  --selection-text: var(--color-hover-ink);
+  --selection-background: #d1d1c7;
+  --selection-text: #080807;
 }
 
 ::selection {
@@ -3426,9 +3638,9 @@ img::selection {
 }
 
 /*
- * The strip is draggable as well as scrollable. `grab` advertises it, and
- * `touch-action: pan-y` lets the browser keep vertical gestures (so a phone can
- * still scroll the page) while the horizontal axis belongs to the drag.
+ * The strip is draggable as well as scrollable. `grab` advertises it. Touch
+ * gestures all belong to the drag (`touch-action: none` below): the page is a
+ * single viewport that does not scroll, so there is nothing to hand back.
  */
 @media (hover: hover) and (pointer: fine) {
   .pcar-wrap {
@@ -3457,96 +3669,83 @@ img::selection {
   padding-bottom: 0.667vw;
 }
 
-@media (width >= 650px) {
-  .pcar-wrap {
-    touch-action: none;
+/*
+ * The strip runs the same engine at every width: the transforms below apply
+ * everywhere, and only the slot count changes — seven to the row from 650px,
+ * three below it (see the phone block further down).
+ */
+.pcar-wrap {
+  touch-action: none;
+}
+.pcar-slide {
+  --x: 0%;
+  --scale: 0;
+  --x-output: calc(var(--x) * var(--diff));
+  --x-text-output: calc(var(--x-text) * var(--diff));
+  --scale-output: calc(1 + var(--scale) * var(--diff));
+}
+.pcar-slide.is-left {
+  --x: -50%;
+  --x-text: -50%;
+  --scale: 0;
+}
+.pcar-slide.is-right {
+  --x: 50%;
+  --x-text: 50%;
+  --scale: 0;
+}
+.pcar-slide.is-big {
+  --x: 0% !important;
+  --x-text: -50%;
+  --scale: 1 !important;
+}
+.pcar-slide.is-not-visible {
+  --x: 0%;
+  --x-text: 0%;
+  --scale: 0;
+}
+.pcar-text {
+  transition: transform 1s cubic-bezier(0.19, 1, 0.22, 1);
+  transform: translate3d(var(--x-text-output), 0, 0);
+}
+@media (hover: hover) and (pointer: fine) {
+  .pcar-slide:hover .pcar-text {
+    transform: translate3d(var(--x-text-output), -0.75rem, 0);
   }
+}
+.is-not-visible .pcar-text {
+  transition: none;
+}
+.pcar-scale {
+  transition: transform 1s cubic-bezier(0.19, 1, 0.22, 1);
+  transform: translate3d(var(--x-output), 0, 0) scale(var(--scale-output));
+}
+.is-not-visible .pcar-scale {
+  transition: none;
+}
+
+@media (width >= 650px) {
   .pcar-slide {
     --width: 14.28571%;
-    --x: 0%;
-    --scale: 0;
-    --x-output: calc(var(--x) * var(--diff));
-    --x-text-output: calc(var(--x-text) * var(--diff));
-    --scale-output: calc(1 + var(--scale) * var(--diff));
-  }
-  .pcar-slide.is-left {
-    --x: -50%;
-    --x-text: -50%;
-    --scale: 0;
-  }
-  .pcar-slide.is-right {
-    --x: 50%;
-    --x-text: 50%;
-    --scale: 0;
-  }
-  .pcar-slide.is-big {
-    --x: 0% !important;
-    --x-text: -50%;
-    --scale: 1 !important;
-  }
-  .pcar-slide.is-not-visible {
-    --x: 0%;
-    --x-text: 0%;
-    --scale: 0;
-  }
-  .pcar-text {
-    transition: transform 1s cubic-bezier(0.19, 1, 0.22, 1);
-    transform: translate3d(var(--x-text-output), 0, 0);
-  }
-  @media (hover: hover) and (pointer: fine) {
-    .pcar-slide:hover .pcar-text {
-      transform: translate3d(var(--x-text-output), -0.75rem, 0);
-    }
-  }
-  .is-not-visible .pcar-text {
-    transition: none;
-  }
-  .pcar-scale {
-    transition: transform 1s cubic-bezier(0.19, 1, 0.22, 1);
-    transform: translate3d(var(--x-output), 0, 0) scale(var(--scale-output));
-  }
-  .is-not-visible .pcar-scale {
-    transition: none;
   }
 }
 
 /*
- * Below 650px the strip is a native snap row, as the reference's small mode:
- * one slide and a sliver of the next per screen, swiped natively, centred in
- * the space between the fixed header and the wordmark.
+ * Phones: three slots to the screen, so the enlarged slide (twice a slot)
+ * takes two thirds of the width and each neighbour shows half a slot at the
+ * edge. The big slide stands 2 x 1.25 x 33.333vw = 83.333vw tall; the row is
+ * dropped so that it and its caption (~3rem above it) sit centred on the
+ * screen, never higher than the fixed header plus the caption allows.
  */
 @media (width < 650px) {
-  /*
-   * `overflow-x: auto` also clips on the y axis, and the captions hang above
-   * each slide — so the row reserves their height as padding. Overflow clips
-   * at the padding box, which leaves that band visible.
-   */
-  .pcar-slides {
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scroll-padding-inline: var(--site-margin);
-    scrollbar-width: none;
-    padding-top: 4rem;
-    padding-inline: var(--site-margin);
-    column-gap: 0.75rem;
-  }
-  .pcar-slides::-webkit-scrollbar {
-    display: none;
-  }
   .pcar-slide {
-    --width: 72%;
-    scroll-snap-align: start;
+    --width: 33.33333%;
   }
   .pcar-wrap {
-    /* Clear the fixed header, then centre the row in what is left above the wordmark. */
-    padding-top: calc(var(--site-margin) * 2 + 2.5rem);
-    padding-bottom: 12rem;
-    align-items: center;
-  }
-  /* The floating app controls own both bottom corners on a phone, so the
-     wordmark sits above them rather than under them. */
-  .pcar-wordmark {
-    bottom: calc(var(--site-margin) + 7.5rem);
+    padding-top: max(
+      calc(var(--site-margin) * 2 + 2.5rem + 3rem),
+      calc((100svh - 83.333vw + 3rem) / 2)
+    );
   }
   .pcar-text {
     padding-bottom: 0.5rem;
@@ -3574,198 +3773,6 @@ img::selection {
  * ---------------------------------------------------------------------------
  */
 /*
- * The gallery name, alone behind the frames.
- *
- * Fixed and centred on both axes with flex rather than a translate, so the
- * word stays optically centred whatever its length. z-index sits below .pg-vp
- * (5) so the photographs drift over it, and it takes no pointer events — the
- * canvas must stay draggable through the type.
- */
-.pg-stage {
-  position: fixed;
-  inset: 0;
-  z-index: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  user-select: none;
-  overflow: hidden;
-  padding: var(--site-margin);
-  transition: opacity 0.5s ease;
-}
-
-.pg-title-text {
-  font-size: clamp(3rem, 15vw, 18rem);
-  font-weight: 600;
-  text-transform: uppercase;
-  line-height: 0.9;
-  letter-spacing: -0.04em;
-  white-space: nowrap;
-  /* Low contrast so the frames stay the subject; it reads as a watermark. */
-  color: var(--color--foreground--10);
-}
-
-/* Viewer open: pull the word back so the card owns the stage. */
-.pg-root[data-mode="large"] .pg-stage {
-  opacity: 0.25;
-}
-
-/*
- * Sibling galleries, one card pinned to each edge and vertically centred.
- * Filled rather than frosted so they read as solid cards over the frames.
- */
-.pg-sides {
-  position: fixed;
-  inset-inline: var(--site-margin);
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 260;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  /* The DOM runs next-then-previous, which is the stacking order the phone
-   * layout wants. Here the row is reversed instead, so previous still sits on
-   * the left edge and next on the right. */
-  flex-direction: row-reverse;
-  /* The strip spans the viewport; only the cards themselves take the pointer,
-   * so the canvas stays draggable in the gap between them. */
-  pointer-events: none;
-}
-
-/*
- * Built on the CTA pill (`.btn-pill`): same fill, same radius, same two-part
- * hover — the label slides up to a duplicate drawn by its own text-shadow,
- * while the arrow pair travels diagonally through the square aside. The
- * variables and timings are lifted from it so the two stay in step.
- */
-.pg-side {
-  --active-ease: cubic-bezier(0.48, 1.68, 0.64, 1);
-  --active-speed: 0.35s;
-  --btn-slide: 0.65s cubic-bezier(0.16, 1, 0.35, 1);
-
-  pointer-events: auto;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: fit-content;
-  max-width: min(320px, 34vw);
-  gap: var(--nav-space-1);
-  padding: 0.25em 0.25em 0.25em var(--nav-space-1);
-  border-radius: var(--nav-radius);
-  background: var(--palette-foreground);
-  color: var(--palette-background);
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: -0.03em;
-  text-decoration: none;
-  overflow: clip;
-  transition:
-    transform var(--active-speed) var(--active-ease),
-    opacity var(--active-speed) cubic-bezier(0.16, 1, 0.35, 1);
-}
-
-/* The previous card leads with its arrow, so the padding mirrors. */
-.pg-side-prev {
-  padding: 0.25em var(--nav-space-1) 0.25em 0.25em;
-}
-
-.pg-side:hover {
-  opacity: 0.9;
-}
-
-.pg-side:active {
-  transform: scale(0.95);
-}
-
-/* Clips the label's travel, exactly as the CTA pill's container does. */
-.pg-side_text_contain {
-  overflow: clip;
-  min-width: 0;
-}
-
-/* The shadow copy is the second label — it must match the card background.
- * This element must not clip: `overflow: hidden` (which `text-overflow:
- * ellipsis` would require) cuts off the shadow 1.2em below, and the hover
- * then slides the label up into an empty card. */
-.pg-side_text {
-  display: block;
-  line-height: 1;
-  white-space: nowrap;
-  text-shadow: 0 1.2em 0 var(--palette-background);
-  transition: transform var(--btn-slide);
-}
-
-.pg-side:hover .pg-side_text {
-  transform: translateY(-1.2em);
-}
-
-.pg-side_aside {
-  position: relative;
-  flex: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  aspect-ratio: 1;
-  width: 1.5em;
-  height: 100%;
-  border-radius: var(--nav-radius);
-  overflow: hidden;
-}
-
-.pg-side_aside_bg {
-  position: absolute;
-  inset: 0;
-  border-radius: var(--nav-radius);
-  background: var(--palette-muted);
-  transition: transform var(--btn-slide);
-}
-
-.pg-side:hover .pg-side_aside_bg {
-  transform: scale(0.8);
-}
-
-.pg-side_icon {
-  position: relative;
-  z-index: 1;
-  width: 1em;
-  color: var(--palette-background);
-  transition: transform var(--btn-slide);
-}
-
-/* Next travels up and to the right, as the CTA does; previous mirrors it, so
- * each arrow leaves and re-enters on the side it points to. */
-.pg-side-next .pg-side_icon.is-absolute {
-  position: absolute;
-  transform: translate(-100%, 100%);
-}
-
-.pg-side-next:hover .pg-side_icon {
-  transform: translate(100%, -100%);
-}
-
-.pg-side-prev .pg-side_icon.is-absolute {
-  position: absolute;
-  transform: translate(100%, 100%);
-}
-
-.pg-side-prev:hover .pg-side_icon {
-  transform: translate(-100%, -100%);
-}
-
-.pg-side:hover .pg-side_icon.is-absolute {
-  transform: translate(0%);
-}
-
-/* Viewer open: the side cards would sit over the photograph, so they go. */
-.pg-root[data-mode="large"] .pg-sides {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s ease;
-}
-
-/*
  * Heading and state line, centred along the bottom edge.
  */
 .pg-hud {
@@ -3785,15 +3792,6 @@ img::selection {
 .pg-hud a,
 .pg-hud button {
   pointer-events: auto;
-}
-
-.pg-hud-title {
-  font-size: 13px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  line-height: 1;
-  color: var(--color--foreground--50);
 }
 
 .pg-vp {
@@ -3872,7 +3870,9 @@ body.pg-dragging .pg-vp {
   inset: 0;
   z-index: 6;
   pointer-events: none;
-  background: radial-gradient(ellipse at center, transparent 45%, var(--color--foreground--10) 100%);
+  /* The edges fall away into the page ground (black on a gallery), not
+     toward the foreground tint, which lit them up white on black. */
+  background: radial-gradient(ellipse at center, transparent 45%, var(--palette-background) 100%);
 }
 
 /*
@@ -3886,13 +3886,11 @@ body.pg-dragging .pg-vp {
 .pg-nav button {
   pointer-events: auto;
 }
-/* Viewer state: the page links give way to the viewer's controls. */
-.pg-root[data-mode="large"] .pg-nav-links,
+/* The frame counter shows only while the viewer is open. */
 .pg-root:not([data-mode="large"]) .pg-nav-viewer {
   opacity: 0;
   pointer-events: none;
 }
-.pg-nav-links,
 .pg-nav-viewer {
   transition: opacity 0.4s ease;
 }
@@ -4021,15 +4019,58 @@ body.pg-viewing .pg-bar {
   opacity: 0.6;
 }
 
-/* The bar's foot: the frame counter with the print-request toggle beside it,
- * centred along the bottom edge. One row, not a stack — a portrait card runs
- * to 78vh, and a stacked foot would climb onto the photograph. */
+/* The key that does the same, as a keycap beside the label. Touch screens
+ * have no Escape, so it shows only with a mouse or trackpad. */
+.pg-bar_kbd {
+  display: none;
+  align-items: center;
+  height: 1.5em;
+  padding-inline: 0.4em;
+  border: 1px solid var(--color--foreground--25);
+  border-radius: var(--nav-radius);
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 0.75em;
+  line-height: 1;
+  letter-spacing: 0;
+  color: var(--color--foreground--50);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pg-bar_kbd {
+    display: inline-flex;
+  }
+}
+
+/* The bar's foot: the print-request toggle with the way to the next frame
+ * under it, centred along the bottom edge. */
 .pg-bar_foot {
   align-self: center;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 1.25rem;
+  gap: 0.625rem;
   padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* One line per input: a mouse or trackpad gets the scroll-and-arrow wording,
+ * a touch screen the scroll alone. */
+.pg-bar_hint {
+  color: var(--color--foreground--50);
+  white-space: nowrap;
+}
+
+.pg-bar_hint-pointer {
+  display: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .pg-bar_hint-touch {
+    display: none;
+  }
+
+  .pg-bar_hint-pointer {
+    display: inline;
+  }
 }
 
 /* The counter is a tabular readout that changes per frame; fixed digits keep
@@ -4074,17 +4115,16 @@ body.pg-viewing .pg-bar {
   opacity: 0.85;
 }
 
-/* A long gallery name ("[02] Classical Dancers") has only four columns on a
- * phone, so it ellipses rather than pushing the counter off centre. */
+/* A long name ("[02] Classical Dancers") on a phone ellipses rather than
+ * pushing the count off the edge or into Close. */
 .pg-bar_title {
-  min-width: 0;
-  white-space: nowrap;
   overflow: hidden;
+  white-space: nowrap;
   text-overflow: ellipsis;
 }
 
-.pg-bar_title,
-.pg-bar_count,
+.pg-bar_meta,
+.pg-bar_hint,
 .pg-bar_close {
   /* The bar is click-through except for its button; without this the title
      would swallow taps meant for the photograph behind it. */
@@ -4111,18 +4151,25 @@ body.pg-viewing .pg-hud {
  * viewer closes.
  */
 body.pg-viewing header {
-  opacity: 0;
-  pointer-events: none;
-  /* Opacity alone would leave the links in the tab order, so a keyboard could
-   * focus an invisible nav; visibility takes it out of the tree once the fade
-   * has finished. */
-  visibility: hidden;
+  /* !important, as on the books viewer (body.bk-viewing): the bar's intro
+   * leaves `opacity: 1; visibility: inherit` inline, which outranks any
+   * plain rule. Opacity alone would leave the links in the tab order, so a
+   * keyboard could focus an invisible nav; visibility takes it out of the
+   * tree once the fade has finished. */
+  opacity: 0 !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
   transition:
     opacity 0.3s ease,
     visibility 0s linear 0.3s;
 }
 
-body:has(.pg-root.is-zoomed) header,
+body:has(.pg-root.is-zoomed) header {
+  opacity: 0 !important;
+  pointer-events: none !important;
+  transition: opacity 0.3s ease;
+}
+
 body:has(.pg-root.is-zoomed) .app-aside {
   opacity: 0;
   pointer-events: none;
@@ -4137,8 +4184,6 @@ body:has(.pg-root.is-zoomed) .app-aside {
  */
 body .pg-root.is-zoomed .pg-bar,
 .pg-root.is-zoomed .pg-hud,
-.pg-root.is-zoomed .pg-sides,
-.pg-root.is-zoomed .pg-stage,
 .pg-root.is-zoomed .pg-vig {
   opacity: 0;
   pointer-events: none;
@@ -4195,91 +4240,6 @@ body .pg-root.is-zoomed .pg-bar,
 }
 
 @media (width <= 768px) {
-  /*
-   * On a phone the cards drop their labels and become icon buttons pinned to
-   * the left and right edges, vertically centred — the gallery names would
-   * crowd the frames at this width, and the arrows alone carry the meaning.
-   * Each Link keeps its accessible name from the aria-label on the element.
-   */
-  .pg-sides {
-    /* Back to a row across the viewport; `row-reverse` from the base rule
-       still puts previous on the left, next on the right. */
-    justify-content: space-between;
-  }
-
-  .pg-side {
-    /* Sized to the touch target, with the label removed. The rounded-square
-       corner is the CTA pill's own --nav-radius, so the icon button matches
-       the buttons on the web layout rather than becoming a circle. */
-    width: 44px;
-    min-width: 44px;
-    height: 44px;
-    max-width: none;
-    padding: 0;
-    border-radius: var(--nav-radius);
-    gap: 0;
-  }
-
-  /* The mirrored padding only mattered while there was a label to sit beside. */
-  .pg-side-prev {
-    padding: 0;
-  }
-
-  .pg-side_text_contain {
-    display: none;
-  }
-
-  /* The aside is the CTA's square icon plate, inset so the button's own fill
-     still shows as a border around it — the same relationship the pill has
-     between its background and the plate. */
-  .pg-side_aside {
-    width: calc(100% - 8px);
-    height: calc(100% - 8px);
-    margin: 4px;
-    border-radius: calc(var(--nav-radius) - 2px);
-  }
-
-  /* Without a label there is nothing to travel toward, and the button clips
-     the diagonal — so the second copy is dropped and the arrow sits still. */
-  .pg-side_icon.is-absolute {
-    display: none;
-  }
-
-  .pg-side-next:hover .pg-side_icon,
-  .pg-side-prev:hover .pg-side_icon {
-    transform: none;
-  }
-
-  .pg-side_icon {
-    width: 0.9rem;
-  }
-
-  /*
-   * A two-word gallery name ("Classical Dancers", "Folk Art") cannot hold one
-   * line at this size on a phone — `nowrap` would push it off both edges. Let
-   * it break per word and centre the lines, and pull the leading in so the
-   * stacked words still read as one block.
-   */
-  .pg-title-text {
-    /* Centred on both axes it would sit right behind the arrow buttons, which
-       are pinned at 50% of the same viewport box. Anchor its top edge a little
-       below their bottom edge instead: 50% + half the 44px button + a gap. The
-       stage is `inset: 0`, so its 50% is the same line the buttons use. */
-    position: absolute;
-    top: calc(50% + 22px + 0.75rem);
-    left: 50%;
-    transform: translateX(-50%);
-    width: calc(100% - 2 * var(--site-margin));
-    white-space: normal;
-    text-align: center;
-    text-wrap: balance;
-    line-height: 0.85;
-    /* Sized so the longest single word ("CLASSICAL", "MUSICIANS" — 9 glyphs)
-       fits inside the margins at ~90% of the available width on every phone
-       size, rather than being clipped by the stage's overflow. */
-    font-size: clamp(2.25rem, 16vw, 8rem);
-  }
-
   /* Sits on the same base line as the floating theme/grid pills (.app-aside),
      which are pinned at --grid-margin plus the home indicator on a phone — so
      the heading, "All photography" and the pills share one bottom edge. */

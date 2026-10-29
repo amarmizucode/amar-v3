@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
+import { usePathname } from "next/navigation";
+import { GALLERY_PATH, GALLERY_STOP } from "@/lib/theme";
 
 /**
  * Theme scale + grid overlay, ported from billysweeney.com.
@@ -20,6 +22,22 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 
 const STOPS = 17; // 00..16
 const DEFAULT_STOP = 16; // the reference ships on theme--16 (white)
+
+/*
+ * Theme switching is off for now: the page always renders on the white stop,
+ * whatever the device's colour scheme, and the theme icon and slider are not
+ * rendered. Set this back to true to restore both.
+ */
+const THEME_SWITCHING = false;
+
+/*
+ * A gallery detail page is shown on the black stop (see lib/theme). It is
+ * decided here, by route, rather than by the gallery setting <body> itself,
+ * so this component stays the one writer of `data-theme` after hydration:
+ * two writers raced on a direct load, and this effect, running after the
+ * gallery's, put the page back on white. The layout's pre-paint script sets
+ * the same stop before React runs, so the first paint is already black.
+ */
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -67,12 +85,32 @@ export function AppControls() {
     getDarkQueryMatches,
     getDarkQueryServerMatches,
   );
-  const effectiveStop = stop ?? (prefersDark ? 0 : DEFAULT_STOP);
+  const pathname = usePathname();
+  const effectiveStop = GALLERY_PATH.test(pathname)
+    ? GALLERY_STOP
+    : THEME_SWITCHING
+      ? (stop ?? (prefersDark ? 0 : DEFAULT_STOP))
+      : DEFAULT_STOP;
 
   // <body> is owned by the server layout, so drive its attributes directly.
-  useEffect(() => {
-    document.body.dataset.theme = pad(effectiveStop);
-  }, [effectiveStop]);
+  // A layout effect, so a route's new page is never painted on the old stop.
+  const themedPath = useRef(pathname);
+  useLayoutEffect(() => {
+    const body = document.body;
+    const next = pad(effectiveStop);
+    // A stop change that comes with a route change (into or out of a gallery)
+    // lands at once: `body[data-theme]` fades its ground for the slider, and
+    // on a navigation that fade showed the new page on the old colour first.
+    const instant = themedPath.current !== pathname;
+    themedPath.current = pathname;
+    if (body.dataset.theme === next) return;
+    if (instant) body.style.transition = "none";
+    body.dataset.theme = next;
+    if (instant) {
+      void body.offsetHeight; // commit the new ground before the fade returns
+      body.style.transition = "";
+    }
+  }, [effectiveStop, pathname]);
 
   useEffect(() => {
     if (sliderOpen) document.body.dataset.themeSlider = "open";
@@ -129,56 +167,58 @@ export function AppControls() {
     <>
       <aside className="app-aside">
         <div className="options">
-          <div
-            ref={themeOption}
-            className="option theme"
-            onPointerEnter={(event) => {
-              if (event.pointerType === "mouse") setSliderOpen(true);
-            }}
-            onPointerLeave={(event) => {
-              if (event.pointerType === "mouse") setSliderOpen(false);
-            }}
-            onPointerDown={(event) => {
-              if (event.pointerType !== "mouse") setSliderOpen(true);
-            }}
-          >
-            <div className="icon-container">
-              <svg
-                className="icon theme"
-                xmlns="http://www.w3.org/2000/svg"
-                width="32"
-                height="32"
-                viewBox="0 0 32 32"
-                aria-hidden
-              >
-                <path d="M17 2h-2v6h2V2zm-1 8c-3.31372 0-6 2.68628-6 6s2.68628 6 6 6 6-2.68628 6-6-2.68628-6-6-6zm0 10c-2.20911 0-4-1.79089-4-4s1.79089-4 4-4 4 1.79089 4 4-1.79089 4-4 4zm-1 10h2v-6h-2v6zM11.05029 9.63605 6.80762 5.39337 5.39337 6.80762l4.24268 4.24268 1.41424-1.41425zm9.89954 12.72796 4.24255 4.24261 1.41425-1.41425-4.24261-4.24268-1.41419 1.41432zM8 15H2v2h6v-2zm16 0v2h6v-2h-6zM5.39337 25.19238l1.41425 1.41425 4.24268-4.24261-1.41425-1.41431-4.24268 4.24267zM26.60663 6.80762l-1.41425-1.41425-4.24268 4.24268 1.41431 1.41412 4.24262-4.24255z" />
-              </svg>
-            </div>
-
-            <div className="slider-container">
-              {/* 17 dots, one per stop. */}
-              <div className="dots">
-                {Array.from({ length: STOPS }).map((_, i) => (
-                  <div key={i} className="dot" />
-                ))}
+          {THEME_SWITCHING && (
+            <div
+              ref={themeOption}
+              className="option theme"
+              onPointerEnter={(event) => {
+                if (event.pointerType === "mouse") setSliderOpen(true);
+              }}
+              onPointerLeave={(event) => {
+                if (event.pointerType === "mouse") setSliderOpen(false);
+              }}
+              onPointerDown={(event) => {
+                if (event.pointerType !== "mouse") setSliderOpen(true);
+              }}
+            >
+              <div className="icon-container">
+                <svg
+                  className="icon theme"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="32"
+                  height="32"
+                  viewBox="0 0 32 32"
+                  aria-hidden
+                >
+                  <path d="M17 2h-2v6h2V2zm-1 8c-3.31372 0-6 2.68628-6 6s2.68628 6 6 6 6-2.68628 6-6-2.68628-6-6-6zm0 10c-2.20911 0-4-1.79089-4-4s1.79089-4 4-4 4 1.79089 4 4-1.79089 4-4 4zm-1 10h2v-6h-2v6zM11.05029 9.63605 6.80762 5.39337 5.39337 6.80762l4.24268 4.24268 1.41424-1.41425zm9.89954 12.72796 4.24255 4.24261 1.41425-1.41425-4.24261-4.24268-1.41419 1.41432zM8 15H2v2h6v-2zm16 0v2h6v-2h-6zM5.39337 25.19238l1.41425 1.41425 4.24268-4.24261-1.41425-1.41431-4.24268 4.24267zM26.60663 6.80762l-1.41425-1.41425-4.24268 4.24268 1.41431 1.41412 4.24262-4.24255z" />
+                </svg>
               </div>
-              <input
-                ref={sliderTrack}
-                className="slider"
-                type="range"
-                min={0}
-                max={STOPS - 1}
-                step={1}
-                value={effectiveStop}
-                aria-label="Theme"
-                onChange={(event) => setStop(Number(event.target.value))}
-                onPointerDown={onSliderPointerDown}
-                onPointerMove={onSliderPointerMove}
-                onPointerUp={onSliderPointerUp}
-                onPointerCancel={onSliderPointerUp}
-              />
+
+              <div className="slider-container">
+                {/* 17 dots, one per stop. */}
+                <div className="dots">
+                  {Array.from({ length: STOPS }).map((_, i) => (
+                    <div key={i} className="dot" />
+                  ))}
+                </div>
+                <input
+                  ref={sliderTrack}
+                  className="slider"
+                  type="range"
+                  min={0}
+                  max={STOPS - 1}
+                  step={1}
+                  value={effectiveStop}
+                  aria-label="Theme"
+                  onChange={(event) => setStop(Number(event.target.value))}
+                  onPointerDown={onSliderPointerDown}
+                  onPointerMove={onSliderPointerMove}
+                  onPointerUp={onSliderPointerUp}
+                  onPointerCancel={onSliderPointerUp}
+                />
+              </div>
             </div>
-          </div>
+          )}
 
           <button
             type="button"

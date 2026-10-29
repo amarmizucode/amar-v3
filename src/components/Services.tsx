@@ -2,7 +2,7 @@
 
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
-import { gsap, DUR } from "@/lib/gsap";
+import { gsap, DUR, NO_HOVER, ScrollTrigger } from "@/lib/gsap";
 import { MEDIA } from "@/lib/media";
 
 /**
@@ -17,6 +17,10 @@ import { MEDIA } from "@/lib/media";
  * heading sits at full strength with no frame showing — and leaving the
  * list returns it to that rest state. The stack drifts in, unblurring, as
  * the band scrolls up.
+ *
+ * Touch has no hover, so there the row crossing the middle of the viewport
+ * is the active one, through the same `activate` and `move`; the list
+ * returns to rest once it has scrolled past the middle either way.
  */
 export type ServiceItem = { label: string; href?: string; image?: string };
 
@@ -96,6 +100,34 @@ export function Services({ items }: { items: ServiceItem[] }) {
         return () => row.removeEventListener("mouseenter", onEnter);
       });
 
+      // Touch: the row at the viewport's middle is the hovered one. Only
+      // entering activates, so the gap between two rows keeps the last one
+      // lit rather than flickering to rest.
+      const mm = gsap.matchMedia();
+      mm.add(NO_HOVER, () => {
+        triggers.forEach((row, i) => {
+          ScrollTrigger.create({
+            trigger: row,
+            start: "top center",
+            end: "bottom center",
+            onToggle: (self) => {
+              if (!self.isActive) return;
+              activate(i);
+              move(row);
+            },
+          });
+        });
+        if (list) {
+          ScrollTrigger.create({
+            trigger: list,
+            start: "top center",
+            end: "bottom center",
+            onLeave: reset,
+            onLeaveBack: reset,
+          });
+        }
+      });
+
       // Headings rewrap as the viewport changes, which moves the rows; keep
       // the stack on the active one.
       const onResize = () => {
@@ -104,6 +136,7 @@ export function Services({ items }: { items: ServiceItem[] }) {
       window.addEventListener("resize", onResize);
 
       return () => {
+        mm.revert();
         listeners.forEach((off) => off());
         list?.removeEventListener("mouseleave", reset);
         window.removeEventListener("resize", onResize);

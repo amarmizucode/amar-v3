@@ -76,8 +76,18 @@ export function Hero({ start }: { start: boolean }) {
       const allLines = splits.flatMap((s) => s.lines);
       const displayLines = displaySplits.flatMap((s) => s.lines);
 
+      // The split exists only for the masked reveal, so it is reverted once
+      // the reveal has played: the paragraphs go back to plain text for
+      // selection, copying and find-in-page. (The statement's selection
+      // highlights overlapping the line above was the font's tall metrics,
+      // not the split — that is fixed by its own face in layout.tsx.)
+      const revertSplits = () => {
+        splits.forEach((s) => s.revert());
+        displaySplits.forEach((s) => s.revert());
+      };
+
       if (reduced) {
-        gsap.set([...allLines, ...displayLines], { yPercent: 0 });
+        revertSplits();
         gsap.set(".hero_content_cta", { autoAlpha: 1, y: 0 });
         gsap.set(".hero_canvas_wrap", { autoAlpha: 0.32 });
         gsap.set(document.querySelectorAll(".navbar_wrap"), { autoAlpha: 1 });
@@ -136,6 +146,9 @@ export function Hero({ start }: { start: boolean }) {
           "<",
         );
       }
+
+      // Masks done, hand the text back (see revertSplits above).
+      tl.eventCallback("onComplete", revertSplits);
     },
     { scope: root, dependencies: [start] },
   );
@@ -159,16 +172,23 @@ export function Hero({ start }: { start: boolean }) {
         <canvas ref={canvasRef} data-hero-canvas className="h-full w-full" />
       </div>
 
-      {/* One row, vertically centred: a narrow copy column with its CTA on
-          the left, and the statement filling the rest at display size. */}
-      <div className="grid-12 my-auto shrink-0 items-center gap-y-12">
-        <div className="col-span-12 md:col-span-3">
+      {/* One row, top-aligned: a narrow copy column with its CTA on the
+          left, and the statement filling the rest at display size. The row
+          itself still centres in the section (`my-auto`); `items-start` is
+          what lines the two columns up at their tops. */}
+      <div className="grid-12 my-auto shrink-0 items-start gap-y-12">
+        {/* The paragraph is a fixed 15em measure (see .hero_content_p), not a
+            column span; this cell is only the slot it sits in, and 4 columns
+            is the narrowest that holds 360px at 1280px. "to explore." is
+            nowrap-wrapped rather than just &nbsp;-joined: SplitText's word
+            pass normalises whitespace with /\s+/, and `\s` matches U+00A0, so
+            a bare nbsp is split like any space and the last line was landing
+            on "explore." alone. */}
+        <div className="col-span-12 md:col-span-4">
           <p className="hero_content_p text-lede font-semibold">
-            What started with photography has taken me into the fascinating worlds of art,
-            architecture, culture, films and books. I&rsquo;ve met some incredible people along the
-            way, discovered places I might never have visited otherwise, and found myself exploring
-            things I never imagined I&rsquo;d be doing. And there&rsquo;s still so much more I want
-            to discover.
+            Photography opened doors to art, culture, and new places. Every discovery leads to
+            another, and there&rsquo;s still so much more{" "}
+            <span className="whitespace-nowrap">to&nbsp;explore.</span>
           </p>
           <div className="hero_content_cta mt-8">
             <CtaPill label="Explore My Work" href="/#works" />
@@ -178,26 +198,30 @@ export function Hero({ start }: { start: boolean }) {
         {/* order-first: below `md` the reference pulls its heading above the
             paragraph (`order:-9999`); on the desktop grid the DOM order and
             the column placement already match it. */}
-        <div className="order-first col-span-12 md:order-none md:col-start-5 md:col-span-8">
+        <div className="order-first col-span-12 md:order-0 md:col-start-5 md:col-span-7">
           {/* Set as stacked lines like the reference's hero heading, which
-              breaks on sense rather than on measure. The breaks are desktop
-              only — below `md` the column is too narrow to hold "just the"
-              on one line, so it wraps on its own instead. */}
-          <p className="hero_display display-statement">
-            The camera
-            <br className="hidden md:inline" />
-            was just
-            <br className="hidden md:inline" />
-            the beginning
-          </p>
+              breaks on sense rather than on measure. The breaks hold at every
+              width: on a 320px phone the widest line ("was only the", 232px at
+              the 44px floor) still leaves 56px of its 288px column spare.
+              Four lines, not three: the statement spans 7 of 12 columns
+              (5–11), and at the 8.75vw slope every three-line break runs
+              wider than that column until the 148px cap engages near
+              1900px. Measured from the Bold outlines, the widest line here
+              is "was only the" at 5.28em, against the 5.89em the narrowest
+              desktop column affords. */}
+          {/* The h1: the name block that used to carry it is gone, so the
+              statement is the page's one top-level heading, as the
+              reference's hero heading is. */}
+          <h1 className="hero_display display-statement">
+            Camera
+            <br />
+            was only the
+            <br />
+            beginning of
+            <br />
+            everything.
+          </h1>
         </div>
-      </div>
-
-      <div className="grid-12 shrink-0 pt-20 md:pt-32">
-        <h1 className="contents">
-          <span className="hero_display display optical-A col-span-12 md:col-span-4">Amar</span>
-          <span className="hero_display display optical-R col-span-12 md:col-span-8">Ramesh</span>
-        </h1>
       </div>
     </section>
   );

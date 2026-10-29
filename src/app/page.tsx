@@ -3,6 +3,7 @@ import { HomeHero } from "@/components/HomeHero";
 import { DocumentarySection, PhotographySection, BooksSection } from "@/components/HomeWork";
 import { VentureCards } from "@/components/VentureCards";
 import { StickyPortrait } from "@/components/StickyPortrait";
+import { WorksActiveOnScroll } from "@/components/WorksActiveOnScroll";
 import { InNumbers, NUMBERS, Recognition, logoWidth } from "@/components/Highlights";
 import { HighlightText } from "@/components/HighlightText";
 import { Services } from "@/components/Services";
@@ -361,8 +362,10 @@ export default function Home() {
                 slow drift, column and caption, so the two pages introduce
                 Amar the same way. */}
             {/* StickyPortrait holds it in view, from md, while the copy and
-                awards beside it scroll past. */}
-            <div className="col-span-8 sm:col-span-6 md:col-span-3">
+                awards beside it scroll past. Full width on a phone; from `sm`
+                it narrows to six columns so a landscape phone doesn't get a
+                4:5 frame taller than its screen. */}
+            <div className="col-span-12 sm:col-span-6 md:col-span-3">
               <StickyPortrait>
                 <Reveal>
                   <MediaFrame
@@ -594,53 +597,55 @@ export default function Home() {
             </div>
 
             <div className="col-span-12 min-[62rem]:col-span-9">
-              <ol className="works_list">
-                {WORKS.map((work) => (
-                  <Reveal as="li" key={work.title} className="works_item">
-                    {/* The whole row is the link, so the cover and its copy
-                        lead to the same place. */}
-                    <a href={work.href} className="grid-12 items-start gap-y-4">
-                      <div className="works_cover relative col-span-12 overflow-clip rounded-[0.15rem] min-[30rem]:col-span-7">
-                        <MediaFrame ratio="3 / 2" ratioMobile="1 / 1" src={work.image} parallax={15} />
-                        <span aria-hidden className="works_overlay" />
-                        <span aria-hidden className="works_reel">
-                          <span className="works_reel_card">
-                            <img src={work.reveal} alt="" loading="lazy" decoding="async" />
+              <WorksActiveOnScroll>
+                <ol className="works_list">
+                  {WORKS.map((work) => (
+                    <Reveal as="li" key={work.title} className="works_item">
+                      {/* The whole row is the link, so the cover and its copy
+                          lead to the same place. */}
+                      <a href={work.href} className="grid-12 items-start gap-y-4">
+                        <div className="works_cover relative col-span-12 overflow-clip rounded-[0.15rem] min-[30rem]:col-span-7">
+                          <MediaFrame ratio="3 / 2" src={work.image} parallax={15} />
+                          <span aria-hidden className="works_overlay" />
+                          <span aria-hidden className="works_reel">
+                            <span className="works_reel_card">
+                              <img src={work.reveal} alt="" loading="lazy" decoding="async" />
+                            </span>
                           </span>
-                        </span>
-                      </div>
+                        </div>
 
-                      <div className="works_content col-span-12 min-[30rem]:col-span-5">
-                        <div className="flex flex-col gap-[var(--space-4)]">
-                          {/* The reference's micrographic: initials, then a
-                              dot and a dash leading into the boxed row
-                              number. */}
-                          <span className="works_micrographic">
-                            <span className="works_micro pt-[0.015rem]">SW</span>
-                            <span className="flex items-center">
-                              <span aria-hidden className="size-[3px] shrink-0 rounded-full bg-foreground" />
-                              <span aria-hidden className="h-px w-2.5 shrink-0 bg-foreground" />
-                              <span className="works_micro_box">
-                                <span className="works_micro">
-                                  {work.index}/{String(WORKS.length).padStart(2, "0")}
+                        <div className="works_content col-span-12 min-[30rem]:col-span-5">
+                          <div className="flex flex-col gap-[var(--space-4)]">
+                            {/* The reference's micrographic: initials, then a
+                                dot and a dash leading into the boxed row
+                                number. */}
+                            <span className="works_micrographic">
+                              <span className="works_micro pt-[0.015rem]">SW</span>
+                              <span className="flex items-center">
+                                <span aria-hidden className="size-[3px] shrink-0 rounded-full bg-foreground" />
+                                <span aria-hidden className="h-px w-2.5 shrink-0 bg-foreground" />
+                                <span className="works_micro_box">
+                                  <span className="works_micro">
+                                    {work.index}/{String(WORKS.length).padStart(2, "0")}
+                                  </span>
                                 </span>
                               </span>
                             </span>
+                            <h3 className="works_title">{work.title}</h3>
+                            <p className="works_p">{work.blurb}</p>
+                          </div>
+                          <span className="works_cta mt-[var(--space-4)] min-[30rem]:mt-[var(--section-space-small)]">
+                            <span className="inline-flex items-center gap-2">
+                              {work.cta}
+                              <CornerArrow tight className="w-3 shrink-0" />
+                            </span>
                           </span>
-                          <h3 className="works_title">{work.title}</h3>
-                          <p className="works_p">{work.blurb}</p>
                         </div>
-                        <span className="works_cta mt-[var(--section-space-small)]">
-                          <span className="inline-flex items-center gap-2">
-                            {work.cta}
-                            <CornerArrow tight className="w-3 shrink-0" />
-                          </span>
-                        </span>
-                      </div>
-                    </a>
-                  </Reveal>
-                ))}
-              </ol>
+                      </a>
+                    </Reveal>
+                  ))}
+                </ol>
+              </WorksActiveOnScroll>
             </div>
           </div>
 

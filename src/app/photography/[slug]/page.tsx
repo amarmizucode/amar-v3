@@ -31,15 +31,10 @@ export default async function GalleryPage({ params }: PageProps<"/photography/[s
   const gallery = galleryBySlug(slug);
   if (!gallery) notFound();
 
-  // Wraps, so the last gallery leads back to the first.
-  const position = GALLERIES.indexOf(gallery);
-  const next = GALLERIES[(position + 1) % GALLERIES.length];
-  const prev = GALLERIES[(position - 1 + GALLERIES.length) % GALLERIES.length];
-
   return (
     <>
       <main className="relative h-svh overflow-hidden">
-        <GalleryCanvas gallery={gallery} next={next} prev={prev} />
+        <GalleryCanvas gallery={gallery} />
       </main>
     </>
   );
