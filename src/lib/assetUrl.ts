@@ -16,6 +16,25 @@
  */
 const BASE = (process.env.NEXT_PUBLIC_IMAGE_BASE_URL ?? "").replace(/\/+$/, "");
 
+/*
+ * A production build with no bucket is a silent failure, not a fallback: the
+ * deploy prunes `assets/photography*` from `out/` (see the deploy script and
+ * wrangler.toml), so every path this function would leave untouched points at
+ * a file that was never uploaded. The site builds, ships, and shows broken
+ * galleries. Fail the build instead — the variable is inlined at build time,
+ * so this is the last moment anything can catch it.
+ *
+ * Only `next build` is guarded. `next dev` and `next start` keep serving from
+ * `public/`, so a clone with no env file still runs.
+ */
+if (!BASE && process.env.NODE_ENV === "production" && process.env.NEXT_PHASE === "phase-production-build") {
+  throw new Error(
+    "NEXT_PUBLIC_IMAGE_BASE_URL is unset, so the photography would build as " +
+      "paths into `public/` — which the deploy does not upload. Set it to the " +
+      "R2 bucket's public URL (see .env.example) and rebuild.",
+  );
+}
+
 export function assetUrl(path: string): string {
   if (!BASE) return path;
   // Already absolute (the Unsplash stand-ins in `media.ts`): leave it alone.

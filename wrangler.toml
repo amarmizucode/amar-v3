@@ -1,0 +1,31 @@
+# Cloudflare Workers — the site deploys as static assets.
+#
+# `next build` writes the whole site to `out/` (output: "export" in
+# next.config.ts) and Workers serves that folder directly. There is no Worker
+# script: an assets-only project has no runtime, so nothing executes per
+# request and there is nothing to pay for beyond bandwidth.
+#
+# Deploy with `npm run deploy`, which builds, prunes and uploads in one step.
+#
+# The prune matters. `next build` copies all of `public/` into `out/`,
+# including the 4+ GB of photography derivatives that are only a local mirror
+# of the R2 bucket — the browser never asks this origin for them, because
+# assetUrl() (src/lib/assetUrl.ts) rewrites every photography path to
+# NEXT_PUBLIC_IMAGE_BASE_URL at build time. Without the prune the upload is
+# 4.8 GB of files nothing requests; with it, ~54 MB. The deploy script does
+# this rather than a `.assetsignore`, which this Wrangler version does not
+# apply.
+#
+# NEXT_PUBLIC_IMAGE_BASE_URL has to be set wherever the build runs (locally,
+# or in the dashboard's build settings). It is inlined at build time, so a
+# build without it compiles every gallery URL as a root-relative path to
+# files that were deliberately not uploaded.
+name = "amar-v3"
+compatibility_date = "2026-10-29"
+
+[assets]
+directory = "./out"
+# A static export emits `/books.html` for `/books`, so serve the clean URL
+# from the matching file and send unknown paths to the exported 404.
+html_handling = "auto-trailing-slash"
+not_found_handling = "404-page"
