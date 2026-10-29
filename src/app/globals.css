@@ -4283,8 +4283,9 @@ body .pg-root.is-zoomed .pg-bar,
  * slot widens from spine to cover width while the two-faced book — the real
  * spine strip out front, the cover artwork at a right angle behind it —
  * swivels on its left edge to bring the cover around. `.bk-lg` is the detail
- * viewer, with a `.bk-bar` standing in for the hidden site header and the
- * photography viewer's `.pg-side` pills pinned along the bottom.
+ * pop-up: a scrim over the shelf with `.bk-lg_panel` centred on it, holding
+ * the cover, the plates, the story and the way to the store. One book at a
+ * time — closing it returns to the shelf, which is the way between books.
  * ---------------------------------------------------------------------------
  */
 .bk-stage {
@@ -4575,39 +4576,87 @@ body .pg-root.is-zoomed .pg-bar,
   }
 }
 
-/* ── Viewer ─────────────────────────────────────────────────────────── */
+/* ── Viewer: a pop-up over the shelf ───────────────────────────────── */
+/*
+ * The detail opens on top of the shelf rather than replacing it, so the
+ * scrim is the dialog's own box and the panel is centred on it. The shelf
+ * stays visible (and dimmed) behind, which is what makes this read as a
+ * pop-up rather than a page.
+ */
 .bk-lg {
   position: fixed;
   inset: 0;
-  z-index: 500;
-  background: var(--palette-background);
+  /* Above the fixed header (999), so the scrim's blur covers the whole page
+     — header included — rather than leaving it sharp on top. */
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* Generous gutters, so the page is visibly still there around the panel. */
+  padding: clamp(1rem, 4vh, 3rem) clamp(1rem, 4vw, 3.5rem);
   overflow: hidden;
+}
+
+/* The scrim: its own layer, so clicking it closes without the panel's
+   clicks passing through. Everything behind it — the shelf and the site
+   header alike — blurs out of focus beneath a tint of the background. */
+.bk-lg_scrim {
+  position: absolute;
+  inset: 0;
+  cursor: pointer;
+  border: 0;
+  padding: 0;
+  appearance: none;
+  background-color: color-mix(in srgb, var(--palette-background) 45%, transparent);
+  -webkit-backdrop-filter: blur(22px) saturate(1.1);
+  backdrop-filter: blur(22px) saturate(1.1);
 }
 
 /*
- * Centres on a desktop and scrolls where it must: auto block margins on the
- * grid rather than flex centring, so content taller than the viewport scrolls
- * from its top instead of clipping it.
+ * The panel. It takes its width from the viewport but never outgrows a
+ * comfortable reading measure, and it is capped in height so a long story
+ * scrolls inside the pop-up instead of pushing it past the screen.
  */
+.bk-lg_panel {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  width: min(100%, 1040px);
+  max-height: 100%;
+  overflow: hidden;
+  border-radius: var(--nav-radius);
+  background: var(--palette-background);
+  box-shadow: 0 2.4rem 5rem color-mix(in srgb, #080807 28%, transparent);
+}
+
+/* Scrolls within the panel; the grid centres while it still fits. */
 .bk-lg_scroll {
   display: flex;
-  height: 100%;
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
-  padding-block: calc(var(--site-margin) * 2 + 2.5rem);
+  padding-block: clamp(1.5rem, 3vw, 2.5rem);
 }
 
+/* The shot and the story sit on a common top line rather than being centred
+   against each other, so the column heights never drift apart. */
 .bk-lg_grid {
   margin-block: auto;
-  row-gap: 2rem;
-  align-items: center;
+  row-gap: 1.75rem;
+  align-items: start;
 }
 
+/*
+ * The shot is shown whole, never cropped: the frame is a box the image sits
+ * inside — tall enough to read, capped to the viewport — and the image is
+ * contained within it, so covers and plates keep their own proportions
+ * whatever shape the store shot happens to be.
+ */
 .bk-lg_frame {
   position: relative;
   width: 100%;
-  aspect-ratio: 4 / 5;
-  max-height: 62svh;
-  overflow: hidden;
+  height: min(52svh, 28rem);
   border-radius: var(--nav-radius);
 }
 
@@ -4661,17 +4710,17 @@ body .pg-root.is-zoomed .pg-bar,
 }
 
 /*
- * The viewer's top bar — the site header's stand-in while a book is open,
- * matching the photography viewer's: same fixed box, same padding, so the
- * title lands on the wordmark's line and Close on the menu button's.
+ * The pop-up's top bar. The site header stays where it is now, so this is
+ * the panel's own head rather than a stand-in for it: title on the left,
+ * Close on the right, sitting above the sheet that scrolls beneath it.
  */
 .bk-bar {
-  position: fixed;
-  inset-inline: 0;
+  position: sticky;
   top: 0;
   z-index: 520;
-  padding-block: var(--site-margin);
-  /* The sheet scrolls beneath it on a phone, so it paints its own ground. */
+  flex: none;
+  padding-block: clamp(0.85rem, 1.6vw, 1.15rem);
+  border-bottom: 1px dotted var(--palette-rule);
   background: var(--palette-background);
 }
 
@@ -4697,94 +4746,45 @@ body .pg-root.is-zoomed .pg-bar,
   opacity: 0.6;
 }
 
-/* Tabular digits so the readout does not jitter as it counts. */
-.bk-bar_count {
-  position: fixed;
-  bottom: var(--site-margin);
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 520;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  font-variant-numeric: tabular-nums;
-  white-space: nowrap;
+/* The Esc hint, quiet beside Close: a chip at the muted weight, so it reads
+   as a note about the keyboard rather than a second button. */
+.bk-bar_kbd {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--nav-radius);
+  background: var(--palette-chip);
+  padding: 0.2em 0.5em;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1;
   color: var(--color--foreground--50);
 }
 
 /*
- * Next and previous — the photography viewer's side pills (`.pg-side`),
- * pinned along the bottom edge here rather than mid-height: the viewer is a
- * reading layout, and mid-edge pills would sit on the text column.
+ * A book is open. The pop-up paints above everything (it portals out of the
+ * isolated `main`), and its scrim blurs the page behind it. The header and
+ * the floating theme and grid pills step aside even so: both are fixed to
+ * the same corners the panel occupies, and their links lead away from a
+ * view the reader is still inside.
  */
-.bk-sides {
-  position: fixed;
-  inset-inline: var(--site-margin);
-  bottom: var(--site-margin);
-  z-index: 520;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  flex-direction: row-reverse;
-  pointer-events: none;
-}
-
-@media (width <= 768px) {
-  .bk-sides {
-    display: none;
-  }
-}
-
-/*
- * Phone: the way through the shelf, at the foot of the sheet. Shown by the
- * media query rather than a `md:hidden` utility: these rules are unlayered,
- * so they would beat Tailwind's layered display utility anyway.
- */
-.bk-lg_mnav {
-  display: none;
-  justify-content: space-between;
-  gap: 1rem;
-  border-top: 1px dotted var(--palette-rule);
-  padding-top: 0.75rem;
-}
-
-@media (width < 768px) {
-  .bk-lg_mnav {
-    display: flex;
-  }
-}
-
-.bk-lg_mnav button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5em;
-  padding: 0.5rem 0;
-  font-size: 15px;
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  appearance: none;
-  border: 0;
-  background: none;
-  color: inherit;
-  font-family: inherit;
-  cursor: pointer;
-}
-
-.bk-lg_mnav_arrow {
-  width: 0.9em;
-  flex: none;
-}
-
-/*
- * A book is open: the site header would sit over the viewer's own bar, and
- * its links lead away from a view the user is still inside — the same
- * treatment the photography viewer gives it. The floating theme and grid
- * pills go too: `main` is isolated, so they paint over the viewer, and they
- * share the bottom-right corner with the next-book pill.
- */
-body.bk-viewing header,
 body.bk-viewing .app-aside {
   opacity: 0;
   pointer-events: none;
   visibility: hidden;
+  transition:
+    opacity 0.3s ease,
+    visibility 0s linear 0.3s;
+}
+
+/* GSAP owns the header's autoAlpha (the intro, and the footer's fade), and
+   it writes inline — so taking it out of the way has to be !important or
+   the inline opacity wins and the bar sits on top of the panel. */
+body.bk-viewing .navbar_wrap {
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
   transition:
     opacity 0.3s ease,
     visibility 0s linear 0.3s;

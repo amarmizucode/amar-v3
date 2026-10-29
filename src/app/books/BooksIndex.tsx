@@ -8,8 +8,9 @@ import {
   useState,
   type CSSProperties,
 } from "react";
+import { createPortal } from "react-dom";
 import { useGSAP } from "@gsap/react";
-import { CornerArrow, RightArrow } from "@/components/Arrows";
+import { CornerArrow } from "@/components/Arrows";
 import { usePageReady } from "@/components/PageTransition";
 import { gsap, DUR } from "@/lib/gsap";
 import type { Book } from "@/lib/books";
@@ -174,15 +175,6 @@ export function BooksIndex({ books }: { books: Book[] }) {
     setOpen(i);
   };
 
-  const step = useCallback(
-    (dir: 1 | -1) => {
-      setShot(0);
-      setOpen((o) => (o == null ? o : (o + dir + books.length) % books.length));
-      setActive((a) => (a == null ? a : (a + dir + books.length) % books.length));
-    },
-    [books.length],
-  );
-
   const requestClose = useCallback(() => {
     if (closing.current || !overlay.current) return;
     const done = () => {
@@ -239,15 +231,13 @@ export function BooksIndex({ books }: { books: Book[] }) {
     document.body.classList.add("bk-viewing");
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") requestClose();
-      else if (e.key === "ArrowRight") step(1);
-      else if (e.key === "ArrowLeft") step(-1);
     };
     window.addEventListener("keydown", onKey);
     return () => {
       document.body.classList.remove("bk-viewing");
       window.removeEventListener("keydown", onKey);
     };
-  }, [viewing, requestClose, step]);
+  }, [viewing, requestClose]);
 
   /* The caption keeps the last hovered book's lines while it fades away, so
    * a mouse-leave does not empty the block mid-fade; the peek keeps its last
@@ -259,8 +249,6 @@ export function BooksIndex({ books }: { books: Book[] }) {
   if (peek != null) lastPeek.current = peek;
   const peekBook = books[peek ?? lastPeek.current];
   const book = open != null ? books[open] : null;
-  const next = open != null ? books[(open + 1) % books.length] : null;
-  const prev = open != null ? books[(open - 1 + books.length) % books.length] : null;
   const shots = book ? [book.cover, ...book.plates] : [];
 
   return (
@@ -364,8 +352,14 @@ export function BooksIndex({ books }: { books: Book[] }) {
           </span>
         </div>
 
-        {/* ── Viewer ─────────────────────────────────────────────────── */}
-        {book && (
+      </main>
+
+      {/* ── Viewer ─────────────────────────────────────────────────────── */}
+      {/* Portalled to <body>: `main` is an isolated stacking context, so a
+          dialog rendered inside it can never paint above the fixed site
+          header however high its z-index goes. */}
+      {book && typeof document !== "undefined"
+        ? createPortal(
           <div
             ref={overlay}
             role="dialog"
@@ -373,134 +367,92 @@ export function BooksIndex({ books }: { books: Book[] }) {
             aria-label={`${book.title} — book details`}
             className="bk-lg"
           >
-            {/* The header's stand-in while it is hidden: title where the
-                wordmark sits, Close where the menu button does. */}
-            <div className="bk-bar">
-              <div className="shell grid-12 items-center">
-                <p className="bk-bar_title col-span-8 text-[15px] font-semibold uppercase tracking-[-0.01em] md:col-span-5">
-                  [{book.index}] {book.title}
-                </p>
-                <div className="col-span-4 flex justify-end md:col-start-11 md:col-span-2">
-                  <button
-                    ref={closeBtn}
-                    type="button"
-                    onClick={requestClose}
-                    className="bk-bar_close text-[15px] font-medium tracking-[-0.03em]"
-                  >
-                    Close
-                  </button>
+            {/* Clicking off the panel closes it, as the film player does. */}
+            <button
+              type="button"
+              aria-label="Close book details"
+              tabIndex={-1}
+              onClick={requestClose}
+              className="bk-lg_scrim"
+            />
+
+            <div className="bk-lg_panel">
+              {/* The pop-up's own head: which book this is, and the way out. */}
+              <div className="bk-bar">
+                <div className="shell grid-12 items-center">
+                  <p className="bk-bar_title col-span-8 text-[15px] font-semibold uppercase tracking-[-0.01em] md:col-span-9">
+                    {book.title}
+                  </p>
+                  <div className="col-span-4 flex items-center justify-end gap-2 md:col-span-3">
+                    {/* The shortcut sits with the button it doubles for. */}
+                    <kbd className="bk-bar_kbd" aria-hidden>
+                      Esc
+                    </kbd>
+                    <button
+                      ref={closeBtn}
+                      type="button"
+                      onClick={requestClose}
+                      className="bk-bar_close text-[15px] font-medium tracking-[-0.03em]"
+                    >
+                      Close
+                    </button>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="bk-lg_scroll">
-              <div className="bk-lg_grid shell grid-12">
-                <div className="col-span-12 md:col-span-5">
-                  <div className="bk-lg_frame">
-                    <div className="bk-lg_mask">
-                      <div className="bk-lg_mask_inside">
-                        <Shot
-                          key={`${book.slug}-${shot}`}
-                          src={shots[shot]}
-                          alt={
-                            shot === 0
-                              ? `${book.title} — cover`
-                              : `${book.title} — plate ${shot}`
-                          }
-                        />
+              <div className="bk-lg_scroll">
+                <div className="bk-lg_grid shell grid-12">
+                  <div className="col-span-12 md:col-span-5">
+                    <div className="bk-lg_frame">
+                      <div className="bk-lg_mask">
+                        <div className="bk-lg_mask_inside">
+                          <Shot
+                            key={`${book.slug}-${shot}`}
+                            src={shots[shot]}
+                            alt={
+                              shot === 0
+                                ? `${book.title} — cover`
+                                : `${book.title} — plate ${shot}`
+                            }
+                          />
+                        </div>
                       </div>
                     </div>
+                    {/* Every shot the store carries; the frame shows the pick. */}
+                    <div className="bk-lg_thumbs" role="tablist" aria-label="Book photographs">
+                      {shots.map((s, n) => (
+                        <button
+                          key={s}
+                          type="button"
+                          role="tab"
+                          aria-selected={n === shot}
+                          aria-label={n === 0 ? "Cover" : `Plate ${n}`}
+                          className={n === shot ? "is-cur" : ""}
+                          onClick={() => setShot(n)}
+                        >
+                          <img src={s} alt="" draggable={false} loading="lazy" />
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                  {/* Every shot the store carries; the frame shows the pick. */}
-                  <div className="bk-lg_thumbs" role="tablist" aria-label="Book photographs">
-                    {shots.map((s, n) => (
-                      <button
-                        key={s}
-                        type="button"
-                        role="tab"
-                        aria-selected={n === shot}
-                        aria-label={n === 0 ? "Cover" : `Plate ${n}`}
-                        className={n === shot ? "is-cur" : ""}
-                        onClick={() => setShot(n)}
-                      >
-                        <img src={s} alt="" draggable={false} loading="lazy" />
-                      </button>
-                    ))}
-                  </div>
+
+                  <TextCol key={book.slug} book={book} />
                 </div>
-
-                <TextCol key={book.slug} book={book} />
-
-                {/* Phone: the fixed side pills are gone, so the way through
-                    the shelf sits at the foot of the sheet. */}
-                {prev && next && (
-                  <nav className="bk-lg_mnav col-span-12" aria-label="More books">
-                    <button type="button" onClick={() => step(-1)}>
-                      <RightArrow className="bk-lg_mnav_arrow" back />
-                      {prev.title}
-                    </button>
-                    <button type="button" onClick={() => step(1)}>
-                      {next.title}
-                      <RightArrow className="bk-lg_mnav_arrow" />
-                    </button>
-                  </nav>
-                )}
               </div>
             </div>
+          </div>,
+            document.body,
+          )
+        : null}
 
-            {/* Next and previous, pinned to the edges — the photography
-                viewer's side pills, so the interaction matches. */}
-            {prev && next && (
-              <nav className="bk-sides">
-                <button
-                  type="button"
-                  onClick={() => step(1)}
-                  className="pg-side pg-side-next"
-                  aria-label={`Next book: ${next.title}`}
-                >
-                  <span className="pg-side_text_contain">
-                    <span className="pg-side_text">
-                      [{next.index}] {next.title}
-                    </span>
-                  </span>
-                  <span className="pg-side_aside">
-                    <span className="pg-side_aside_bg" />
-                    <RightArrow className="pg-side_icon" />
-                    <RightArrow className="pg-side_icon is-absolute" />
-                  </span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => step(-1)}
-                  className="pg-side pg-side-prev"
-                  aria-label={`Previous book: ${prev.title}`}
-                >
-                  <span className="pg-side_aside">
-                    <span className="pg-side_aside_bg" />
-                    <RightArrow className="pg-side_icon" back />
-                    <RightArrow className="pg-side_icon is-absolute" back />
-                  </span>
-                  <span className="pg-side_text_contain">
-                    <span className="pg-side_text">
-                      [{prev.index}] {prev.title}
-                    </span>
-                  </span>
-                </button>
-              </nav>
-            )}
-
-            <p className="bk-bar_count text-[13px] font-medium">
-              {book.index} / {String(books.length).padStart(2, "0")}
-            </p>
-          </div>
-        )}
-      </main>
     </div>
   );
 }
 
-/** The viewer's frame. Keyed per shot, so each swap fades its mount in. */
+/**
+ * The viewer's frame. Keyed per shot, so each swap fades its mount in. The
+ * shot is contained rather than cropped, so each keeps its own proportions.
+ */
 function Shot({ src, alt }: { src: string; alt: string }) {
   const img = useRef<HTMLImageElement>(null);
   useLayoutEffect(() => {
@@ -517,7 +469,7 @@ function Shot({ src, alt }: { src: string; alt: string }) {
       src={src}
       alt={alt}
       draggable={false}
-      className="absolute inset-0 h-full w-full object-cover"
+      className="absolute inset-0 h-full w-full object-contain"
     />
   );
 }
@@ -550,7 +502,7 @@ function TextCol({ book }: { book: Book }) {
       className="bk-lg_text col-span-12 flex flex-col items-start gap-5 md:col-start-7 md:col-span-6"
     >
       <p className="text-[15px] font-medium text-muted">
-        [{book.index}] — {book.category}
+        {book.category}
       </p>
       <h2 className="text-[clamp(2rem,3.4vw,3.5rem)] font-semibold uppercase leading-[0.95] tracking-[-0.03em]">
         {book.title}
