@@ -103,7 +103,9 @@ export function PageTransition({ children }: { children: ReactNode }) {
   }, []);
 
   const runReveal = useCallback((hash?: string) => {
-    if (!curtain.current) return;
+    // While CURTAIN_HIDDEN the curtain is not rendered, so its ref is null;
+    // only the wipe needs it, not the release below.
+    if (!CURTAIN_HIDDEN && !curtain.current) return;
     window.clearTimeout(stuckTimer.current);
     window.scrollTo(0, 0);
     if (hash) {

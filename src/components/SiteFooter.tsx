@@ -145,7 +145,7 @@ export function SiteFooter() {
           <span className="col-span-6 md:col-span-4">© 2026, AMAR RAMESH</span>
           <a
             href="#top"
-            className="link-wipe col-span-6 justify-self-end md:col-start-6 md:col-span-3 md:justify-self-start"
+            className="link-wipe col-span-6 justify-self-end md:col-start-5 md:col-span-3 md:justify-self-start"
           >
             Back to top ↑
           </a>

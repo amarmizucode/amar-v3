@@ -2,19 +2,25 @@
 
 import { useState } from "react";
 import { Reveal } from "@/components/Reveal";
-import { SectionLabel } from "@/components/SectionLabel";
+import { CornerArrow } from "@/components/Arrows";
 
 /**
  * The copy document's CONTACT section: the invitation, where Amar is based,
  * and the enquiry form it specifies — Name, Email, Organisation (optional),
  * Project Type and Message.
  *
+ * Set on the reference system like the rest of the home page: the header
+ * column is Selected work's (eyebrow, heading, `works_p` intro), the email a
+ * footer-style inline hover row, and the fields works-list rows — a muted
+ * small label over the entry line in text-large — on the same dotted rules.
+ * The submit is the CTA pill. Styles are the `contact_*` rules in
+ * globals.css.
+ *
  * Email rather than a POST, for the reason PrintRequestDock gives: the site
  * prerenders and has no server to receive a form. Send composes a mailto:
  * draft, so nothing leaves the visitor's machine until they send it from
  * their own mail app, and Copy covers the machines where no mail client ever
- * opens. The fields reuse `.preq-field` from the print-request drawer, so the
- * two forms on the site look like one.
+ * opens.
  */
 
 const CONTACT_EMAIL = "hello@amarramesh.com";
@@ -49,6 +55,15 @@ const enquiryBody = (
     .filter((line) => line !== null)
     .join("\n");
 
+/** A field's label, in the muted small reference type. */
+function FieldLabel({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
+  return (
+    <label htmlFor={htmlFor} className="contact_label">
+      <span className="contact_label_text">{children}</span>
+    </label>
+  );
+}
+
 export function ContactSection() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -80,78 +95,103 @@ export function ContactSection() {
   };
 
   return (
-    <section id="contact" className="shell py-20 md:py-28">
-      <div className="grid-12 gap-y-10">
-        {/* The invitation, in the label column. */}
-        <div className="col-span-12 md:col-span-4 flex flex-col gap-6">
+    /* `works` for the eyebrow marker and rule colours, as every reference
+       section takes it. */
+    <section id="contact" className="works shell py-20 md:py-28">
+      <div className="grid-12 gap-y-12">
+        {/* The invitation — Selected work's header column, on the About
+            band's column plan: the left block over the portrait's three
+            columns, the form over the copy's 5–10, so the two sections
+            align rail for rail. The details pin to the foot of the column,
+            as the FAQ's left block pins its CTA. */}
+        <div className="col-span-12 flex flex-col gap-6 md:col-span-3">
           <Reveal>
-            <SectionLabel>Contact</SectionLabel>
+            <p className="works_eyebrow">
+              <span aria-hidden className="works_eyebrow_marker" />
+              <span className="works_eyebrow_text">Contact</span>
+            </p>
           </Reveal>
           <Reveal>
-            <h2 className="text-[clamp(2rem,3.4vw,3.25rem)] font-semibold leading-[1.15] tracking-[-0.03em]">
-              Let&rsquo;s talk
-            </h2>
+            <h2 className="section_heading">Let&rsquo;s talk</h2>
           </Reveal>
-          <Reveal className="flex flex-col gap-4 text-[17px] leading-[1.5] text-muted">
-            <p>
+          <Reveal>
+            <p className="works_p max-w-[36ch]">
               Have a project in mind, an interesting idea or something you think I&rsquo;d enjoy
               exploring? I&rsquo;d love to hear about it.
             </p>
-            <p className="font-medium text-foreground">Based in Chennai, India</p>
-            <p>
-              <a href={`mailto:${CONTACT_EMAIL}`} className="link-wipe font-medium text-foreground">
-                {CONTACT_EMAIL}
-              </a>
-            </p>
+          </Reveal>
+
+          <Reveal className="flex flex-col items-start gap-3 md:mt-auto md:pt-10">
+            {/* The footer's inline email row, verbatim interaction: label
+                slides, the corner arrow travels with it. */}
+            <a
+              href={`mailto:${CONTACT_EMAIL}`}
+              className="footer_hover_row is-inline-row contact_email flex w-fit items-center gap-[0.3em]"
+            >
+              <span className="footer_hover_label">{CONTACT_EMAIL}</span>
+              <span className="footer_hover_marker flex items-center">
+                <CornerArrow className="inline-arrow" />
+              </span>
+            </a>
+            <p className="works_p">Based in Chennai, India</p>
           </Reveal>
         </div>
 
-        {/* The form the doc specifies. */}
-        <Reveal className="col-span-12 md:col-span-8">
-          <h3 className="text-[17px] font-semibold leading-[1.3] tracking-[-0.03em]">
-            Tell me a little about your idea
-          </h3>
+        {/* The form the doc specifies, as a ruled works list. */}
+        <Reveal className="col-span-12 md:col-start-5 md:col-span-6">
+          <form onSubmit={send} className="flex flex-col">
+            <p className="contact_descriptor pb-[var(--ref-space-3)]">
+              (Tell me a little about your idea)
+            </p>
 
-          <form onSubmit={send} className="mt-6 flex flex-col gap-5">
-            {/* Name and email share a row from sm: both are short. */}
-            <div className="grid gap-5 sm:grid-cols-2">
-              <div className="preq-field">
-                <label htmlFor="contact-name">Name</label>
+            <div className="contact_grid">
+              {/* Name and email share a row from 30rem: both are short. */}
+              <div className="contact_field">
+                <FieldLabel htmlFor="contact-name">
+                  Name
+                </FieldLabel>
                 <input
                   id="contact-name"
                   type="text"
                   required
                   autoComplete="name"
+                  placeholder="Your name"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                 />
               </div>
-              <div className="preq-field">
-                <label htmlFor="contact-email">Email</label>
+              <div className="contact_field">
+                <FieldLabel htmlFor="contact-email">
+                  Email
+                </FieldLabel>
                 <input
                   id="contact-email"
                   type="email"
                   required
                   autoComplete="email"
+                  placeholder="you@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
-            </div>
 
-            <div className="grid gap-5 sm:grid-cols-2">
-              <div className="preq-field">
-                <label htmlFor="contact-org">Organisation (optional)</label>
+              <div className="contact_field">
+                <FieldLabel htmlFor="contact-org">
+                  Organisation (optional)
+                </FieldLabel>
                 <input
                   id="contact-org"
                   type="text"
                   autoComplete="organization"
+                  placeholder="Studio, brand or institution"
                   value={organisation}
                   onChange={(e) => setOrganisation(e.target.value)}
                 />
               </div>
-              <div className="preq-field">
-                <label htmlFor="contact-type">Project type</label>
+              <div className="contact_field">
+                <FieldLabel htmlFor="contact-type">
+                  Project type
+                </FieldLabel>
                 {/* A select rather than a free text field: it spares the
                     visitor the typing and keeps the subject line tidy. */}
                 <select
@@ -167,29 +207,38 @@ export function ContactSection() {
                   ))}
                 </select>
               </div>
+
+              <div className="contact_field contact_span">
+                <FieldLabel htmlFor="contact-message">
+                  Your message
+                </FieldLabel>
+                <textarea
+                  id="contact-message"
+                  rows={4}
+                  required
+                  placeholder="A little about what you have in mind."
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                />
+              </div>
             </div>
 
-            <div className="preq-field">
-              <label htmlFor="contact-message">Your message</label>
-              <textarea
-                id="contact-message"
-                rows={4}
-                required
-                placeholder="A little about what you have in mind."
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-              />
-            </div>
-
-            <div className="flex flex-wrap items-center gap-x-6 gap-y-3 pt-1">
-              <button type="submit" className="preq-send">
-                {sent ? "Reopen the email draft" : "Send Enquiry"}
+            <div className="contact_actions">
+              {/* The CTA pill, on a real submit button: the same markup
+                  CtaPill renders, which the `.btn-pill` rules animate. */}
+              <button type="submit" className="btn-pill cursor-pointer">
+                <span className="btn-pill_text_contain">
+                  <span className="btn-pill_text">
+                    {sent ? "Reopen the email draft" : "Send Enquiry"}
+                  </span>
+                </span>
+                <span className="btn-pill_aside" aria-hidden>
+                  <span className="btn-pill_aside_bg" />
+                  <CornerArrow className="btn-pill_icon" />
+                  <CornerArrow className="btn-pill_icon is-absolute" />
+                </span>
               </button>
-              <button
-                type="button"
-                onClick={copy}
-                className="text-[13px] font-medium text-muted underline underline-offset-4 transition-opacity hover:opacity-60"
-              >
+              <button type="button" onClick={copy} className="contact_aux">
                 {copied ? "Copied" : "Copy as text"}
               </button>
             </div>
@@ -198,7 +247,7 @@ export function ContactSection() {
                 same as the message being sent, and on a machine with none
                 nothing visible happens at all. */}
             {sent && (
-              <p className="text-[13px] leading-[1.5] text-muted">
+              <p className="contact_hint">
                 Your mail app should have opened with the enquiry ready to send. If nothing
                 happened, use Copy as text and email {CONTACT_EMAIL} directly.
               </p>

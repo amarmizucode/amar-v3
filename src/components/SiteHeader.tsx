@@ -113,12 +113,20 @@ export function SiteHeader() {
    * swapped container.
    */
   const played = useRef(false);
+  const intro = useRef<gsap.Context | null>(null);
   useEffect(() => {
     const bar = root.current;
-    if (!ready || played.current || !bar) return;
+    if (!ready || !bar) return;
+    // Later pages: just make sure the bar is up. The home hero hides it for
+    // its own entrance and, reverting on unmount, leaves it at the CSS
+    // hidden state when the visitor navigates away.
+    if (played.current) {
+      gsap.set(bar, { autoAlpha: 1 });
+      return;
+    }
     played.current = true;
     const stagger = isHome ? 0.0525 : 0.0625;
-    const ctx = gsap.context(() => {
+    intro.current = gsap.context(() => {
       const tl = gsap.timeline({ defaults: { ease: "ease-transition" } });
       tl.from(".navbar_home", { yPercent: 100, duration: 0.95, rotate: 0.001 }, isHome ? 0.3 : 0.25)
         .to(bar, { autoAlpha: 1, duration: 0 }, "<")
@@ -133,8 +141,10 @@ export function SiteHeader() {
         );
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) tl.progress(1);
     }, root);
-    return () => ctx.revert();
   }, [ready, isHome]);
+  // Reverted on unmount only: `ready` drops on every navigation, and undoing
+  // the intro then would hide the bar for good, since it plays once.
+  useEffect(() => () => intro.current?.revert(), []);
 
   /*
    * Nav theme, the reference's section watcher: on every scroll, the section

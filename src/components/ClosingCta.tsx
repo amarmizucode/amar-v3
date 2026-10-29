@@ -32,7 +32,9 @@ export function ClosingCta({ children }: { children: ReactNode }) {
       // A dark section: the bar turns beige over it and the pill inside takes
       // the dark pair (see the `[data-theme-section]` rules in globals.css).
       data-theme-section="dark"
-      className="relative isolate flex min-h-[70svh] flex-col items-center justify-center overflow-clip bg-black text-white py-16 sm:py-20 md:py-24"
+      // Deep padding: the statement and its image trail want room to breathe
+      // between the ventures band above and the contact form below.
+      className="relative isolate flex min-h-[70svh] flex-col items-center justify-center overflow-clip bg-black text-white py-32 sm:py-40 md:py-56"
     >
       {children}
     </section>

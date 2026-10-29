@@ -15,13 +15,14 @@ import { GapSection } from "@/components/GapSection";
 import { SmoothScroll } from "@/components/SmoothScroll";
 import { CornerArrow } from "@/components/Arrows";
 import { ContactSection } from "@/components/ContactSection";
+import { ImageTrail } from "@/components/ImageTrail";
 import { BLACK_PALETTE, ClosingCta } from "@/components/ClosingCta";
 import { CtaPill } from "@/components/CtaPill";
 import { SiteFooter } from "@/components/SiteFooter";
 import { MEDIA } from "@/lib/media";
 import { assetUrl } from "@/lib/assetUrl";
 import { BSF_CHANNEL, thumbUrl } from "@/lib/documentary";
-import { galleryBySlug } from "@/lib/photography";
+import { GALLERIES, galleryBySlug } from "@/lib/photography";
 
 /** A landscape frame other than the cover, to suit the 3:2 hover card. */
 const revealFrame = (slug: string) => {
@@ -227,6 +228,16 @@ const SERVICES = [
   { label: "Books & Publishing", href: "/books", image: "/assets/books/aranga/plate-2.jpg" },
   { label: "Mentorship", image: "/assets/ventures/kanavu.jpg" },
 ];
+
+/*
+ * Work with me — the image trail's deck: every frame of every gallery
+ * (350-odd), at the 480px thumb cut the gallery canvas tiles use. The
+ * trail swaps sources into a small pool of cards and preloads a few deals
+ * ahead, so the size of the deck costs nothing up front.
+ */
+const TRAIL_IMAGES = GALLERIES.flatMap((gallery) =>
+  gallery.frames.map((frame) => frame.thumb),
+);
 
 const FAQS = [
   {
@@ -558,7 +569,10 @@ export default function Home() {
              supplies the gap. ──────────────────────────────────────── */}
         <section id="works" className="works shell pb-20 md:pb-28">
           <div className="grid-12 gap-y-8 pb-[var(--space-4)]">
-            <div className="col-span-12 flex flex-col gap-6 min-[62rem]:col-span-2">
+            {/* Three columns rather than the reference's two: the heading is
+                set at the shared section_heading size, and "particularly"
+                overruns a two-column measure at it. */}
+            <div className="col-span-12 flex flex-col gap-6 min-[62rem]:col-span-3">
               <Reveal>
                 <p className="works_eyebrow">
                   <span aria-hidden className="works_eyebrow_marker" />
@@ -566,7 +580,7 @@ export default function Home() {
                 </p>
               </Reveal>
               <Reveal>
-                <h2 className="text-[clamp(1.5rem,2.6vw,2.25rem)] font-semibold leading-[1.15] tracking-[-0.03em]">
+                <h2 className="section_heading">
                   A few projects that have been particularly special
                 </h2>
               </Reveal>
@@ -578,7 +592,7 @@ export default function Home() {
               </Reveal>
             </div>
 
-            <div className="col-span-12 min-[62rem]:col-span-10">
+            <div className="col-span-12 min-[62rem]:col-span-9">
               <ol className="works_list">
                 {WORKS.map((work) => (
                   <Reveal as="li" key={work.title} className="works_item">
@@ -670,7 +684,7 @@ export default function Home() {
         {/* ── Notable ventures — the header set as Selected work's (its
              eyebrow, heading and intro), so the wrapper takes `works` for
              the marker colour. The three sit in one row from 62rem —
-             eyebrow over the first three columns, heading 5–7, intro 9–12,
+             eyebrow over the first three columns, heading 5–8, intro 10–12,
              bottom-aligned — and stack below it. A black band continuing
              the services band above, on its `svc_wrap` ground and palette;
              `data-theme-section="dark"` turns the bar beige and the cards to
@@ -691,12 +705,12 @@ export default function Home() {
                   <span className="works_eyebrow_text">Ventures</span>
                 </p>
               </Reveal>
-              <Reveal className="col-span-12 min-[62rem]:col-start-5 min-[62rem]:col-span-3">
-                <h2 className="max-w-[26ch] text-[clamp(1.5rem,2.6vw,2.25rem)] font-semibold leading-[1.15] tracking-[-0.03em]">
+              <Reveal className="col-span-12 min-[62rem]:col-start-5 min-[62rem]:col-span-4">
+                <h2 className="section_heading max-w-[26ch]">
                   Some ideas I couldn&rsquo;t stop thinking about
                 </h2>
               </Reveal>
-              <Reveal className="col-span-12 flex max-w-[56ch] flex-col gap-3 min-[62rem]:col-start-9 min-[62rem]:col-span-4">
+              <Reveal className="col-span-12 flex max-w-[56ch] flex-col gap-3 min-[62rem]:col-start-10 min-[62rem]:col-span-3">
                 <p className="works_p">
                   Over the years, I&rsquo;ve been fortunate to work with people who have helped turn
                   different ideas into actual projects and businesses.
@@ -770,17 +784,35 @@ export default function Home() {
              #contact, which the header and footer link to. ───────── */}
         <ClosingCta>
           <h2 className="sr-only">Have an interesting idea? I&rsquo;d love to hear about it.</h2>
-          <Reveal className="flex w-full flex-col items-center gap-10 px-[var(--grid-margin)]">
-            <HighlightText className="text-lede font-semibold text-center max-w-[600px]">
-              I enjoy working with people who are passionate about what they do. It could be a
-              photography assignment, a documentary, a book, a campaign or a cultural project
-              you&rsquo;ve been wanting to explore.
-            </HighlightText>
-          </Reveal>
-
-          <Reveal className="mt-10 flex justify-center md:mt-16">
-            <CtaPill label="Start a Conversation" href="#contact" />
-          </Reveal>
+          {/* Frames of the work trail the cursor across the band. The layer
+              is positioned (z-0), so it paints over the statement's
+              non-positioned grid; the pill below lifts above it (z-10) and
+              stays unobscured. */}
+          <ImageTrail images={TRAIL_IMAGES} />
+          {/* The closing statement on the About band's column plan — the
+              eyebrow over the portrait's three columns, the invitation and
+              pill over the copy's 5–10 — so the two black bands align rail
+              for rail. The copy resolves line by line as the About
+              statements do. `works` hands the eyebrow the band's muted
+              marker. */}
+          <div className="works shell grid-12 w-full gap-y-10">
+            <Reveal className="col-span-12 md:col-span-3">
+              <p className="works_eyebrow">
+                <span aria-hidden className="works_eyebrow_marker" />
+                <span className="works_eyebrow_text">Work with me</span>
+              </p>
+            </Reveal>
+            <div className="col-span-12 flex flex-col items-start md:col-start-5 md:col-span-6">
+              <HighlightText className="cta_statement">
+                I enjoy working with people who are passionate about what they do. It could be a
+                photography assignment, a documentary, a book, a campaign or a cultural project
+                you&rsquo;ve been wanting to explore.
+              </HighlightText>
+              <Reveal className="relative z-10 mt-10 md:mt-14">
+                <CtaPill label="Start a Conversation" href="#contact" />
+              </Reveal>
+            </div>
+          </div>
         </ClosingCta>
         {/* ── Contact — the document's form. Sits after the band, so the
              band's invitation leads straight into it. ──────────── */}

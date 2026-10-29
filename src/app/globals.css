@@ -5658,3 +5658,243 @@ li:hover .brand-wall__logo {
     transition: none;
   }
 }
+
+/*
+ * Contact — the enquiry form on the reference system the rest of the home
+ * page is set in. The header column reads as Selected work's; the fields are
+ * works-list rows (a muted small label over the entry line in text-large)
+ * on the same dotted rules, each turning solid full-ink while
+ * its field holds focus; the submit is the CTA pill. Colours ride the
+ * `works` variables, so the section follows the theme ramp exactly as
+ * Selected work does. The mailto/copy behaviour is ContactSection.tsx's.
+ */
+
+/* Work with me — the image trail's cards, centred on their spawn point
+   (GSAP owns the transform; xPercent/yPercent set the centring) and hidden
+   until dealt so nothing flashes before hydration. Each keeps its own
+   aspect ratio, uncropped: the max pair only bounds the longer side, so a
+   portrait and a landscape read at one visual size. */
+.trail_card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: auto;
+  height: auto;
+  max-width: clamp(150px, 16vw, 230px);
+  max-height: clamp(150px, 16vw, 230px);
+  border-radius: 0.15rem;
+  opacity: 0;
+  visibility: hidden;
+  will-change: transform, opacity;
+}
+
+/* Work with me — the closing band's invitation, set left on the About
+   copy's columns at the statements' face (700, -0.03em, the alternates)
+   one step down the scale: the copy runs ~46 words, which h3 would stack
+   past the band. The highlight scrub (HighlightText) resolves it line by
+   line as the band scrolls in. */
+.cta_statement {
+  max-width: 30ch;
+  font-size: var(--ref-h4);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  text-wrap: pretty;
+  font-feature-settings: "ss01", "ss07";
+}
+
+@media (min-width: 120rem) {
+  .cta_statement {
+    font-size: var(--ref-h3);
+  }
+}
+
+/* Section heading — h3 at 700, set solid. Shared by Contact's "Let's talk"
+   and Selected work's heading. */
+.section_heading {
+  font-size: var(--ref-h3);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+  font-feature-settings: "ss01", "ss07";
+}
+
+/* The email under the intro — the footer's inline row at text-large, on
+   `.footer_email`'s box: the label and arrow each slide 10px right on hover,
+   and the 20px right padding keeps both inside the inverted fill. */
+.contact_email {
+  padding-block: var(--nav-space-1);
+  padding-right: 20px;
+  font-size: var(--ref-large);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  font-feature-settings: "ss01", "ss07";
+}
+
+/* "(Tell me a little about your idea)" — the parenthetical descriptor the
+   testimonials slider leads with, muted at text-main. */
+.contact_descriptor {
+  color: var(--works-muted);
+  font-size: var(--ref-main);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  font-feature-settings: "ss01", "ss07";
+}
+
+/*
+ * Name/Email and Organisation/Project type pair up from 30rem (the works
+ * sections' own narrow break); the message row spans both tracks. Vertical
+ * rhythm comes from the fields' own padding so the rules stay evenly
+ * spaced, and a solid rule opens the list the way the works closing bar
+ * closes its section.
+ */
+.contact_grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  column-gap: var(--grid-gutter);
+  border-top: 1px solid var(--works-bar-rule);
+}
+
+@media (min-width: 30rem) {
+  .contact_grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .contact_span {
+    grid-column: 1 / -1;
+  }
+}
+
+.contact_field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ref-space-3);
+  /* Shallow below: the rule hugs the entry line, underline-close, while the
+     top padding keeps the row rhythm from the rule above. */
+  padding: var(--ref-space-4) 0 var(--ref-space-1);
+  border-bottom: 1px dotted var(--works-rule);
+}
+
+/* The focused field's rule is the print-request underline, drawn on the
+   row: solid, full ink. border-style does not transition — only the colour
+   eases. */
+.contact_field:focus-within {
+  border-bottom-style: solid;
+  border-bottom-color: var(--palette-foreground);
+}
+
+.contact_label {
+  display: flex;
+  align-items: center;
+  width: fit-content;
+  cursor: pointer;
+}
+
+.contact_label_text {
+  color: var(--works-muted);
+  font-size: var(--ref-small);
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: -0.01em;
+  font-feature-settings: "ss01", "ss07";
+}
+
+/* The entry line: text-large at 500, bare — the field row draws the rule.
+   Its 18px floor also keeps iOS from zooming the page on focus. */
+.contact_field input,
+.contact_field textarea,
+.contact_field select {
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--palette-foreground);
+  font: inherit;
+  font-size: var(--ref-large);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+}
+
+/* The row's rule carries the focus state, so the controls show none. */
+.contact_field :is(input, textarea, select):focus-visible {
+  outline: none;
+}
+
+.contact_field textarea {
+  resize: vertical;
+  min-height: 3lh;
+}
+
+/* The native select brings its own background, border and arrow; strip them
+   so it reads as the fields beside it, then draw one chevron — the
+   print-request select's trick. */
+.contact_field select {
+  appearance: none;
+  padding-right: 1.5em;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%),
+    linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: right 0.55em center, right 0.25em center;
+  background-size: 0.3em 0.3em, 0.3em 0.3em;
+  background-repeat: no-repeat;
+  cursor: pointer;
+}
+
+/* The options are drawn by the OS, so they do not inherit the theme: give
+   them explicit colours or a dark stop renders black-on-black. */
+.contact_field select option {
+  background: #ffffff;
+  color: #000000;
+}
+
+.contact_field input::placeholder,
+.contact_field textarea::placeholder {
+  color: var(--color--foreground--33);
+}
+
+/* Until an option is chosen the select reads as a placeholder, not a value. */
+.contact_field select:has(option[value=""]:checked) {
+  color: var(--color--foreground--33);
+}
+
+.contact_actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  column-gap: var(--ref-space-5);
+  row-gap: var(--ref-space-3);
+  padding-top: var(--ref-space-5);
+}
+
+/* "Copy as text" — the print-request aux buttons' muted underline, on the
+   reference scale. */
+.contact_aux {
+  cursor: pointer;
+  color: var(--works-muted);
+  font-size: var(--ref-small);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  text-decoration: underline;
+  text-underline-offset: 0.25em;
+  transition: color 0.25s ease;
+  font-feature-settings: "ss01", "ss07";
+}
+
+.contact_aux:hover {
+  color: var(--palette-foreground);
+}
+
+.contact_hint {
+  max-width: 55ch;
+  padding-top: var(--ref-space-3);
+  color: var(--works-muted);
+  font-size: var(--ref-small);
+  font-weight: 500;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  font-feature-settings: "ss01", "ss07";
+}
