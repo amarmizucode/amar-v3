@@ -319,24 +319,53 @@ body::after {
 
 /*
  * Hero statement type. Takes the reference's treatment — sentence case, tight
- * leading so the lines stack as a block — at a size that suits a longer
- * sentence: the reference's heading is three short words per line, this one is
- * a full clause, so it is set nearer the display scale than to the reference's
- * own 11vw.
+ * leading, and the lines broken on sense in the markup so they stack as a
+ * block of two or three words each rather than running to the measure.
  *
- * Leading is 0.9, not the 0.78 this carried under Inter. KH Teka's ink spans
- * 0.88em (ascender +0.700em on "j" to descender -0.180em on "g", measured from
- * the Medium CFF outlines), so a line box under that clips descenders outright
- * — and the hero runs its lines through SplitText masks, which crop to exactly
- * that box. 0.9 clears the ink with a little air.
+ * Size follows the reference's display token (80→148px over its 320→1600px
+ * viewport range, ~5.3vw of slope) rather than this site's own display scale,
+ * so the statement is the dominant element of the hero the way the heading is
+ * there. The slope is steepened to 8.75vw with a lower floor because the
+ * statement only has 8 of 12 columns: at the md breakpoint those 8 columns
+ * are ~456px, and the reference's own slope would overflow "the beginning"
+ * there. The 148px cap engages near 1690px, inside the shell's 1920px max,
+ * so the type never outgrows its columns on wide displays.
+ *
+ * No `text-wrap: balance`: the breaks are hard `<br>`s on desktop, and below
+ * `md` balance would re-flow the sentence against breaks it cannot see.
+ *
+ * Weight and leading are the reference heading's own: `--primary-bold` (700)
+ * and 0.78. KH Teka's ink spans 0.88em (ascender +0.700em on "j" to descender
+ * -0.180em on "g", measured from the Medium CFF outlines), so a 0.78em line
+ * box cannot hold the ink — it hangs out of the box top AND bottom — and the
+ * hero runs its lines through SplitText masks (`overflow: clip` wrappers
+ * sized to exactly that box), which is what was cropping the glyphs. The fix
+ * is on the masks below, not on the leading.
  */
 .display-statement {
-  font-weight: 500;
+  font-weight: 700;
   text-transform: none;
-  line-height: 0.9;
+  line-height: 0.78;
   letter-spacing: -0.03em;
-  font-size: clamp(2rem, 6vw, 6.375rem);
-  text-wrap: balance;
+  font-size: clamp(2.75rem, 8.75vw, 9.25rem);
+}
+
+/*
+ * SplitText's `mask: "lines"` clones each line into an `overflow: clip`
+ * wrapper (same classes, `-mask` suffix) sized to the line box. The negative
+ * clip-path inset extends the visible region 0.15em past the box top and
+ * bottom — enough for the ~0.06em the ink overhangs each side — WITHOUT
+ * touching layout, so the stack's leading stays exactly 0.78. (An earlier
+ * padding + negative-margin version drifted to ~0.93: adjacent negative
+ * block margins collapse to one, not to their sum.) `overflow: visible` has
+ * to out-rank the wrapper's inline `overflow: clip`, hence the !important;
+ * the clip-path alone then does the cropping. The lines' hidden position in
+ * Hero.tsx starts at yPercent 140 (not the usual 110) so a line still clears
+ * this taller window before its reveal.
+ */
+.display-statement .split-line-mask {
+  overflow: visible !important;
+  clip-path: inset(-0.15em 0);
 }
 
 /* Monolog-style link underline that wipes in from the left on hover. */

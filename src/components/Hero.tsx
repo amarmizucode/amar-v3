@@ -99,7 +99,10 @@ export function Hero({ start }: { start: boolean }) {
       // Initial states — everything sits below its mask until `start`. Set from
       // JS (not markup) so a script failure leaves the page readable.
       gsap.set(allLines, { yPercent: 110 });
-      gsap.set(displayLines, { yPercent: 110 });
+      // 140, not 110: the statement's masks clip 0.15em past the line box
+      // (see .display-statement .split-line-mask) so tight leading doesn't
+      // crop the ink, and a hidden line has to clear that taller window too.
+      gsap.set(displayLines, { yPercent: 140 });
       gsap.set(".hero_content_cta", { autoAlpha: 0, y: 16 });
       gsap.set(".hero_canvas_wrap", { autoAlpha: 0 });
       gsap.set(navWrap, { autoAlpha: 0 });
@@ -172,8 +175,21 @@ export function Hero({ start }: { start: boolean }) {
           </div>
         </div>
 
-        <div className="col-span-12 md:col-start-5 md:col-span-8">
-          <p className="hero_display display-statement">The camera was just the beginning</p>
+        {/* order-first: below `md` the reference pulls its heading above the
+            paragraph (`order:-9999`); on the desktop grid the DOM order and
+            the column placement already match it. */}
+        <div className="order-first col-span-12 md:order-none md:col-start-5 md:col-span-8">
+          {/* Set as stacked lines like the reference's hero heading, which
+              breaks on sense rather than on measure. The breaks are desktop
+              only — below `md` the column is too narrow to hold "just the"
+              on one line, so it wraps on its own instead. */}
+          <p className="hero_display display-statement">
+            The camera
+            <br className="hidden md:inline" />
+            was just
+            <br className="hidden md:inline" />
+            the beginning
+          </p>
         </div>
       </div>
 
