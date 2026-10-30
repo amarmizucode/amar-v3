@@ -167,8 +167,22 @@ export function GalleryCanvas({ gallery }: { gallery: Gallery }) {
             const el = document.createElement("div");
             el.className = "pg-it";
             el.style.cssText = `left:${x}px;top:${y}px;width:${ce.w}px;height:${ce.h}px`;
+            // The canvas repeats the set 3×3 so it can wrap. Only the middle
+            // copy is exposed to keyboard and assistive tech — once each;
+            // the other eight are visual repeats.
+            const middle = tr === 1 && tc === 1;
+            if (middle) {
+              el.tabIndex = 0;
+              el.setAttribute("role", "button");
+              el.setAttribute(
+                "aria-label",
+                f.caption ?? `${gallery.title}, frame ${ce.pi + 1} of ${P.length}`,
+              );
+            } else {
+              el.setAttribute("aria-hidden", "true");
+            }
             const img = new Image();
-            img.loading = tr === 1 && tc === 1 ? "eager" : "lazy";
+            img.loading = middle ? "eager" : "lazy";
             img.decoding = "async";
             img.src = f.thumb;
             img.alt = "";
@@ -357,7 +371,11 @@ export function GalleryCanvas({ gallery }: { gallery: Gallery }) {
       });
     };
 
+    // The tile a frame was opened from, to hand focus back to on close.
+    let returnFocus: HTMLElement | null = null;
+
     const openLarge = (idx: number, clicked: HTMLElement) => {
+      returnFocus = clicked;
       mode = "large";
       lgIdx = idx;
       setOpenIdx(idx);
@@ -366,6 +384,9 @@ export function GalleryCanvas({ gallery }: { gallery: Gallery }) {
       // The header sits in the root layout, outside .pg-root, so the open
       // viewer signals itself on the body for the CSS there to react to.
       document.body.classList.add("pg-viewing");
+      // Into the viewer's chrome, now that the class has shown it: the
+      // canvas behind stops responding while a frame is open.
+      closeEl?.focus({ preventScroll: true });
       setCount(false, 0);
       // After the hero lands, swap the count for a scroll hint for a moment.
       window.clearTimeout(hintTimer);
@@ -591,6 +612,9 @@ export function GalleryCanvas({ gallery }: { gallery: Gallery }) {
     const closeLarge = () => {
       if (closing || mode !== "large") return;
       closing = true;
+      // Only the middle copy's tiles take focus (see build).
+      if (returnFocus?.tabIndex === 0) returnFocus.focus({ preventScroll: true });
+      returnFocus = null;
       // The card flies back to its tile from 1x; a live zoom transform would
       // fight the flight.
       resetZoom();
@@ -675,14 +699,42 @@ export function GalleryCanvas({ gallery }: { gallery: Gallery }) {
       }, cleanup);
     };
 
+    let openTimer = 0;
+    const openTile = (it: HTMLElement) => {
+      items.forEach((el) => el.classList.remove("hov"));
+      it.classList.add("active");
+      vpEl.classList.add("expanding");
+      window.clearTimeout(openTimer);
+      openTimer = window.setTimeout(() => openLarge(Number(it.dataset.pi), it), 100);
+    };
+
     const onClick = (e: MouseEvent) => {
       if (hasMoved || mode !== "gallery") return;
       const it = (e.target as Element).closest<HTMLElement>(".pg-it");
       if (!it || it.dataset.pi == null) return;
-      items.forEach((el) => el.classList.remove("hov"));
-      it.classList.add("active");
-      vpEl.classList.add("expanding");
-      window.setTimeout(() => openLarge(Number(it.dataset.pi), it), 100);
+      openTile(it);
+    };
+
+    // Enter or Space on a focused tile opens it, as a click does.
+    const onTileKey = (e: KeyboardEvent) => {
+      if (mode !== "gallery" || (e.key !== "Enter" && e.key !== " ")) return;
+      const it = (e.target as Element).closest<HTMLElement>(".pg-it");
+      if (!it || it.dataset.pi == null) return;
+      e.preventDefault();
+      openTile(it);
+    };
+
+    // A tile taking focus pans the canvas to centre it. Focus also scrolls
+    // the clipped viewport natively, which the canvas does not account for,
+    // so that is undone first.
+    const onTileFocus = (e: FocusEvent) => {
+      if (mode !== "gallery") return;
+      const it = (e.target as Element).closest<HTMLElement>(".pg-it");
+      if (!it) return;
+      vpEl.scrollLeft = vpEl.scrollTop = 0;
+      velX = velY = 0;
+      offX = window.innerWidth / 2 - it.offsetLeft - it.offsetWidth / 2;
+      offY = window.innerHeight / 2 - it.offsetTop - it.offsetHeight / 2;
     };
 
     let sAcc = 0;
@@ -938,6 +990,8 @@ export function GalleryCanvas({ gallery }: { gallery: Gallery }) {
     window.addEventListener("pointercancel", onUp);
     vpEl.addEventListener("wheel", onWheel, { passive: false });
     cvEl.addEventListener("click", onClick);
+    cvEl.addEventListener("keydown", onTileKey);
+    cvEl.addEventListener("focusin", onTileFocus);
     lgEl.addEventListener("wheel", onLgWheel, { passive: false });
     lgEl.addEventListener("touchstart", onTouchStart, { passive: true });
     lgEl.addEventListener("touchmove", onTouchMove, { passive: false });
@@ -957,6 +1011,7 @@ export function GalleryCanvas({ gallery }: { gallery: Gallery }) {
       start.current = null;
       cancelAnimationFrame(rafId);
       window.clearTimeout(enterTimer);
+      window.clearTimeout(openTimer);
       window.clearTimeout(hintTimer);
       window.clearTimeout(rT);
       window.clearTimeout(pressTimer);
@@ -966,6 +1021,8 @@ export function GalleryCanvas({ gallery }: { gallery: Gallery }) {
       window.removeEventListener("pointercancel", onUp);
       vpEl.removeEventListener("wheel", onWheel);
       cvEl.removeEventListener("click", onClick);
+      cvEl.removeEventListener("keydown", onTileKey);
+      cvEl.removeEventListener("focusin", onTileFocus);
       lgEl.removeEventListener("wheel", onLgWheel);
       lgEl.removeEventListener("touchstart", onTouchStart);
       lgEl.removeEventListener("touchmove", onTouchMove);
@@ -1040,7 +1097,7 @@ export function GalleryCanvas({ gallery }: { gallery: Gallery }) {
         bottom, the print-request toggle with the way to the next frame under
         it, worded per input.
       */}
-      <div className="pg-bar" aria-hidden={false}>
+      <div className="pg-bar">
         <div className="pg-bar_contain shell flex min-h-11 items-center justify-between gap-x-4">
           <p className="pg-bar_meta flex min-w-0 items-baseline gap-x-3 text-[15px] tracking-[-0.01em]">
             <span className="pg-bar_title min-w-0 font-semibold uppercase">
@@ -1052,17 +1109,17 @@ export function GalleryCanvas({ gallery }: { gallery: Gallery }) {
           </p>
 
           <div className="pg-bar_close flex flex-none items-center">
+            <kbd aria-hidden className="close-kbd">
+              Esc
+            </kbd>
             <button
               ref={closeBtn}
               type="button"
               aria-label="Close image"
-              className="pg-bar_close_btn relative -mr-(--nav-space-1) flex min-h-11 items-center justify-center gap-x-2 text-[15px] font-medium tracking-[-0.03em]"
+              className="close-btn pg-bar_close_btn relative -mr-(--nav-space-1) flex min-h-11 items-center justify-center"
               style={{ padding: "0.25rem var(--nav-space-1)" }}
             >
               Close
-              <kbd aria-hidden className="pg-bar_kbd">
-                esc
-              </kbd>
             </button>
           </div>
         </div>
@@ -1087,7 +1144,7 @@ export function GalleryCanvas({ gallery }: { gallery: Gallery }) {
       </div>
 
       {/* Viewer. */}
-      <div ref={lg} className="pg-lg">
+      <div ref={lg} className="pg-lg" role="dialog" aria-label={gallery.title}>
         <div ref={stack} className="pg-lg-stack" />
       </div>
     </div>

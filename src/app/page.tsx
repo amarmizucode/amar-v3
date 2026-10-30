@@ -2,8 +2,8 @@ import { HomeHero } from "@/components/HomeHero";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- the work sections are hidden for now, not removed.
 import { DocumentarySection, PhotographySection, BooksSection } from "@/components/HomeWork";
 import { VentureCards } from "@/components/VentureCards";
-import { StickyPortrait } from "@/components/StickyPortrait";
 import { WorksActiveOnScroll } from "@/components/WorksActiveOnScroll";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars -- InNumbers moved into the About band, kept to restore.
 import { InNumbers, NUMBERS, Recognition, logoWidth } from "@/components/Highlights";
 import { HighlightText } from "@/components/HighlightText";
 import { Services } from "@/components/Services";
@@ -17,13 +17,13 @@ import { SmoothScroll } from "@/components/SmoothScroll";
 import { CornerArrow } from "@/components/Arrows";
 import { ContactSection } from "@/components/ContactSection";
 import { ImageTrail } from "@/components/ImageTrail";
-import { BLACK_PALETTE, ClosingCta } from "@/components/ClosingCta";
+import { ClosingCta } from "@/components/ClosingCta";
 import { CtaPill } from "@/components/CtaPill";
 import { SiteFooter } from "@/components/SiteFooter";
-import { MEDIA } from "@/lib/media";
 import { assetUrl } from "@/lib/assetUrl";
 import { BSF_CHANNEL, thumbUrl } from "@/lib/documentary";
 import { GALLERIES, galleryBySlug } from "@/lib/photography";
+import { Eyebrow } from "@/components/Eyebrow";
 
 /** A landscape frame other than the cover, to suit the 3:2 hover card. */
 const revealFrame = (slug: string) => {
@@ -189,22 +189,6 @@ const BRANDS = [
 ];
 
 /*
- * Logos sized to one visual weight rather than one box, by `logoWidth`
- * from Highlights — the same equal-area rule the Featured-in mastheads
- * use, so the two logo tables read at one size. `weight` is the optical
- * nudge: solid fields (Ramraj's green bar, Thriveni's heavy caps) read
- * heavier than their size, thin linework (Hilton, the Tamil Nadu script)
- * lighter. The cell's own max-width/height caps guard the widest marks.
- */
-
-
-
-/*
- * Each row's hover image is Amar's own work: a Studio A wedding frame (the
- * ventures card's image), the Kalamkari film's YouTube still, and the open
- * Aranga spread that stands for Mara Labs.
- */
-/*
  * The doc's "What I do" rows. Each photography row takes its gallery's own
  * cover rather than a hardcoded frame, so a re-run of gen-photography.py
  * cannot leave a dead path behind; galleryBySlug resolves it on the server.
@@ -271,62 +255,62 @@ const FAQS = [
   },
 ];
 
+/*
+ * Parked sections. Rendered as nothing rather than `display:none`, which
+ * still fetched their images and mounted their scroll triggers. Flip to true
+ * to bring one back.
+ */
+const SHOW_BYLINE = false;
+const SHOW_REEL = false;
+
 const TESTIMONIALS = [
   {
     quote:
-      "Weddings, classical dance, folk art, musicians, storytellers — Amar found the thread that tied all of it together and gave our work a voice we could finally share.",
+      "Weddings, classical dance, folk art, musicians, storytellers - Amar found the thread that tied all of it together and gave our work a voice we could finally share.",
     name: "K. R. Nagarajan",
     role: "Founder, Ramrajcotton",
-    avatar: MEDIA.avatar2,
   },
   {
     quote:
-      "He spent three days simply watching the weavers before lifting a camera. What came back was not a shoot — it was our history, told properly for the first time.",
+      "He spent three days simply watching the weavers before lifting a camera. What came back was not a shoot - it was our history, told properly for the first time.",
     name: "Lakshmi Venkatesh",
     role: "Director, Kanchi Silk Trust",
-    avatar: MEDIA.avatar1,
   },
   {
     quote:
       "We had thirty years of work and nothing that explained it. Amar built the story we now open every conversation with.",
     name: "Dr. S. Raghunathan",
     role: "Trustee, Chettinad Heritage",
-    avatar: MEDIA.avatar2,
   },
   {
     quote:
       "The film travelled to four festivals, but the part that mattered was watching the artisans see themselves on screen with that much dignity.",
     name: "Meera Krishnan",
     role: "Programme Lead, Craft Council",
-    avatar: MEDIA.avatar1,
   },
   {
     quote:
       "Amar asks the questions nobody thinks to ask. By the end our own team understood the work better than when we started.",
     name: "Arjun Subramanian",
     role: "Co-founder, Maatram Foundation",
-    avatar: MEDIA.avatar2,
   },
   {
     quote:
       "Six hundred temples, four years, and a consistency of eye across every single frame. That archive is now the reference nobody else has.",
     name: "Prof. Kamala Iyer",
     role: "Head of Archives, Temple Studies",
-    avatar: MEDIA.avatar1,
   },
   {
     quote:
       "The mentorship changed how fifteen young photographers in our cohort see their own communities. That outlasts any single commission.",
     name: "Divya Raman",
     role: "Programme Director, Kanavu",
-    avatar: MEDIA.avatar2,
   },
   {
     quote:
       "We came for photographs and left with a way of talking about ourselves. Our funding conversations have not been the same since.",
     name: "Vikram Anand",
     role: "CEO, Inspiring Women India",
-    avatar: MEDIA.avatar1,
   },
 ];
 
@@ -342,52 +326,26 @@ export default function Home() {
   return (
     <>
       <SmoothScroll>
-      <main className="flex-1">
+      <main id="main" className="flex-1">
         {/* ── Hero ───────────────────────────────────────────────── */}
         <HomeHero />
 
-        {/* ── About — a full-bleed black band, pinned to the same
-             white-on-black palette as the closing CTA so the caption, the
-             frame's placeholder and the portrait's hover read against it.
-             `data-theme-section="dark"` turns the bar beige while it is
-             over the band. ──────────────────────────────────────── */}
-        <section
-          id="about"
-          data-theme-section="dark"
-          style={BLACK_PALETTE}
-          className="bg-black text-white py-28 md:py-44"
-        >
+        {/* ── About — a full-bleed inverted band, on the same palette as
+             the closing CTA so the caption, the frame's placeholder and the
+             portrait's hover read against it. `data-theme-section="invert"`
+             flips the page's ramp onto it (dark on the light stops) and
+             turns the bar to the inverted pair over it. ──────────────── */}
+        <section id="about" data-theme-section="invert" className="pt-20 pb-28 md:pt-0 md:pb-44">
           <div className="shell grid-12 gap-y-10">
-            {/* The About page's portrait block, verbatim: the same 4:5 frame,
-                slow drift, column and caption, so the two pages introduce
-                Amar the same way. */}
-            {/* StickyPortrait holds it in view, from md, while the copy and
-                awards beside it scroll past. Full width on a phone; from `sm`
-                it narrows to six columns so a landscape phone doesn't get a
-                4:5 frame taller than its screen. */}
-            <div className="col-span-12 sm:col-span-6 md:col-span-3">
-              <StickyPortrait>
-                <Reveal>
-                  <MediaFrame
-                    ratio="4 / 5"
-                    src={assetUrl("/assets/amar-ramesh.jpg")}
-                    parallax={14}
-                  />
-                  <p className="mt-4 text-[13px] font-medium text-muted">
-                    Photographer · Filmmaker · Author · Entrepreneur · Mentor
-                  </p>
-                </Reveal>
-              </StickyPortrait>
-            </div>
-
+            {/* The portrait beside this copy is the hero's, held in view
+                through the band (see Hero.tsx); its columns stay clear. */}
             <div className="col-span-12 md:col-start-5 md:col-span-6 flex flex-col">
               {/* All three set as the reference's `problems_home_heading`
                   (see `.about_statement` in globals.css), spaced as its
                   blank-line breaks between paragraphs. */}
               <HighlightText className="about_statement">
-                I&rsquo;m Amar Ramesh. I started my career as an engineer in the US. Somewhere along
-                the way, I realised photography was what I really wanted to pursue. So I made the
-                switch.
+                I started my career as an engineer in the US. Somewhere along the way, I realised
+                photography was what I really wanted to pursue. So I made the switch.
               </HighlightText>
               <HighlightText className="about_statement">
                 I&rsquo;ve always been curious about our temples, architecture, art and the people
@@ -429,8 +387,8 @@ export default function Home() {
                   2×2 grid under a hairline: the numeral at display scale,
                   its measure in small muted type beneath. */}
               <ul className="mt-16 grid grid-cols-2 gap-x-6 gap-y-10 border-t border-rule pt-8 md:mt-24 md:pt-10">
-                {NUMBERS.map((item, i) => (
-                  <Reveal as="li" key={item.label} delay={i * 60} className="flex flex-col gap-2">
+                {NUMBERS.map((item) => (
+                  <Reveal as="li" key={item.label} className="flex flex-col gap-2">
                     <span className="about_type text-[clamp(2rem,1.5rem+2vw,3.5rem)] leading-none">
                       {item.stat}
                     </span>
@@ -441,27 +399,29 @@ export default function Home() {
 
               {/* Byline, matching `gap_home_testimonial`: 2.5rem round
                   headshot, 0.6em beside it, name and role stacked at 0.5em.
-                  Hidden for now — swap `hidden` back to `flex` to restore it. */}
-              <div className="mt-6 hidden items-center gap-[0.6em]">
-                {/* A profile-picture crop of the full-length portrait: the
-                    image is drawn at ~2x the circle and offset so the face
-                    (around 50% / 28% of the 750×1125 source) lands at centre,
-                    head filling about three-quarters of the circle. The
-                    offsets are tied to that photo — re-tune them if it is
-                    replaced. */}
-                <span className="relative size-10 shrink-0 overflow-hidden rounded-full bg-chip">
-                  <img
-                    src={assetUrl("/assets/amar-ramesh.jpg")}
-                    alt=""
-                    className="absolute max-w-none"
-                    style={{ width: "216%", left: "-57%", top: "-39.5%" }}
-                  />
-                </span>
-                <div className="flex flex-col gap-[0.5em] text-[15px] leading-[1.3]">
-                  <p className="font-medium text-muted">Amar Ramesh</p>
-                  <p className="text-muted">Founder, Photographer, Author &amp; Mentor</p>
+                  Parked — see SHOW_BYLINE. */}
+              {SHOW_BYLINE && (
+                <div className="mt-6 flex items-center gap-[0.6em]">
+                  {/* A profile-picture crop of the full-length portrait: the
+                      image is drawn at ~2x the circle and offset so the face
+                      (around 50% / 28% of the 750×1125 source) lands at centre,
+                      head filling about three-quarters of the circle. The
+                      offsets are tied to that photo — re-tune them if it is
+                      replaced. */}
+                  <span className="relative size-10 shrink-0 overflow-hidden rounded-full bg-chip">
+                    <img
+                      src={assetUrl("/assets/amar-ramesh.jpg")}
+                      alt=""
+                      className="absolute max-w-none"
+                      style={{ width: "216%", left: "-57%", top: "-39.5%" }}
+                    />
+                  </span>
+                  <div className="flex flex-col gap-[0.5em] text-[15px] leading-[1.3]">
+                    <p className="font-medium text-muted">Amar Ramesh</p>
+                    <p className="text-muted">Founder, Photographer, Author &amp; Mentor</p>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
 
@@ -485,10 +445,7 @@ export default function Home() {
         <section className="pt-12 pb-36 md:pt-16 md:pb-56">
           <div className="works shell">
             <Reveal>
-              <h2 className="works_eyebrow">
-                <span aria-hidden className="works_eyebrow_marker" />
-                <span className="works_eyebrow_text">Selected Collaborations</span>
-              </h2>
+              <Eyebrow as="h2">Selected Collaborations</Eyebrow>
             </Reveal>
           </div>
 
@@ -499,12 +456,17 @@ export default function Home() {
               duplicate display:none'd). Hovering a mark hands back its
               colour; hovering the strip rests it. */}
           <Reveal className="mt-8 md:mt-12">
-            <div className="logo-marquee" role="list" aria-label="Brands and institutions Amar has worked with">
+            <div className="logo-marquee">
               <div className="logo-marquee__track">
                 {[0, 1].map((copy) => (
-                  <ul key={copy} aria-hidden={copy === 1} className="logo-marquee__list">
+                  <ul
+                    key={copy}
+                    aria-hidden={copy === 1}
+                    aria-label={copy === 0 ? "Brands and institutions Amar has worked with" : undefined}
+                    className="logo-marquee__list"
+                  >
                     {BRANDS.map((brand) => (
-                      <li key={brand.name} role={copy === 0 ? "listitem" : undefined} className="flex items-center">
+                      <li key={brand.name} className="flex items-center">
                         {/* Each mark opens its brand's site in a new tab; the
                             decorative copy's links stay out of the tab order. */}
                         <a
@@ -549,17 +511,19 @@ export default function Home() {
              portrait phone crop would keep only the middle four people, so
              the panorama holds its ratio on mobile too.
 
-             Hidden for now — drop `hidden` to restore it. */}
-        <section className="shell hidden">
-          <Reveal>
-            <MediaFrame
-              ratio="2253 / 804"
-              src="/assets/DSC9228-2.jpg"
-              parallax={10}
-              label="Showreel"
-            />
-          </Reveal>
-        </section>
+             Parked — see SHOW_REEL. */}
+        {SHOW_REEL && (
+          <section className="shell">
+            <Reveal>
+              <MediaFrame
+                ratio="2253 / 804"
+                src="/assets/DSC9228-2.jpg"
+                parallax={10}
+                label="Showreel"
+              />
+            </Reveal>
+          </section>
+        )}
 
         {/* ── Selected work — the copy document's four subjects, laid out
              as the reference's "Success Stories" (`works_home_*`): the
@@ -578,10 +542,7 @@ export default function Home() {
                 overruns a two-column measure at it. */}
             <div className="col-span-12 flex flex-col gap-6 min-[62rem]:col-span-3">
               <Reveal>
-                <p className="works_eyebrow">
-                  <span aria-hidden className="works_eyebrow_marker" />
-                  <span className="works_eyebrow_text">Selected work</span>
-                </p>
+                <Eyebrow>Selected work</Eyebrow>
               </Reveal>
               <Reveal>
                 <h2 className="section_heading">
@@ -603,7 +564,11 @@ export default function Home() {
                     <Reveal as="li" key={work.title} className="works_item">
                       {/* The whole row is the link, so the cover and its copy
                           lead to the same place. */}
-                      <a href={work.href} className="grid-12 items-start gap-y-4">
+                      <a
+                        href={work.href}
+                        aria-labelledby={`work-${work.index}`}
+                        className="grid-12 items-start gap-y-4"
+                      >
                         <div className="works_cover relative col-span-12 overflow-clip rounded-[0.15rem] min-[30rem]:col-span-7">
                           <MediaFrame ratio="3 / 2" src={work.image} parallax={15} />
                           <span aria-hidden className="works_overlay" />
@@ -631,7 +596,9 @@ export default function Home() {
                                 </span>
                               </span>
                             </span>
-                            <h3 className="works_title">{work.title}</h3>
+                            <h3 id={`work-${work.index}`} className="works_title">
+                              {work.title}
+                            </h3>
                             <p className="works_p">{work.blurb}</p>
                           </div>
                           <span className="works_cta mt-[var(--space-4)] min-[30rem]:mt-[var(--section-space-small)]">
@@ -658,18 +625,21 @@ export default function Home() {
                 {String(WORKS.length).padStart(2, "0")}
               </span>
               <span className="works_all_text col-span-8">View all work</span>
-              <span className="works_all_text works_all_arrow col-span-2">(→)</span>
+              <span aria-hidden className="works_all_text works_all_arrow col-span-2">
+                (→)
+              </span>
             </a>
           </Reveal>
         </section>
 
         {/* ── Services + testimonial — the reference's `services_home_*`
-             band ("What we can help with"): black-400 ground, the slider in
+             band ("What we can help with"): an inverted ground, the slider in
              the first three columns, the service list from the fifth. Below
              62rem the list leads and the slider follows at half width (full
              under 30rem). Styles are the `svc_*` classes in globals.css.
-             `data-theme-section="dark"` turns the bar beige over it. ── */}
-        <section id="services" data-theme-section="dark" className="svc_wrap">
+             `data-theme-section="invert"` flips the ramp onto it and turns
+             the bar to the inverted pair over it. ── */}
+        <section id="services" data-theme-section="invert" className="svc_wrap">
           <div className="svc_contain shell grid-12">
             <div className="svc_stats order-last col-span-12 min-[30rem]:col-span-6 min-[62rem]:order-none min-[62rem]:col-span-3">
               <Testimonials items={TESTIMONIALS} descriptor="(Real client stories)" />
@@ -677,10 +647,7 @@ export default function Home() {
 
             <div className="col-span-12 min-[62rem]:col-start-5 min-[62rem]:col-span-8">
               <div className="svc_eyebrow">
-                <p className="works_eyebrow">
-                  <span aria-hidden className="works_eyebrow_marker" />
-                  <span className="works_eyebrow_text">Here&rsquo;s what I enjoy working on</span>
-                </p>
+                <Eyebrow as="h2">Here&rsquo;s what I enjoy working on</Eyebrow>
               </div>
               <Services items={SERVICES} />
             </div>
@@ -691,13 +658,13 @@ export default function Home() {
              eyebrow, heading and intro), so the wrapper takes `works` for
              the marker colour. The three sit in one row from 62rem —
              eyebrow over the first three columns, heading 5–8, intro 10–12,
-             top-aligned — and stack below it. A black band continuing
+             top-aligned — and stack below it. An inverted band continuing
              the services band above, on its `svc_wrap` ground and palette;
-             `data-theme-section="dark"` turns the bar beige and the cards to
-             their dark ramp. ──────────────────────────────────────────── */}
+             `data-theme-section="invert"` turns the bar and the cards to the
+             band's palette. ──────────────────────────────────────────── */}
         <section
           id="ventures"
-          data-theme-section="dark"
+          data-theme-section="invert"
           // -mt-px tucks it under the services band by a pixel: mid-scroll the
           // smoother lands the two on fractional pixels, and the light page
           // showed through the seam as a hairline.
@@ -706,10 +673,7 @@ export default function Home() {
           <div className="shell">
             <div className="works grid-12 items-start gap-y-6">
               <Reveal className="col-span-12 min-[62rem]:col-span-3">
-                <p className="works_eyebrow">
-                  <span aria-hidden className="works_eyebrow_marker" />
-                  <span className="works_eyebrow_text">Ventures</span>
-                </p>
+                <Eyebrow>Ventures</Eyebrow>
               </Reveal>
               <Reveal className="col-span-12 min-[62rem]:col-start-5 min-[62rem]:col-span-4">
                 <h2 className="section_heading max-w-[26ch]">
@@ -753,28 +717,25 @@ export default function Home() {
              and CTA pinned to the foot of those four columns, the heading
              and accordion over the other eight. Stacks below 62rem.
              Styles are the `faq_*` rules in globals.css. ────────────── */}
-        <section id="faqs" data-theme-section="dark" className="faq_wrap">
+        <section id="faqs" data-theme-section="invert" className="faq_wrap">
           <Reveal className="works faq_left">
-            <p className="works_eyebrow">
-              <span aria-hidden className="works_eyebrow_marker" />
-              <span className="works_eyebrow_text">FAQ&apos;s</span>
-            </p>
+            <Eyebrow>FAQ&apos;s</Eyebrow>
           </Reveal>
 
           <div className="faq_main">
             <Reveal>
               <h2 className="faq_heading">A few things you might want to know.</h2>
             </Reveal>
-            <Reveal delay={100}>
+            <Reveal>
               <Faq items={FAQS} />
             </Reveal>
           </div>
 
           {/* The reference's headshot is a square cropped high (50% 20%),
               which keeps the portrait's face in frame. */}
-          <Reveal delay={80} className="faq_content">
+          <Reveal className="faq_content">
             <img
-              src={MEDIA.faq}
+              src={assetUrl("/assets/amar-ramesh.jpg")}
               alt="Amar Ramesh"
               loading="lazy"
               decoding="async"
@@ -786,10 +747,9 @@ export default function Home() {
         </section>
 
         {/* ── Work with me — the copy document's invitation, on the black
-             band. Restored from the commented-out version: it also carries
-             #contact, which the header and footer link to. ───────── */}
+             band. Its CTA leads into #contact below, which the header and
+             footer link to. ───────── */}
         <ClosingCta>
-          <h2 className="sr-only">Have an interesting idea? I&rsquo;d love to hear about it.</h2>
           {/* Frames of the work trail the cursor across the band. The layer
               is positioned (z-0), so it paints over the statement's
               non-positioned grid; the pill below lifts above it (z-10) and
@@ -803,10 +763,7 @@ export default function Home() {
               marker. */}
           <div className="works shell grid-12 w-full gap-y-10">
             <Reveal className="col-span-12 md:col-span-3">
-              <p className="works_eyebrow">
-                <span aria-hidden className="works_eyebrow_marker" />
-                <span className="works_eyebrow_text">Work with me</span>
-              </p>
+              <Eyebrow as="h2">Work with me</Eyebrow>
             </Reveal>
             <div className="col-span-12 flex flex-col items-start md:col-start-5 md:col-span-6">
               <HighlightText className="cta_statement">

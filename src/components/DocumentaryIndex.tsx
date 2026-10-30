@@ -259,7 +259,7 @@ export function DocumentaryIndex({ films }: { films: ChannelFilm[] }) {
   const [aw, ah] = film?.aspect ?? [16, 9];
 
   return (
-    <main ref={root} className="min-h-svh shell">
+    <main id="main" ref={root} className="min-h-svh shell">
       <h1 className="sr-only">Documentary</h1>
 
       <div className="grid-12 pb-24 md:pb-0">
@@ -329,7 +329,7 @@ export function DocumentaryIndex({ films }: { films: ChannelFilm[] }) {
               films are published. */}
           <p className="di-lede text-lede font-semibold">
             People have the most interesting stories. One of my favourite parts of making a
-            documentary is the research — getting to know someone, spending time in their world
+            documentary is the research - getting to know someone, spending time in their world
             and discovering things I would never have learnt otherwise. Through{" "}
             <a
               href={BSF_CHANNEL.url}
@@ -423,13 +423,14 @@ export function DocumentaryIndex({ films }: { films: ChannelFilm[] }) {
                     moves to the bottom of the screen (below), where the thumb
                     already is. */}
                 {pinned && (
-                  <button
-                    type="button"
-                    onClick={close}
-                    className="absolute right-0 top-0 hidden -translate-y-[calc(100%+10px)] cursor-pointer bg-background px-3 py-1.5 text-[12px] font-medium tracking-[-0.02em] transition-colors hover:bg-chip md:block"
-                  >
-                    Close
-                  </button>
+                  <div className="absolute right-0 top-0 hidden -translate-y-[calc(100%+10px)] items-center gap-2 md:flex">
+                    <kbd className="close-kbd" aria-hidden>
+                      Esc
+                    </kbd>
+                    <button type="button" onClick={close} className="close-btn">
+                      Close
+                    </button>
+                  </div>
                 )}
 
                 {/* Phone caption: the title right under the video rather than
@@ -448,7 +449,8 @@ export function DocumentaryIndex({ films }: { films: ChannelFilm[] }) {
                 <button
                   type="button"
                   onClick={close}
-                  className="cursor-pointer bg-background px-5 py-2.5 text-[13px] font-medium tracking-[-0.02em] transition-colors hover:bg-chip"
+                  className="close-btn"
+                  style={{ padding: "0.625rem 1.25rem" }}
                 >
                   Close
                 </button>

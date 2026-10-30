@@ -3,7 +3,7 @@ import { BooksIndex } from "./BooksIndex";
 import { BOOKS } from "@/lib/books";
 
 export const metadata: Metadata = {
-  title: "Books — Amar Ramesh",
+  title: "Books",
   description:
     "Eight pictorial monographs published through Mara Labs: the temples, textiles, dancers, musicians and folk guardians of Tamil Nadu, photographed and written by Amar Ramesh.",
 };

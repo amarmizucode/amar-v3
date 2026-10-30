@@ -3,7 +3,6 @@
 import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, DUR, NO_HOVER, ScrollTrigger } from "@/lib/gsap";
-import { MEDIA } from "@/lib/media";
 
 /**
  * Service list, a port of the reference's `services_home_content` handler
@@ -171,7 +170,9 @@ export function Services({ items }: { items: ServiceItem[] }) {
             <div key={`${label}-${i}`} className="svc_img_item">
               <img
                 data-content-image
-                src={image ?? MEDIA.services[i % MEDIA.services.length]}
+                // No stand-in for a missing image: an empty slot keeps the
+                // indices the hover reads, and shows nothing.
+                src={image}
                 alt=""
                 loading="lazy"
                 decoding="async"

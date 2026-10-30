@@ -144,7 +144,7 @@ export function GapSection() {
 
         {/* Supporting copy pinned to the lower third of the stage. */}
         <p className="absolute bottom-[4svh] left-1/2 w-full max-w-[38ch] -translate-x-1/2 text-balance px-6 text-center text-[0.9375rem] font-medium leading-[1.35] text-muted md:bottom-[6svh] md:text-[clamp(1rem,1.4vw,1.25rem)]">
-          I uncover the people, purpose and stories behind the work — and turn them into
+          I uncover the people, purpose and stories behind the work - and turn them into
           photography, films, documentaries and experiences that make your impact understood, felt
           and remembered.
         </p>

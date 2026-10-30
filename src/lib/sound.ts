@@ -16,6 +16,13 @@
  * rejected play() is swallowed, so the toggle still works without them.
  */
 
+/*
+ * Sound is off for now: the samples are not in `public/sounds/` yet, so the
+ * nav toggle is not rendered and nothing binds. Set this back to true once
+ * the six files are there.
+ */
+export const SOUND_AVAILABLE = false;
+
 const STORAGE_KEY = "amar:sound-enabled";
 const VOLUME = 0.15;
 const BASE = "/sounds";

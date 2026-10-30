@@ -4,6 +4,20 @@ import { useRef, type CSSProperties } from "react";
 import { useGSAP } from "@gsap/react";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 
+/*
+ * Each frame's trigger needs a refresh once the page has laid out, but a page
+ * mounts several frames at once and every refresh re-measures every trigger
+ * on it. Coalesce them into one, on the next frame.
+ */
+let refreshQueued = 0;
+const queueRefresh = () => {
+  if (refreshQueued) return;
+  refreshQueued = requestAnimationFrame(() => {
+    refreshQueued = 0;
+    ScrollTrigger.refresh();
+  });
+};
+
 /**
  * Media slot. Renders a placeholder image until real footage lands — swap
  * `src` for a <video> then; the wrapper owns the aspect ratio so the
@@ -18,6 +32,7 @@ export function MediaFrame({
   ratio = "16 / 9",
   ratioMobile,
   src,
+  alt = "",
   label,
   className = "",
   parallax = 24,
@@ -26,6 +41,8 @@ export function MediaFrame({
   /** Aspect ratio below the md breakpoint. Defaults to `ratio`. */
   ratioMobile?: string;
   src?: string;
+  /** Empty (decorative) unless the image carries content. */
+  alt?: string;
   label?: string;
   className?: string;
   /** Drift distance as a percentage of the frame height. 0 disables it. */
@@ -70,7 +87,7 @@ export function MediaFrame({
         },
       );
 
-      ScrollTrigger.refresh();
+      queueRefresh();
     },
     { scope: root, dependencies: [parallax, src] },
   );
@@ -96,7 +113,9 @@ export function MediaFrame({
         >
           <img
             src={src}
-            alt=""
+            alt={alt}
+            loading="lazy"
+            decoding="async"
             className="h-full w-full object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.04]"
           />
         </span>

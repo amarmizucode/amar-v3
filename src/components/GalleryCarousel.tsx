@@ -342,8 +342,11 @@ export function GalleryCarousel({
         };
 
         // A drag ends in a click on whichever slide was under the pointer.
+        // Caught on window, in capture: the route curtain's own capture
+        // listener is on document, which runs first, and would otherwise
+        // navigate to that slide before this ever saw the click.
         const onClickCapture = (event: MouseEvent) => {
-          if (!dragged) return;
+          if (!dragged || !wrap.contains(event.target as Node)) return;
           event.preventDefault();
           event.stopPropagation();
           dragged = false;
@@ -361,7 +364,7 @@ export function GalleryCarousel({
         window.addEventListener("pointermove", onMove);
         window.addEventListener("pointerup", onUp);
         window.addEventListener("pointercancel", onUp);
-        wrap.addEventListener("click", onClickCapture, true);
+        window.addEventListener("click", onClickCapture, true);
         window.addEventListener("resize", resize);
 
         return () => {
@@ -372,7 +375,7 @@ export function GalleryCarousel({
           window.removeEventListener("pointermove", onMove);
           window.removeEventListener("pointerup", onUp);
           window.removeEventListener("pointercancel", onUp);
-          wrap.removeEventListener("click", onClickCapture, true);
+          window.removeEventListener("click", onClickCapture, true);
           window.removeEventListener("resize", resize);
           wrap.classList.remove("is-grabbing");
           wrap.style.removeProperty("--diff");

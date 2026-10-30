@@ -3,7 +3,10 @@ import { notFound } from "next/navigation";
 import { GalleryCanvas } from "@/components/GalleryCanvas";
 import { GALLERIES, galleryBySlug } from "@/lib/photography";
 
-/** The set is fixed and known at build time, so every gallery prerenders. */
+/** The set is fixed and known at build time, so every gallery prerenders,
+ *  and any other slug is a 404 — in dev too, matching the static export. */
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return GALLERIES.map((gallery) => ({ slug: gallery.slug }));
 }
@@ -16,8 +19,10 @@ export async function generateMetadata({
   if (!gallery) return {};
 
   return {
-    title: `${gallery.title} — Photography — Amar Ramesh`,
+    title: `${gallery.title} - Photography`,
     description: gallery.blurb,
+    // The cover is already an absolute bucket URL, so it needs no domain.
+    openGraph: { title: gallery.title, description: gallery.blurb, images: [gallery.cover] },
   };
 }
 
@@ -33,7 +38,7 @@ export default async function GalleryPage({ params }: PageProps<"/photography/[s
 
   return (
     <>
-      <main className="relative h-svh overflow-hidden">
+      <main id="main" className="relative h-svh overflow-hidden">
         <GalleryCanvas gallery={gallery} />
       </main>
     </>

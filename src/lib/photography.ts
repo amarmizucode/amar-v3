@@ -75,7 +75,7 @@ const COPY: Array<{
     slug: "folk-art",
     title: "Folk Art",
     category: "Folk",
-    blurb: "Therukoothu, Karagattam, Poikkal Kudhirai — the forms that never left the street.",
+    blurb: "Therukoothu, Karagattam, Poikkal Kudhirai - the forms that never left the street.",
     intro:
       "Folk performance happens at night, in a village square, lit by whatever is available. No stage, no rehearsal, no second take. These are the forms that survived without institutions.",
   },
@@ -86,7 +86,7 @@ const COPY: Array<{
     category: "Music",
     blurb: "Ilaiyaraaja, Carnatic vocalists, and the hands that keep the rhythm.",
     intro:
-      "Musicians are photographed badly more often than anyone. The frame usually catches the instrument and misses the listening — the half second before an artist knows where the phrase is going.",
+      "Musicians are photographed badly more often than anyone. The frame usually catches the instrument and misses the listening - the half second before an artist knows where the phrase is going.",
   },
   {
     folder: "temples",
@@ -104,14 +104,14 @@ const COPY: Array<{
     category: "Heritage",
     blurb: "Mansions, Athangudi tile, and a merchant culture held in ninety-six villages.",
     intro:
-      "The Chettinad Project is the longest-running body of work here. Burma teak, Belgian glass, Italian marble and local lime — houses built by a trading community that brought the world home, now largely empty.",
+      "The Chettinad Project is the longest-running body of work here. Burma teak, Belgian glass, Italian marble and local lime - houses built by a trading community that brought the world home, now largely empty.",
   },
   {
     folder: "art-form",
     slug: "art-form",
     title: "Art Form",
     category: "Craft",
-    blurb: "Makers and their work — the crafts still practised by hand.",
+    blurb: "Makers and their work - the crafts still practised by hand.",
     intro:
       "Every craft here is older than the person practising it. The photographs are of the hands as much as the object, because the object outlives the hands and rarely records them.",
   },
@@ -131,7 +131,7 @@ const COPY: Array<{
     category: "Travel",
     blurb: "Places, passed through with a camera.",
     intro:
-      "Travel work is the least planned of all of it — a day in a place with nothing to deliver. These are the frames that stayed.",
+      "Travel work is the least planned of all of it - a day in a place with nothing to deliver. These are the frames that stayed.",
   },
   {
     folder: "wild-life",

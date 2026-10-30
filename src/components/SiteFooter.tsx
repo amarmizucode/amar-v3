@@ -1,5 +1,6 @@
 import { CornerArrow, RightArrow } from "@/components/Arrows";
 import { AI_SERVICES, AiIcon, aiHref } from "@/components/AiIcons";
+import { Eyebrow } from "@/components/Eyebrow";
 
 /* The copy document's footer navigation, in its order. Ventures and Contact
    are home-page sections; the rest are pages. Work is removed — restore by
@@ -49,10 +50,7 @@ export function SiteFooter() {
         <div className="footer_eyebrow">
           {/* `works` carries the marker/muted tokens the eyebrow reads; on
               the footer it resolves them from the inverted footer palette. */}
-          <p className="works works_eyebrow">
-            <span aria-hidden className="works_eyebrow_marker" />
-            <span className="works_eyebrow_text">Navigation</span>
-          </p>
+          <Eyebrow className="works">Navigation</Eyebrow>
 
           <nav>
             <ul className="footer_nav_ul">

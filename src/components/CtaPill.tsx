@@ -1,4 +1,4 @@
-import { CornerArrow } from "@/components/CornerArrow";
+import { CornerArrow } from "@/components/Arrows";
 
 /**
  * Filled CTA pill — the reference's `button_wrap`. The label slides up on
@@ -8,20 +8,24 @@ import { CornerArrow } from "@/components/CornerArrow";
  * Colour and type are the nav's everywhere: the `--button-*` pairs keyed on
  * `data-theme-nav` / `data-theme-section` in globals.css, and
  * `text-style-small` metrics. Nothing is sized per call site.
+ *
+ * Renders a link by default; pass `type` to get a real form button instead.
  */
 export function CtaPill({
   label,
   href = "#contact",
   className = "",
   onClick,
+  type,
 }: {
   label: string;
   href?: string;
   className?: string;
   onClick?: () => void;
+  type?: "submit" | "button";
 }) {
-  return (
-    <a href={href} onClick={onClick} className={`btn-pill ${className}`}>
+  const content = (
+    <>
       <span className="btn-pill_text_contain">
         <span className="btn-pill_text">{label}</span>
       </span>
@@ -30,6 +34,15 @@ export function CtaPill({
         <CornerArrow className="btn-pill_icon" />
         <CornerArrow className="btn-pill_icon is-absolute" />
       </span>
+    </>
+  );
+  return type ? (
+    <button type={type} onClick={onClick} className={`btn-pill cursor-pointer ${className}`}>
+      {content}
+    </button>
+  ) : (
+    <a href={href} onClick={onClick} className={`btn-pill ${className}`}>
+      {content}
     </a>
   );
 }

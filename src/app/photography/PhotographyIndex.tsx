@@ -14,8 +14,8 @@ import type { Gallery } from "@/lib/photography";
 export function PhotographyIndex({ galleries }: { galleries: Gallery[] }) {
   return (
     <>
-      <main className="relative isolate h-svh overflow-hidden">
-        <h1 className="sr-only">Photography — Amar Ramesh</h1>
+      <main id="main" className="relative isolate h-svh overflow-hidden">
+        <h1 className="sr-only">Photography - Amar Ramesh</h1>
 
         <div className="absolute inset-0 z-10">
           <GalleryCarousel items={galleries} />

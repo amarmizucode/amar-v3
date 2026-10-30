@@ -161,6 +161,20 @@ html {
 }
 
 /*
+ * No sideways scroll on phones. Two fixed layers reach past the right edge by
+ * design: the grain (body::after, 200% wide so its jitter never shows an
+ * edge) and the print-request panel parked off-screen. Desktop browsers
+ * ignore fixed overflow, but mobile Safari and Chrome widen the page to take
+ * it in. `clip` on the root propagates to the viewport as `hidden`; on body
+ * it is `clip`, not `hidden`, so body never becomes a scroll container and
+ * position: sticky (the hero's StickyPortrait) keeps the viewport.
+ */
+html,
+body {
+  overflow-x: clip;
+}
+
+/*
  * ScrollSmoother sets the wrapper's own position/overflow/size inline when it
  * initialises, so none of that belongs here — declaring it up front only
  * clips the page during the pre-init (and reduced-motion) native-scroll pass.
@@ -258,18 +272,6 @@ body::after {
 :root {
   --lsb-A: 0.008em;
   --lsb-R: 0.068em;
-
-  /*
-   * Additional initials, measured the same way from the KH Teka Medium CFF
-   * outlines. Flat-sided caps (B D E F H I K L M N P R) share xMin 68; round
-   * caps (C G O Q S) are 34; the diagonals (A V W X Y) are 6-10.
-   */
-  --lsb-flat: 0.068em;
-  --lsb-round: 0.034em;
-  --lsb-T: 0.021em;
-  --lsb-S: 0.034em;
-  --lsb-U: 0.063em;
-  --lsb-Z: 0.03em;
 }
 
 .optical-A {
@@ -278,34 +280,6 @@ body::after {
 
 .optical-R {
   margin-left: calc(var(--lsb-R) * -1);
-}
-
-/*
- * Generic variants for lists where the initial varies per item, so each word
- * still sets flush to the grid line rather than looking indented.
- */
-.optical-flat {
-  margin-left: calc(var(--lsb-flat) * -1);
-}
-
-.optical-round {
-  margin-left: calc(var(--lsb-round) * -1);
-}
-
-.optical-T {
-  margin-left: calc(var(--lsb-T) * -1);
-}
-
-.optical-S {
-  margin-left: calc(var(--lsb-S) * -1);
-}
-
-.optical-U {
-  margin-left: calc(var(--lsb-U) * -1);
-}
-
-.optical-Z {
-  margin-left: calc(var(--lsb-Z) * -1);
 }
 
 /* Fluid display type so the 102px headline scales instead of overflowing. */
@@ -318,107 +292,91 @@ body::after {
 }
 
 /*
- * Hero statement type. Takes the reference's treatment — sentence case, tight
- * leading, and the lines broken on sense in the markup so they stack as a
- * block of two or three words each rather than running to the measure.
+ * Hero, after sebastian-martinez.com (see Hero.tsx).
  *
- * Size follows the reference's display token (80→148px over its 320→1600px
- * viewport range, ~5.3vw of slope) rather than this site's own display scale,
- * so the statement is the dominant element of the hero the way the heading is
- * there. The slope is steepened to 8.75vw with a lower floor because the
- * statement only has 8 of 12 columns: at the md breakpoint those 8 columns
- * are ~456px, and the reference's own slope would overflow "the beginning"
- * there. The 148px cap engages near 1690px, inside the shell's 1920px max,
- * so the type never outgrows its columns on wide displays.
+ * --hero-size is the display size. On phones it is fitted to the widest line,
+ * "Photographer," (7.91em in KH Teka Bold at this tracking), across the
+ * content width. From `md` it is 5.6vw, the largest slope at which that same
+ * line still fits columns 7–12 at every width (tightest at ~1024px, where the
+ * margins are still 36px); it caps where the shell stops growing.
  *
- * No `text-wrap: balance`: the breaks are hard `<br>`s on desktop, and below
- * `md` balance would re-flow the sentence against breaks it cannot see.
- *
- * Weight and leading are the reference heading's own: `--primary-bold` (700)
- * and 0.78. KH Teka's ink spans 0.88em (ascender +0.700em on "j" to descender
- * -0.180em on "g", measured from the Medium CFF outlines), so a 0.78em line
- * box cannot hold the ink — it hangs out of the box top AND bottom — and the
- * hero runs its lines through SplitText masks (`overflow: clip` wrappers
- * sized to exactly that box), which is what was cropping the glyphs. The fix
- * is on the masks below, not on the leading.
+ * Uppercase, 700, 0.87 leading as the reference's heading. It sets in the
+ * metric-overridden face from layout.tsx, whose ascent + descent is exactly
+ * 0.87em: the caps top out level with the line box, which is what the
+ * captions' `top: 0` aligns to, and selection highlights tile line by line.
  */
-/*
- * The hero's left paragraph takes the reference's own type for this slot.
- * Its `.hero_home_left-p` is `text-style-large`, which resolves to
- * --text-large (18→20px fluid over a 320→1600px viewport),
- * --line-height-large (1.25) and --letter-spacing-subtle (-0.01em).
- *
- * Size: 24px from 1280px up (the shared --text-lede, kept by decision — the
- * reference's own is 18–20px), easing to 18px at 320px. The leading is the
- * reference's --line-height-medium (1.1) rather than the 1.25 its own slot
- * uses: at 24px a 1.25 ratio gives a 30px line box against the reference's
- * 25px, which read loose; 1.1 recovers that compactness on the larger type.
- * Tracking is the reference's --letter-spacing-subtle. The shared --text-lede
- * tokens stay as they are for the other ledes (AboutHero, DocumentaryIndex).
- *
- * The measure is in em, so the paragraph keeps one shape at every size:
- *
- *   Photography opened doors to art,
- *   culture, and new places. Every
- *   discovery leads to another, and
- *   there's still so much more
- *   to explore.
- *
- * Measured from the Medium outlines at this tracking, that shape holds for
- * 14.62em <= width < 15.76em (the widest of its lines, and the narrowest
- * line-plus-next-word that must not fit); 15em sits mid-window. It needs
- * "to explore." kept together — see the nowrap span in Hero.tsx.
- *
- * No `text-wrap: pretty` here, though the works_* text uses it: on this
- * paragraph it changed nothing (it only guards single-word last lines),
- * and with it set SplitText found no lines at 1536px, so the entrance
- * animation skipped the paragraph there.
- */
-.hero_content_p {
-  font-size: clamp(1.125rem, 1rem + 0.625vw, 1.5rem);
-  line-height: 1.1;
-  letter-spacing: -0.01em;
-  max-width: 15em;
+.hero {
+  --hero-size: calc((100vw - 2 * var(--grid-margin)) / 8.1);
 }
 
-/*
- * The statement sets in its own metric-overridden face (see layout.tsx) so
- * drag-selection highlights tile the 0.78 leading instead of each line's
- * painting over the line above. With ascent 0.60 the glyphs sit 0.14em
- * higher in each line box than under the font's own metrics; the top
- * padding gives that back, so the type lands exactly where it did and still
- * tops out level with the copy column.
- */
-.display-statement {
+@media (width >= 48rem) {
+  .hero {
+    --hero-size: min(5.6vw, 6.72rem);
+  }
+}
+
+.hero_title {
   font-family: var(--font-kh-teka-statement), var(--font-kh-teka), sans-serif;
   font-weight: 700;
-  text-transform: none;
-  line-height: 0.78;
+  font-size: var(--hero-size);
+  line-height: 0.87;
   letter-spacing: -0.03em;
-  font-size: clamp(2.75rem, 8.75vw, 9.25rem);
-  padding-top: 0.14em;
+  text-transform: uppercase;
+}
+
+/* The name heads the phone layout at the width of the frame ("Amar" is
+   2.79em). Phones only. */
+.hero_sig {
+  font-size: calc((100vw - 2 * var(--grid-margin)) / 2.85);
 }
 
 /*
- * SplitText's `mask: "lines"` clones each line into an `overflow: clip`
- * wrapper (same classes, `-mask` suffix) sized to the line box. The negative
- * clip-path inset extends the visible region 0.15em past the box top and
- * bottom — enough for the ~0.06em the ink overhangs each side — WITHOUT
- * touching layout, so the stack's leading stays exactly 0.78. (An earlier
- * padding + negative-margin version drifted to ~0.93: adjacent negative
- * block margins collapse to one, not to their sum.) `overflow: visible` has
- * to out-rank the wrapper's inline `overflow: clip`, hence the !important;
- * the clip-path alone then does the cropping. The lines' hidden position in
- * Hero.tsx starts at yPercent 140 (not the usual 110) so a line still clears
- * this taller window before its reveal.
- *
- * Intro-only: Hero.tsx reverts the split once the entrance has played, so
- * none of this governs the settled page — selection, find-in-page and
- * copying all see one intact paragraph.
+ * Each line's mask. A clip-path rather than `overflow: clip`, so the visible
+ * window can run past the line box — the commas hang below it and the caps
+ * graze its top — without touching the 0.87 leading. A hidden line starts at
+ * yPercent 140 (Hero.tsx) to clear the taller window.
  */
-.display-statement .split-line-mask {
-  overflow: visible !important;
-  clip-path: inset(-0.15em 0);
+.hero_mask {
+  display: block;
+  clip-path: inset(-0.08em -0.2em -0.2em -0.2em);
+}
+
+/*
+ * Each line is pulled left by its first letter's left side bearing, so the
+ * ink — not the glyph's advance box — lands on the column edge. Measured in
+ * KH Teka Bold: the straight stems (H, I, P, F, E, M) sit 0.059em in from
+ * their origin, A only 0.005em.
+ */
+.hero_line {
+  display: block;
+  white-space: nowrap;
+  margin-left: -0.059em;
+}
+
+.hero_line--A {
+  margin-left: -0.005em;
+}
+
+/* Captions hung beside the crafts, the reference's 11px bold caps. */
+.hero_note {
+  position: absolute;
+  top: 0;
+  font-family: var(--font-kh-teka), sans-serif;
+  font-size: clamp(0.625rem, 0.45rem + 0.35vw, 0.8125rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+/*
+ * From `md` the portrait is a 4:5 frame on three columns, held in the
+ * bottom-left corner beside the type. On a short, wide screen three columns
+ * of 4:5 would run up into the bar, so the width also gives way to the
+ * viewport's height (the frame plus the bar's clearance).
+ */
+.hero_frame {
+  width: min(var(--column-width-3), calc((100svh - 12rem) * 0.8));
 }
 
 /* Monolog-style link underline that wipes in from the left on hover. */
@@ -491,21 +449,6 @@ body::after {
   --nav-radius: 0.15rem;
 
   /*
-   * The reference palette, used by the bar alone. Its nav is coloured per
-   * section theme from these fixed stops rather than from the page, so the
-   * bar carries them itself and stays identical whatever the ramp is doing.
-   */
-  --nav-beige-50: #fafaf9;
-  --nav-beige-100: #e8e8e3;
-  --nav-beige-200: #ddddd5;
-  --nav-beige-400: #bfbfb1;
-  --nav-black-50: #938f8a;
-  --nav-black-200: #524d47;
-  --nav-black-300: #393632;
-  --nav-black-400: #080807;
-  --nav-card-bg: #181715;
-
-  /*
    * Section rhythm from the reference (`_spacing---section-space--*` and
    * `space--*`), kept as clamps over the same 20–100rem viewport range.
    */
@@ -515,6 +458,43 @@ body::after {
   --section-space-large: clamp(5.5rem, 4.375rem + 5.625vw, 10rem);
   --nav-ease: cubic-bezier(0.16, 1, 0.35, 1);
   --nav-expo-out: cubic-bezier(0.2, 1, 0.36, 1);
+}
+
+/*
+ * The reference palette, as tones of the theme ramp.
+ *
+ * The names are the reference's beige/black stops, and on the default stop
+ * (16) each mix lands on that stop's hex. Elsewhere they follow the ramp:
+ * black-* run toward the page's ink and beige-* toward its ground, so on a
+ * dark stop "black-400" is the light ink. Every pairing built on them keeps
+ * its contrast on every stop rather than staying beige-and-black.
+ *
+ * On <body>, not :root: custom properties compute where they are defined,
+ * and only <body> carries the active stop. Children inherit the resolved
+ * colours, so an inverted band below still reads the page's tones here.
+ */
+body {
+  --nav-beige-50: var(--color--background--100);
+  --nav-beige-100: var(--color--background--100);
+  --nav-beige-200: color-mix(in srgb, var(--color--background--100) 95%, var(--color--foreground--100));
+  --nav-beige-400: color-mix(in srgb, var(--color--background--100) 82%, var(--color--foreground--100));
+  --nav-black-50: color-mix(in srgb, var(--color--background--100) 62%, var(--color--foreground--100));
+  --nav-black-200: color-mix(in srgb, var(--color--background--100) 32%, var(--color--foreground--100));
+  --nav-black-300: color-mix(in srgb, var(--color--background--100) 20%, var(--color--foreground--100));
+  --nav-black-400: var(--color--foreground--100);
+  --nav-card-bg: color-mix(in srgb, var(--color--background--100) 7%, var(--color--foreground--100));
+
+  /*
+   * The inverted band: the page's pair flipped, ink for ground. Dark on the
+   * light stops and light on the dark ones, tinted with whichever stop is
+   * active. The footer and every `[data-theme-section="invert"]` band take
+   * it (see `.invert-band` below).
+   */
+  --invert-ground: var(--color--foreground--100);
+  --invert-ink: var(--color--background--100);
+  --invert-muted: color-mix(in srgb, var(--color--background--100) 55%, var(--color--foreground--100));
+  --invert-rule: color-mix(in srgb, var(--color--background--100) 22%, var(--color--foreground--100));
+  --invert-chip: color-mix(in srgb, var(--color--background--100) 12%, var(--color--foreground--100));
 }
 
 /*
@@ -765,23 +745,25 @@ body::after {
 }
 
 /*
- * The pill's three surfaces per theme, the reference's `[data-theme-nav]`
- * pairs: card-bg with beige-100 ink and a black-200 aside on light, beige-100
- * with black-400 on dark. SiteHeader writes `data-theme-nav` onto the header
- * and onto <body> (as the reference does), so every pill on the page follows
- * the bar; a section that declares its own `data-theme-section` recolours the
- * pills inside it — the black closing band, for one.
+ * The pill's three surfaces per ground, the reference's `[data-theme-nav]`
+ * pairs: card-bg with beige-100 ink and a black-200 aside over the page,
+ * beige-100 with black-400 over an inverted band. Both are tones of the ramp,
+ * so "page" is a dark pill on a light stop and a light one on a dark stop.
+ * SiteHeader writes `data-theme-nav` onto the header and onto <body> (as the
+ * reference does), so every pill on the page follows the bar; a section that
+ * declares its own `data-theme-section` recolours the pills inside it — the
+ * closing band, for one.
  */
-[data-theme-nav="light"],
-[data-theme-section="light"] {
+[data-theme-nav="page"],
+[data-theme-section="page"] {
   --button-surface: var(--nav-card-bg);
   --button-ink: var(--nav-beige-100);
   --button-aside: var(--nav-black-200);
   --button-arrow: var(--nav-beige-100);
 }
 
-[data-theme-nav="dark"],
-[data-theme-section="dark"] {
+[data-theme-nav="invert"],
+[data-theme-section="invert"] {
   --button-surface: var(--nav-beige-100);
   --button-ink: var(--nav-black-400);
   --button-aside: var(--nav-black-400);
@@ -940,7 +922,7 @@ body::after {
 .about_statement {
   display: flow-root;
   max-width: 24ch;
-  color: #e8e8e3;
+  color: var(--palette-foreground);
   font-size: clamp(2rem, 1.625rem + 1.875vw, 3.5rem);
   font-weight: 700;
   line-height: 1.1;
@@ -1041,10 +1023,13 @@ body::after {
   --works-bar-rule: #d1d1c7;
 }
 
-/* A `works` header on a black band keeps the band's muted tone. */
-[data-theme-section="dark"] .works {
+/* A `works` header on an inverted band takes the band's muted tone and
+   rules, not the page's (which are the band's own ground, faded). */
+[data-theme-section="invert"] .works {
   --works-muted: var(--palette-muted);
   --works-marker: var(--palette-muted);
+  --works-rule: var(--palette-rule);
+  --works-bar-rule: var(--palette-rule);
 }
 
 /*
@@ -1246,22 +1231,16 @@ body::after {
  * right edge to whichever row is active; the list sits above it in
  * `difference`, so a heading inverts where it crosses the photograph.
  *
- * The band pins its own palette (the reference's beige/black stops) so
- * it reads the same whatever theme the page is on.
+ * Its ground and palette are the inverted band's (`[data-theme-section=
+ * "invert"]`), so it is the reference's black-400 on the default stop and
+ * follows the ramp on every other.
  */
 .svc_wrap {
-  --palette-background: #080807;
-  --palette-foreground: #e8e8e3;
-  --palette-muted: #938f8a;
-  --palette-rule: #393632;
-  --palette-chip: rgb(232 232 227 / 0.08);
-  --works-marker: #938f8a;
+  --works-marker: var(--palette-muted);
 
   position: relative;
   z-index: 2;
   isolation: isolate;
-  background-color: #080807;
-  color: #e8e8e3;
 }
 
 /* Even padding: the bottom matches the top. */
@@ -1280,13 +1259,13 @@ body::after {
   position: relative;
   height: 1px;
   overflow: hidden;
-  background-color: #393632;
+  background-color: var(--palette-rule);
 }
 
 .svc_track_fill {
   position: absolute;
   inset: 0;
-  background-color: #e8e8e3;
+  background-color: var(--palette-foreground);
   transform: translateX(-100%);
 }
 
@@ -1310,7 +1289,7 @@ body::after {
 /* `text-mono text-style-xsmall`. The reference sets Suisse Mono, which is
    not licensed here; the system monospace stands in, as elsewhere. */
 .svc_mono {
-  color: #938f8a;
+  color: var(--palette-muted);
   font-family: var(--font-mono, ui-monospace, monospace);
   font-size: var(--ref-xsmall);
   font-weight: 500;
@@ -1368,8 +1347,8 @@ body::after {
   width: 2.5em;
   height: 2.5em;
   border-radius: 9999px;
-  background-color: #393632;
-  color: #e8e8e3;
+  background-color: var(--palette-rule);
+  color: var(--palette-foreground);
   font-size: 1em;
   font-weight: 500;
   letter-spacing: -0.01em;
@@ -1393,7 +1372,7 @@ body::after {
 }
 
 .svc_role {
-  color: #938f8a;
+  color: var(--palette-muted);
 }
 
 .svc_descriptor {
@@ -1436,6 +1415,18 @@ body::after {
   letter-spacing: -0.03em;
   text-wrap: balance;
   font-feature-settings: "ss01", "ss07";
+}
+
+/* `difference` only reads with light ink on a dark ground. On the dark stops
+   (00-08) the inverted band is light and its ink dark, which the blend would
+   turn light-on-light, so there the headings sit on the photo unblended. */
+body:is(
+    [data-theme="00"], [data-theme="01"], [data-theme="02"],
+    [data-theme="03"], [data-theme="04"], [data-theme="05"],
+    [data-theme="06"], [data-theme="07"], [data-theme="08"]
+  )
+  :is(.svc_services, .svc_heading) {
+  mix-blend-mode: normal;
 }
 
 /* Text trim, as the reference's text styles. */
@@ -1541,11 +1532,12 @@ body::after {
   --venture-muted: #6b645c;
 }
 
-/* On a black band (the Ventures section) the cards take the band's own
-   ramp whatever the page theme: a faint white chip that lifts on hover. */
-[data-theme-section="dark"] .venture_cards {
-  --venture-ground: rgb(255 255 255 / 0.06);
-  --venture-ground-hover: rgb(255 255 255 / 0.1);
+/* On the inverted band (the Ventures section) the cards take the band's own
+   palette whatever the page theme: a faint chip of its ink that lifts on
+   hover. */
+[data-theme-section="invert"] .venture_cards {
+  --venture-ground: color-mix(in srgb, var(--palette-foreground) 6%, transparent);
+  --venture-ground-hover: color-mix(in srgb, var(--palette-foreground) 10%, transparent);
   --venture-muted: var(--palette-muted);
 }
 
@@ -1671,12 +1663,21 @@ body::after {
 /* The marks stay full colour on every theme stop. They used to go monochrome
    on the dark stops (00-08), as the brand wall's do, but the dark stops are
    what a dark-mode device lands on, so phones showed them grey. The band is
-   black on every stop, so the light stops already set these colours on the
-   same ground. */
+   the inverted page: dark on the light stops (09-16), light on the dark. */
 
-/* A dark mark set in plain white on the black band, whatever the theme. */
+/* A dark mark set in plain white while the band is dark; on the dark stops
+   the band is light, so the mark keeps its own dark ink. */
 .venture_logo img.is-white {
   filter: brightness(0) invert(1);
+}
+
+body:is(
+    [data-theme="00"], [data-theme="01"], [data-theme="02"],
+    [data-theme="03"], [data-theme="04"], [data-theme="05"],
+    [data-theme="06"], [data-theme="07"], [data-theme="08"]
+  )
+  .venture_logo img.is-white {
+  filter: none;
 }
 
 /*
@@ -1726,12 +1727,14 @@ body::after {
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .works_item:hover .works_overlay {
+  .works_item:hover .works_overlay,
+  .works_item:focus-within .works_overlay {
     opacity: 1;
     backdrop-filter: blur(2px) sepia();
   }
 
-  .works_item:hover .works_reel_card {
+  .works_item:hover .works_reel_card,
+  .works_item:focus-within .works_reel_card {
     opacity: 1;
     transform: translateY(0) rotateX(0) scale(1);
   }
@@ -2482,22 +2485,29 @@ body.cover-is-visible .app-aside .option {
   gap: 8px;
 }
 
+/*
+ * Opaque page-coloured discs, not the reference's translucent ink chips: the
+ * controls float over the inverted bands too, whose ground is the page's ink,
+ * so a see-through chip with an ink icon vanished there (white on white on
+ * the dark stops). Mixed from the page pair at the same ratios, they read as
+ * before over the page and carry their own ground everywhere else.
+ */
 .app-aside .option {
   width: 48px;
   height: 48px;
   border-radius: 24px;
-  background-color: var(--color--foreground--5);
+  background-color: color-mix(in srgb, var(--color--background--100) 95%, var(--color--foreground--100));
   -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
 }
 
 .app-aside .option:hover {
   cursor: pointer;
-  background-color: var(--color--foreground--15);
+  background-color: color-mix(in srgb, var(--color--background--100) 85%, var(--color--foreground--100));
 }
 
 .app-aside .option:active {
-  background-color: var(--color--foreground--20);
+  background-color: color-mix(in srgb, var(--color--background--100) 80%, var(--color--foreground--100));
 }
 
 .app-aside .option svg path {
@@ -2679,6 +2689,15 @@ body[data-theme-slider="open"] .app-aside .option.theme .dot {
   grid-template-columns: repeat(var(--grid-guides), minmax(0, 1fr));
   gap: var(--grid-gutter);
   pointer-events: none;
+  /*
+   * The guides cross the inverted bands too, whose ground is the page's ink,
+   * so a line in the ink vanished over them. Faint white in `difference`
+   * inverts whatever is beneath instead: a dark rule on a light ground, a
+   * light one on a dark ground or a photo, on every theme stop. On the
+   * overlay, not the lines: it is its own stacking context, so blending the
+   * lines inside it would only blend them with its own empty box.
+   */
+  mix-blend-mode: difference;
 }
 
 /*
@@ -2711,7 +2730,7 @@ body[data-theme-slider="open"] .app-aside .option.theme .dot {
 .app-grid-overlay .line {
   width: 1px;
   height: 0;
-  background-color: var(--color--foreground--15);
+  background-color: rgb(255 255 255 / 0.2);
   transition: height 1s ease;
 }
 
@@ -2929,47 +2948,46 @@ body[data-theme="00"] .app-aside .option.theme .icon-container { transition-dela
  * why it needs an opaque ground of its own rather than inheriting one.
  */
 /*
- * The footer is an inverted band: the page palette flipped, so it reads
- * black on the light stops and follows every stop of the theme ramp.
+ * Inverted bands: the footer and every `[data-theme-section="invert"]`
+ * section (About, Services, Ventures, FAQ, the closing CTA). Each is the page
+ * palette flipped, so it reads dark on the light stops and follows every stop
+ * of the theme ramp.
  *
- * The flip needs the stash on <body>: custom properties compute where they
- * are DEFINED, so these resolve against the ramp's palette on <body> and
- * inherit into the footer as concrete colours. Swapping --palette-* directly
- * on the footer would self-reference and invalidate the pair.
+ * The flip needs the stash on <body> (`--invert-*`): custom properties
+ * compute where they are DEFINED, so those resolve against the ramp's palette
+ * on <body> and inherit into the band as concrete colours. Swapping
+ * --palette-* directly on the band would self-reference and invalidate it.
  */
-body {
-  --footer-ground: var(--palette-foreground);
-  --footer-ink: var(--palette-background);
-  --footer-ink-muted: color-mix(in srgb, var(--palette-background) 55%, var(--palette-foreground));
-  --footer-ink-rule: color-mix(in srgb, var(--palette-background) 22%, var(--palette-foreground));
-  --footer-ink-chip: color-mix(in srgb, var(--palette-background) 12%, var(--palette-foreground));
+.footer_wrap_main,
+[data-theme-section="invert"] {
+  background-color: var(--invert-ground);
+  color: var(--invert-ink);
+  /* Both token layers, so everything inside — Tailwind utilities and the
+     band's own --palette-* reads alike — takes the inverted scheme. */
+  --palette-background: var(--invert-ground);
+  --palette-foreground: var(--invert-ink);
+  --palette-muted: var(--invert-muted);
+  --palette-rule: var(--invert-rule);
+  --palette-chip: var(--invert-chip);
+  --color-background: var(--invert-ground);
+  --color-foreground: var(--invert-ink);
+  --color-muted: var(--invert-muted);
+  --color-rule: var(--invert-rule);
+  --color-chip: var(--invert-chip);
+  /* The row-hover inversion flips with the band: a fill in the band's ink
+     with its ground for ink, instead of the page's pair, which vanishes. */
+  --color-hover-fill: var(--invert-ink);
+  --color-hover-ink: var(--invert-ground);
 }
 
 .footer_wrap_main {
   position: relative;
   z-index: 1;
-  background-color: var(--footer-ground);
-  /* Both token layers, so everything inside — Tailwind utilities and the
-     footer's own --palette-* reads alike — takes the inverted scheme. */
-  --palette-background: var(--footer-ground);
-  --palette-foreground: var(--footer-ink);
-  --palette-muted: var(--footer-ink-muted);
-  --palette-rule: var(--footer-ink-rule);
-  --palette-chip: var(--footer-ink-chip);
-  --color-background: var(--footer-ground);
-  --color-foreground: var(--footer-ink);
-  --color-muted: var(--footer-ink-muted);
-  --color-rule: var(--footer-ink-rule);
-  --color-chip: var(--footer-ink-chip);
-  /* The row-hover inversion flips with the band: a light fill with dark
-     ink, instead of the page's dark-fill pair, which vanishes on black. */
-  --color-hover-fill: var(--footer-ink);
-  --color-hover-ink: var(--footer-ground);
 }
 
 .footer_wrap {
-  background-color: var(--footer-ground);
-  color: var(--footer-ink);
+  background-color: var(--invert-ground);
+  color: var(--invert-ink);
 }
 
 /* ---------------------------------------------------------------------------
@@ -2995,12 +3013,12 @@ body {
  * Every label in the bar is the reference's `text-style-small`: text-small
  * (14→16px), weight 500, line-height 1.25, -0.01em, bumped one step at ≥120rem.
  *
- * Colour is not the page's. `data-theme-nav` on the header is "light" or
- * "dark" and selects the reference's fixed stops — black-400 ink on light,
- * beige-100 on dark — with the sound chip, the link fill and the CTA's three
- * surfaces each switching with it. SiteHeader writes the attribute from the
- * section under the bar (`data-theme-section`), falling back to the page
- * background's luminance.
+ * Colour follows the ground under the bar. `data-theme-nav` on the header is
+ * "page" or "invert" and selects the reference's pairs as tones of the ramp
+ * (see the `--nav-*` tokens on body) — black-400 ink over the page, beige-100
+ * over an inverted band — with the sound chip, the link fill and the CTA's
+ * three surfaces each switching with it. SiteHeader writes the attribute from
+ * the section under the bar (`data-theme-section`), falling back to "page".
  *
  * The one reference rule left out is its `[data-theme-nav=light]
  * [data-navigation-status=is-open]` reset, which un-sets the light colours
@@ -3244,7 +3262,7 @@ body {
     transition: transform 0.9s var(--nav-expo-out);
   }
 
-  [data-theme-nav="light"] [data-link-hover]::before {
+  [data-theme-nav="page"] [data-link-hover]::before {
     background-color: var(--nav-beige-400);
   }
 
@@ -3310,7 +3328,13 @@ body {
   position: relative;
   display: inline-flex;
   transform: translateY(0%);
-  transition: transform 0.35s var(--nav-ease);
+  /* The colour pair is the Theme group's below, listed here rather than
+     there: a later `transition` on the same selector replaces this one, and
+     dropped the Menu -> Close slide. */
+  transition:
+    transform 0.35s var(--nav-ease),
+    color 0.25s,
+    background-color 0.25s;
 }
 
 .navbar_menu_span.is-close {
@@ -3434,38 +3458,37 @@ body {
 .navbar_contain,
 .navbar_home,
 .navbar_crumbs,
-.navbar_left_sound_container,
-.navbar_menu_span {
+.navbar_left_sound_container {
   transition:
     color 0.25s,
     background-color 0.25s;
 }
 
-[data-theme-nav="light"] .navbar_contain,
-[data-theme-nav="light"] .navbar_home,
-[data-theme-nav="light"] .navbar_crumbs,
-[data-theme-nav="light"] .navbar_menu_span {
+[data-theme-nav="page"] .navbar_contain,
+[data-theme-nav="page"] .navbar_home,
+[data-theme-nav="page"] .navbar_crumbs,
+[data-theme-nav="page"] .navbar_menu_span {
   color: var(--nav-black-400);
 }
 
-[data-theme-nav="light"] .navbar_left_sound_container {
+[data-theme-nav="page"] .navbar_left_sound_container {
   background-color: var(--nav-beige-400);
 }
 
-[data-theme-nav="dark"] .navbar_contain,
-[data-theme-nav="dark"] .navbar_home,
-[data-theme-nav="dark"] .navbar_crumbs,
-[data-theme-nav="dark"] .navbar_menu_span {
+[data-theme-nav="invert"] .navbar_contain,
+[data-theme-nav="invert"] .navbar_home,
+[data-theme-nav="invert"] .navbar_crumbs,
+[data-theme-nav="invert"] .navbar_menu_span {
   color: var(--nav-beige-100);
 }
 
-[data-theme-nav="dark"] .navbar_left_sound_container {
+[data-theme-nav="invert"] .navbar_left_sound_container {
   background-color: var(--nav-card-bg);
 }
 
 /*
- * Open menu: the bar sits over the panel's black, so it takes the dark
- * theme's colours whatever section it was reading — the reference unsets its
+ * Open menu: the bar sits over the panel's ink-coloured ground, so it takes
+ * the inverted pair whatever section it was reading — the reference unsets its
  * light pairs under `[data-navigation-status=is-open]` to the same end.
  * Scoped heavier than the `[data-theme-nav]` pairs above so it wins while
  * the section watcher keeps writing the underlying theme, and gated to the
@@ -3506,12 +3529,14 @@ body {
  * black-400, a muted tint rather than the browser's blue or an inverted
  * flip. The reference keeps this one pair everywhere — its dark bands
  * included, where the beige highlight reads as a light block — so these no
- * longer follow the hover tokens through the ramp. Images opt out — a
- * tinted block over a photograph is noise.
+ * longer follow the hover tokens. They are tones of the ramp, though (on
+ * <body>, where the stop lives), so the pair lands on #d1d1c7 / #080807 on
+ * the default stop and tints with every other. Images opt out — a tinted
+ * block over a photograph is noise.
  */
-:root {
-  --selection-background: #d1d1c7;
-  --selection-text: #080807;
+body {
+  --selection-background: color-mix(in srgb, var(--color--background--100) 90%, var(--color--foreground--100));
+  --selection-text: var(--color--foreground--100);
 }
 
 ::selection {
@@ -3521,97 +3546,6 @@ body {
 
 img::selection {
   background: transparent;
-}
-
-/*
- * ---------------------------------------------------------------------------
- * Cursor bubble — the reference's `.cursor_wrap` / `.cursor-bubble`.
- *
- * A pill that trails the pointer and names what it is over, raised by any
- * `[data-cursor-hover]` on the page (its `data-cursor-text` is the label).
- * The reference raises it on its process videos and the footer canvas, not
- * on the bar — so the bar carries none. The wrapper's offsets hang the pill
- * below and right of the hot point; `data-cursor` on the wrapper drives every
- * state. The reveal is a clip-path wipe from the left plus a 0.92 → 1 scale;
- * `active-edge` is the same translated a full width left, for when the pill
- * would cross the viewport's right edge.
- * ------------------------------------------------------------------------ */
-.cursor_wrap {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 25;
-  pointer-events: none;
-  padding-top: 1em;
-  padding-left: 0.5em;
-  padding-right: 1em;
-}
-
-.cursor-bubble {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 2em;
-  padding-inline: var(--nav-space-3);
-  border-radius: var(--nav-radius);
-  background-color: var(--nav-beige-200);
-  color: #000;
-  opacity: 0;
-}
-
-.cursor-bubble__text {
-  font-size: 1em;
-  font-weight: 500;
-  letter-spacing: -0.02em;
-  white-space: nowrap;
-}
-
-@media (hover: hover) and (pointer: fine) {
-  [data-cursor] .cursor-bubble {
-    opacity: 0;
-    clip-path: inset(0% 100% 0% 0% round 6px);
-    /* The 0.001deg keeps the pill on its own compositor layer, as the
-       reference does throughout, so clip-path and transform don't
-       re-rasterise together mid-wipe. */
-    transform: translate(0%) scale(0.92) rotate(0.001deg);
-    transition:
-      clip-path 0.45s cubic-bezier(0.16, 1, 0.3, 1),
-      opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-      transform 0.45s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  [data-cursor="active"] .cursor-bubble {
-    opacity: 1;
-    clip-path: inset(0% round 6px);
-    transform: translate(0%) scale(1) rotate(0.001deg);
-  }
-
-  [data-cursor="active-edge"] .cursor-bubble {
-    opacity: 1;
-    clip-path: inset(0% round 6px);
-    transform: translate(-100%) scale(1) rotate(0.001deg);
-  }
-
-  [data-cursor] .cursor-bubble [data-cursor-text-target] {
-    opacity: 0;
-    transform: translateY(4px);
-    transition:
-      opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1),
-      transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  }
-
-  [data-cursor="active"] .cursor-bubble [data-cursor-text-target],
-  [data-cursor="active-edge"] .cursor-bubble [data-cursor-text-target] {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@media (hover: none) and (pointer: coarse) {
-  .cursor_wrap {
-    display: none;
-  }
 }
 
 /*
@@ -3828,7 +3762,6 @@ body.pg-dragging .pg-vp {
      a grey block, so the grid fills in without flashing its own scaffolding. */
   background: transparent;
   cursor: pointer;
-  will-change: transform, opacity;
 }
 .pg-it.hov {
   transition: opacity 0.3s ease;
@@ -3870,8 +3803,8 @@ body.pg-dragging .pg-vp {
   inset: 0;
   z-index: 6;
   pointer-events: none;
-  /* The edges fall away into the page ground (black on a gallery), not
-     toward the foreground tint, which lit them up white on black. */
+  /* The edges fall away into the page ground, whatever the theme stop, not
+     toward the foreground tint, which lit them up white on a dark stop. */
   background: radial-gradient(ellipse at center, transparent 45%, var(--palette-background) 100%);
 }
 
@@ -4011,34 +3944,6 @@ body.pg-viewing .pg-bar {
 
 .pg-bar_close_btn {
   pointer-events: auto;
-  cursor: pointer;
-  transition: opacity 0.25s ease;
-}
-
-.pg-bar_close_btn:hover {
-  opacity: 0.6;
-}
-
-/* The key that does the same, as a keycap beside the label. Touch screens
- * have no Escape, so it shows only with a mouse or trackpad. */
-.pg-bar_kbd {
-  display: none;
-  align-items: center;
-  height: 1.5em;
-  padding-inline: 0.4em;
-  border: 1px solid var(--color--foreground--25);
-  border-radius: var(--nav-radius);
-  font-family: var(--font-mono, ui-monospace, monospace);
-  font-size: 0.75em;
-  line-height: 1;
-  letter-spacing: 0;
-  color: var(--color--foreground--50);
-}
-
-@media (hover: hover) and (pointer: fine) {
-  .pg-bar_kbd {
-    display: inline-flex;
-  }
 }
 
 /* The bar's foot: the print-request toggle with the way to the next frame
@@ -4285,6 +4190,9 @@ body .pg-root.is-zoomed .pg-bar,
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  /* Weights the centred column below the fixed header rather than true
+     centre, so the shelf clears the nav and the paragraph sits lower. */
+  padding-top: clamp(4rem, 14svh, 8rem);
 }
 
 /* The hovered book's name: small and quiet, just beneath the shelf. In flow,
@@ -4294,6 +4202,19 @@ body .pg-root.is-zoomed .pg-bar,
   min-height: 1em;
   text-align: center;
   pointer-events: none;
+}
+
+/* A short word on the books, centred beneath the caption on a narrow
+   measure near the shelf's own width, with balanced lines so the block
+   tapers rather than setting as a box. */
+.bk-intro {
+  box-sizing: content-box;
+  /* In em, so the measure scales with the fluid type and keeps its breaks. */
+  max-width: 31em;
+  margin-top: 1.25rem;
+  padding-inline: var(--site-margin);
+  text-align: center;
+  text-wrap: balance;
 }
 
 .bk-shelf {
@@ -4720,7 +4641,11 @@ body .pg-root.is-zoomed .pg-bar,
   text-overflow: ellipsis;
 }
 
-.bk-bar_close {
+/*
+ * Close, wherever an overlay has one (books, gallery viewer, film players,
+ * print requests): plain text that dims on hover, in the type around it.
+ */
+.close-btn {
   cursor: pointer;
   appearance: none;
   border: 0;
@@ -4731,14 +4656,15 @@ body .pg-root.is-zoomed .pg-bar,
   transition: opacity 0.25s ease;
 }
 
-.bk-bar_close:hover {
+.close-btn:hover {
   opacity: 0.6;
 }
 
 /* The Esc hint, quiet beside Close: a chip at the muted weight, so it reads
-   as a note about the keyboard rather than a second button. */
-.bk-bar_kbd {
-  display: inline-flex;
+   as a note about the keyboard rather than a second button. Touch screens
+   have no Escape, so it shows only with a mouse or trackpad. */
+.close-kbd {
+  display: none;
   align-items: center;
   border-radius: var(--nav-radius);
   background: var(--palette-chip);
@@ -4749,6 +4675,12 @@ body .pg-root.is-zoomed .pg-bar,
   letter-spacing: -0.01em;
   line-height: 1;
   color: var(--color--foreground--50);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .close-kbd {
+    display: inline-flex;
+  }
 }
 
 /*
@@ -4788,7 +4720,7 @@ body.bk-viewing .navbar_wrap {
   .bk-peek,
   .bk-peek img,
   .bk-lg_thumbs button,
-  .bk-bar_close {
+  .close-btn {
     transition: none;
   }
 }
@@ -5049,15 +4981,6 @@ body:has(.pg-root.is-zoomed) .preq-trigger {
   border-bottom: 1px solid var(--color--foreground--10);
 }
 
-.preq-close {
-  cursor: pointer;
-  transition: opacity 0.25s ease;
-}
-
-.preq-close:hover {
-  opacity: 0.6;
-}
-
 /* The picks, one row each; the list is what scrolls, so the form below stays
  * reachable however long the selection grows. */
 .preq-list {
@@ -5278,15 +5201,26 @@ li:hover .brand-wall__logo {
   filter: grayscale(0) opacity(1);
 }
 
-/* On a black band (the press mastheads inside About), multiply would sink
-   every mark into the ground: invert to light marks and screen them on, as
-   the dark themes below do. */
-[data-theme-section="dark"] .brand-wall__logo {
+/* On an inverted band that is dark (the press mastheads inside About, on the
+   light stops 09-16), multiply would sink every mark into the ground: invert
+   to light marks and screen them on. On the dark stops the band is light and
+   the multiplied marks above already read. */
+body:not(
+    [data-theme="00"], [data-theme="01"], [data-theme="02"],
+    [data-theme="03"], [data-theme="04"], [data-theme="05"],
+    [data-theme="06"], [data-theme="07"], [data-theme="08"]
+  )
+  [data-theme-section="invert"] .brand-wall__logo {
   filter: grayscale(1) invert(1) contrast(1.15) opacity(0.65);
   mix-blend-mode: screen;
 }
 
-[data-theme-section="dark"] li:hover .brand-wall__logo {
+body:not(
+    [data-theme="00"], [data-theme="01"], [data-theme="02"],
+    [data-theme="03"], [data-theme="04"], [data-theme="05"],
+    [data-theme="06"], [data-theme="07"], [data-theme="08"]
+  )
+  [data-theme-section="invert"] li:hover .brand-wall__logo {
   filter: grayscale(1) invert(1) contrast(1.15);
 }
 /*
@@ -5308,7 +5242,8 @@ li:hover .brand-wall__logo {
   animation: logo-marquee 45s linear infinite;
 }
 
-.logo-marquee:hover .logo-marquee__track {
+.logo-marquee:hover .logo-marquee__track,
+.logo-marquee:focus-within .logo-marquee__track {
   animation-play-state: paused;
 }
 
@@ -5374,18 +5309,16 @@ li:hover .brand-wall__logo {
  * pushes the question 10px right and the 6px square 10px left, filled. The
  * answer opens on the grid-rows trick at the reference's curve.
  *
- * The palette is pinned like the other dark bands so the eyebrow marker,
- * pill and muted copy read on the card whatever the page theme.
+ * It is an inverted band (`[data-theme-section="invert"]`) like the others,
+ * so the eyebrow marker, pill and muted copy take the band's palette; only
+ * the ground is lifted a step, to the ramp's card-bg tone.
  */
 .faq_wrap {
-  --palette-background: #181715;
-  --palette-foreground: #e8e8e3;
-  --palette-muted: #938f8a;
-  --palette-rule: #393632;
-  --palette-chip: rgb(232 232 227 / 0.08);
-  --faq-square: #524d47;
-  --faq-fill: #e8e8e3;
-  --faq-fill-ink: #080807;
+  --palette-background: var(--nav-card-bg);
+  --color-background: var(--nav-card-bg);
+  --faq-square: var(--nav-black-200);
+  --faq-fill: var(--invert-ink);
+  --faq-fill-ink: var(--invert-ground);
 
   position: relative;
   z-index: 2;
@@ -5399,8 +5332,7 @@ li:hover .brand-wall__logo {
      quarter of the top, and `.faq_content` is align-self: end — so the
      headshot and its CTA sat all but flush against the band's edge. */
   padding: var(--ref-section-medium) var(--grid-margin);
-  background-color: #181715;
-  color: #e8e8e3;
+  background-color: var(--nav-card-bg);
 }
 
 .faq_left {
@@ -5490,6 +5422,7 @@ li:hover .brand-wall__logo {
 
 .faq_q {
   position: relative;
+  display: block;
   margin: 0;
   font-size: var(--ref-large);
   font-weight: 500;
@@ -5889,4 +5822,12 @@ li:hover .brand-wall__logo {
   line-height: 1.4;
   letter-spacing: -0.01em;
   font-feature-settings: "ss01", "ss07";
+}
+
+/* Reduced motion skips the preloader's count entirely; hide its cover from
+   the first paint rather than waiting for hydration to remove it. */
+@media (prefers-reduced-motion: reduce) {
+  .preloader {
+    display: none;
+  }
 }

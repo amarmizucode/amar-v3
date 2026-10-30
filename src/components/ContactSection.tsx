@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Reveal } from "@/components/Reveal";
 import { CornerArrow } from "@/components/Arrows";
+import { CtaPill } from "@/components/CtaPill";
+import { Eyebrow } from "@/components/Eyebrow";
 
 /**
  * The copy document's CONTACT section: the invitation, where Amar is based,
@@ -77,7 +79,7 @@ export function ContactSection() {
 
   const send = (event: React.FormEvent) => {
     event.preventDefault();
-    const subject = projectType ? `Enquiry — ${projectType}` : "Enquiry";
+    const subject = projectType ? `Enquiry - ${projectType}` : "Enquiry";
     window.location.href = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
       subject,
     )}&body=${encodeURIComponent(compose())}`;
@@ -106,10 +108,7 @@ export function ContactSection() {
             as the FAQ's left block pins its CTA. */}
         <div className="col-span-12 flex flex-col gap-6 md:col-span-3">
           <Reveal>
-            <p className="works_eyebrow">
-              <span aria-hidden className="works_eyebrow_marker" />
-              <span className="works_eyebrow_text">Contact</span>
-            </p>
+            <Eyebrow>Contact</Eyebrow>
           </Reveal>
           <Reveal>
             <h2 className="section_heading">Let&rsquo;s talk</h2>
@@ -224,20 +223,7 @@ export function ContactSection() {
             </div>
 
             <div className="contact_actions">
-              {/* The CTA pill, on a real submit button: the same markup
-                  CtaPill renders, which the `.btn-pill` rules animate. */}
-              <button type="submit" className="btn-pill cursor-pointer">
-                <span className="btn-pill_text_contain">
-                  <span className="btn-pill_text">
-                    {sent ? "Reopen the email draft" : "Send Enquiry"}
-                  </span>
-                </span>
-                <span className="btn-pill_aside" aria-hidden>
-                  <span className="btn-pill_aside_bg" />
-                  <CornerArrow className="btn-pill_icon" />
-                  <CornerArrow className="btn-pill_icon is-absolute" />
-                </span>
-              </button>
+              <CtaPill type="submit" label={sent ? "Reopen the email draft" : "Send Enquiry"} />
               <button type="button" onClick={copy} className="contact_aux">
                 {copied ? "Copied" : "Copy as text"}
               </button>
@@ -247,7 +233,7 @@ export function ContactSection() {
                 same as the message being sent, and on a machine with none
                 nothing visible happens at all. */}
             {sent && (
-              <p className="contact_hint">
+              <p role="status" className="contact_hint">
                 Your mail app should have opened with the enquiry ready to send. If nothing
                 happened, use Copy as text and email {CONTACT_EMAIL} directly.
               </p>

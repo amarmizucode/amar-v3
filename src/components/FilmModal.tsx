@@ -156,14 +156,14 @@ export function FilmModal({ film, onClose }: { film: ModalFilm | null; onClose: 
             allowFullScreen
             className="absolute inset-0 h-full w-full border-0"
           />
-          <button
-            ref={closeBtn}
-            type="button"
-            onClick={close}
-            className="absolute right-0 top-0 hidden -translate-y-[calc(100%+10px)] cursor-pointer bg-background px-3 py-1.5 text-[12px] font-medium tracking-[-0.02em] transition-colors hover:bg-chip md:block"
-          >
-            Close
-          </button>
+          <div className="absolute right-0 top-0 hidden -translate-y-[calc(100%+10px)] items-center gap-2 md:flex">
+            <kbd className="close-kbd" aria-hidden>
+              Esc
+            </kbd>
+            <button ref={closeBtn} type="button" onClick={close} className="close-btn">
+              Close
+            </button>
+          </div>
           <p className="absolute inset-x-0 top-full mt-3 text-center text-[13px] font-medium md:hidden">
             {film.title} &middot; {film.channel}
           </p>
@@ -174,7 +174,8 @@ export function FilmModal({ film, onClose }: { film: ModalFilm | null; onClose: 
         <button
           type="button"
           onClick={close}
-          className="cursor-pointer bg-background px-5 py-2.5 text-[13px] font-medium tracking-[-0.02em] transition-colors hover:bg-chip"
+          className="close-btn"
+          style={{ padding: "0.625rem 1.25rem" }}
         >
           Close
         </button>

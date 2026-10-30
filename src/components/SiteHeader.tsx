@@ -7,6 +7,7 @@ import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { usePageReady } from "@/components/PageTransition";
 import { CtaPill } from "@/components/CtaPill";
 import { SoundToggle } from "@/components/SoundToggle";
+import { SOUND_AVAILABLE } from "@/lib/sound";
 import { PrintRequestTrigger } from "@/components/PrintRequestDock";
 import { RightArrow } from "@/components/Arrows";
 import { galleryBySlug } from "@/lib/photography";
@@ -66,6 +67,8 @@ export function SiteHeader() {
   const pathname = usePathname();
   const ready = usePageReady();
   const root = useRef<HTMLElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const menuBtn = useRef<HTMLButtonElement>(null);
   const isHome = pathname === "/";
   // On a gallery the wordmark continues as a breadcrumb: Photography / <name>.
   const crumbGallery = galleryBySlug(pathname.match(/^\/photography\/([^/]+)/)?.[1] ?? "");
@@ -105,14 +108,25 @@ export function SiteHeader() {
     };
   }, [open]);
 
-  // Escape closes the sheet.
+  // Escape closes the sheet, as does growing past the breakpoint that hides
+  // it (a rotation or resize), which would otherwise leave the page locked.
+  // Closing hands focus back to the toggle if it was inside the sheet, which
+  // goes inert and would drop it on <body>.
   useEffect(() => {
     if (!open) return;
+    const menu = menuRef.current;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setOpen(false);
     };
+    const desktop = window.matchMedia("(min-width: 48rem)");
+    const onDesktop = () => desktop.matches && setOpen(false);
     window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
+    desktop.addEventListener("change", onDesktop);
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      desktop.removeEventListener("change", onDesktop);
+      if (menu?.contains(document.activeElement)) menuBtn.current?.focus();
+    };
   }, [open, setOpen]);
 
   /*
@@ -169,12 +183,13 @@ export function SiteHeader() {
 
   /*
    * Nav theme, the reference's section watcher: on every scroll, the section
-   * whose box contains the bar's mid-line (`data-theme-section="light|dark"`)
-   * sets `data-theme-nav` on the header, and the colours switch with it.
-   *
-   * Where no section claims the point — this site's pages mostly carry none
-   * — the theme falls back to the page background's luminance, so the bar
-   * also follows the ramp as the slider moves it (body's `data-theme`).
+   * whose box contains the bar's mid-line sets `data-theme-nav` on the
+   * header, and the colours switch with it. Both pairs are tones of the theme
+   * ramp, so the bar follows the slider whichever it is on:
+   *   - `page` (and no section at all): the page's own ink;
+   *   - `invert`: an inverted band, so the band's ink (the page's ground);
+   *   - `photo`: a photograph, which wants light ink whatever the stop — the
+   *     pair whose ink is light, read off the page ground's luminance.
    */
   useEffect(() => {
     const bar = root.current;
@@ -184,21 +199,21 @@ export function SiteHeader() {
     const resolve = () => {
       frame = 0;
       const y = bar.offsetHeight / 2;
-      let theme: string | null = null;
+      let theme = "page";
       document.querySelectorAll<HTMLElement>("[data-theme-section]").forEach((section) => {
         const r = section.getBoundingClientRect();
-        if (r.top <= y && r.bottom >= y) theme = section.dataset.themeSection ?? null;
+        if (r.top <= y && r.bottom >= y) theme = section.dataset.themeSection ?? theme;
       });
-      if (!theme) {
+      if (theme === "photo") {
         // The stop's own ground token, not body's computed background: that
         // fades for 0.3s on a theme change (`body[data-theme]` in globals.css),
-        // so read the moment the stop switches it still gave the old colour —
-        // a gallery's black page kept the white page's dark ink.
+        // so read the moment the stop switches it still gave the old colour.
         const body = getComputedStyle(document.body);
         const ground =
           body.getPropertyValue("--color--background--100").trim() || body.backgroundColor;
         const l = luminance(ground);
-        theme = l !== null && l < 0.5 ? "dark" : "light";
+        // A dark page has light ink; on a light one the inverted pair does.
+        theme = l !== null && l < 0.5 ? "page" : "invert";
       }
       // Header and body both, as the reference sets every `[data-theme-nav]`:
       // the body's copy is what themes the pills across the page.
@@ -233,25 +248,38 @@ export function SiteHeader() {
     const footer = document.querySelector(".footer_wrap_main");
     if (!bar || !footer) return;
     const row = bar.querySelector<HTMLElement>(".navbar_contain");
+    let faded = false;
     const trigger = ScrollTrigger.create({
       trigger: footer,
       start: "top bottom",
       onEnter: () => {
+        faded = true;
         gsap.to(bar, { opacity: 0, duration: 0.4, ease: "power2.out" });
         if (row) row.style.pointerEvents = "none";
       },
       onLeaveBack: () => {
+        faded = false;
         gsap.to(bar, { opacity: 1, duration: 0.4, ease: "power2.out" });
         if (row) row.style.pointerEvents = "";
       },
     });
-    return () => trigger.kill();
+    return () => {
+      trigger.kill();
+      // kill() fires no callbacks, so a footer link clicked while the bar is
+      // faded would carry the fade — and the dead clicks — onto a page that
+      // has no footer to bring it back. Undo it here, and only if it ran:
+      // the home intro holds the bar at 0 itself.
+      if (!faded) return;
+      gsap.killTweensOf(bar, "opacity");
+      gsap.set(bar, { opacity: 1 });
+      if (row) row.style.pointerEvents = "";
+    };
   }, [pathname, ready]);
 
   return (
     <header
       ref={root}
-      data-theme-nav="light"
+      data-theme-nav="page"
       data-navigation-status={open ? "is-open" : "is-closed"}
       className="navbar_wrap"
     >
@@ -298,7 +326,7 @@ export function SiteHeader() {
           {/* The print-request trigger: zero-width until a print is saved. */}
           <PrintRequestTrigger />
 
-          <SoundToggle />
+          {SOUND_AVAILABLE && <SoundToggle />}
 
           <div className="navbar_cta_contain">
             <CtaPill label="Get in Touch" href="/#contact" />
@@ -308,6 +336,7 @@ export function SiteHeader() {
               the closer. Shown below 48rem by the `.navbar_menu_btn` rules. */}
           <button
             type="button"
+            ref={menuBtn}
             data-menu-btn
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
@@ -337,10 +366,8 @@ export function SiteHeader() {
        * motion lives in the `.mobile-menu*` rules in globals.css.
        */}
       <div
+        ref={menuRef}
         id="mobile-menu"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Menu"
         data-open={open || undefined}
         inert={!open}
         className="mobile-menu fixed inset-0 z-10 md:hidden"
@@ -357,7 +384,7 @@ export function SiteHeader() {
         {/* The reference's `menu_contain`: a black panel 55dvh deep under
             the bar, its rows bottom-aligned and set like the footer's list. */}
         <div className="mobile-menu_panel">
-          <nav aria-label="Primary">
+          <nav aria-label="Menu">
             <ul className="mobile-menu_ul">
               {MOBILE_NAV.map((item, i) => {
                 const current = pathname === item.href || pathname.startsWith(`${item.href}/`);

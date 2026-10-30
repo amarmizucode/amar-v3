@@ -1,6 +1,7 @@
 import { Reveal } from "@/components/Reveal";
 import { RightArrow } from "@/components/Arrows";
 import { watchUrl } from "@/lib/documentary";
+import { Eyebrow } from "@/components/Eyebrow";
 
 /* "The Birdman" in the Big Short Films catalogue (lib/documentary). */
 const BIRDMAN_ID = "oykTD4Y9hl4";
@@ -75,11 +76,10 @@ export function InNumbers({ className = "py-20 md:py-28" }: { className?: string
     <section className={`shell ${className}`}>
       <div className="grid-12">
         <ul className="col-span-12 flex flex-col gap-3 md:col-span-8 md:gap-4">
-          {NUMBERS.map((item, i) => (
+          {NUMBERS.map((item) => (
             <Reveal
               as="li"
               key={item.label}
-              delay={i * 60}
               className="text-statement font-semibold"
             >
               <span className="tabular-nums">{item.stat}</span>{" "}
@@ -118,10 +118,7 @@ export function Recognition({ className = "pb-24 md:pb-36" }: { className?: stri
             numbers (mt-16 / md:mt-24), so the rules sit symmetrically. */}
         <div className="col-span-12 mt-6 flex flex-col gap-3 md:col-start-5 md:col-span-3 md:mt-10 md:gap-4">
           <Reveal>
-            <p className="works_eyebrow">
-              <span aria-hidden className="works_eyebrow_marker" />
-              <span className="works_eyebrow_text">Recognition</span>
-            </p>
+            <Eyebrow>Recognition</Eyebrow>
           </Reveal>
           <Reveal>
             <h2 className="max-w-[18ch] text-[clamp(1.5rem,2.6vw,2.25rem)] font-semibold leading-[1.15] tracking-[-0.03em]">
@@ -151,8 +148,8 @@ export function Recognition({ className = "pb-24 md:pb-36" }: { className?: stri
               site, opening in a new tab. The list's dotted top rule closes
               the first row the way each row's own bottom rule does. */}
           <ul className="border-t border-dotted border-rule">
-            {AWARDS.map((award, i) => (
-              <Reveal as="li" key={award.title} delay={i * 60} className="footer_nav_li">
+            {AWARDS.map((award) => (
+              <Reveal as="li" key={award.title} className="footer_nav_li">
                 <a
                   href={award.href}
                   target="_blank"
@@ -205,10 +202,7 @@ export function Recognition({ className = "pb-24 md:pb-36" }: { className?: stri
               {/* Featured in — the mastheads in one quiet run on the same
                   measure, monochrome via .brand-wall__logo; no rules, no cells. */}
               <Reveal className="mt-12 md:mt-16">
-                <p className="works_eyebrow">
-                  <span aria-hidden className="works_eyebrow_marker" />
-                  <span className="works_eyebrow_text">Featured in</span>
-                </p>
+                <Eyebrow>Featured in</Eyebrow>
               </Reveal>
               <Reveal className="mt-6 md:mt-8">
                 {/* Half the Collaborations marquee's gap, so the four marks sit

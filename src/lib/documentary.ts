@@ -64,7 +64,7 @@ export const FILMS: Film[] = [
     title: "The Art of Leather Puppetry",
     short: "Leather Puppetry",
     blurb:
-      "Behind a lit screen, leather comes alive — the carving, perforating and performance that keep a shadow-puppet tradition moving.",
+      "Behind a lit screen, leather comes alive - the carving, perforating and performance that keep a shadow-puppet tradition moving.",
     duration: "8:25",
     year: 2026,
   },
@@ -80,7 +80,7 @@ export const FILMS: Film[] = [
     id: "JesDPmDEueo",
     title: "Vaidyagrama Ayurveda",
     blurb:
-      "At Vaidyagrama, Ayurveda is not a system of medicine so much as a knowledge of life — a way of paying attention to how we live.",
+      "At Vaidyagrama, Ayurveda is not a system of medicine so much as a knowledge of life - a way of paying attention to how we live.",
     duration: "4:44",
     year: 2026,
   },
@@ -88,7 +88,7 @@ export const FILMS: Film[] = [
     id: "NMlUpYL-UUE",
     title: "Krishna McKenzie",
     blurb:
-      "He arrived in Auroville at nineteen. At Annapurna Farm he found stillness, joy and a sense of bhakti — and a place to belong.",
+      "He arrived in Auroville at nineteen. At Annapurna Farm he found stillness, joy and a sense of bhakti - and a place to belong.",
     duration: "7:07",
     year: 2026,
   },
@@ -97,7 +97,7 @@ export const FILMS: Film[] = [
     title: "Balaramapuram Handlooms",
     short: "Balaramapuram",
     blurb:
-      "In Balaramapuram, weaving is knowledge passed hand to hand — the fine cottons woven into Kerala's cultural fabric.",
+      "In Balaramapuram, weaving is knowledge passed hand to hand - the fine cottons woven into Kerala's cultural fabric.",
     duration: "7:07",
     year: 2026,
   },
@@ -105,7 +105,7 @@ export const FILMS: Film[] = [
     id: "KRqO8ND9uCs",
     title: "Mridangam",
     blurb:
-      "We hear the mridangam in every Carnatic concert. This film is about the people who make it — from wood to skin to pitch.",
+      "We hear the mridangam in every Carnatic concert. This film is about the people who make it - from wood to skin to pitch.",
     duration: "7:46",
     year: 2026,
   },
@@ -113,13 +113,13 @@ export const FILMS: Film[] = [
     id: "wpQd13kvkZo",
     title: "Beneath Our Feet",
     blurb:
-      "A documentary on biochar — soil carbon, depleted land, and the living system beneath our feet that farming depends on.",
+      "A documentary on biochar - soil carbon, depleted land, and the living system beneath our feet that farming depends on.",
     duration: "8:57",
     year: 2026,
   },
   {
     id: "NToJUa_4ZfY",
-    title: "Panchaa — Honest Hand Dhotis",
+    title: "Panchaa - Honest Hand Dhotis",
     short: "Panchaa Dhotis",
     blurb:
       "In the tribal village of Chuliaposi, Mayurbhanj, women artisans revive the nearly forgotten Santali weave of Odisha.",
@@ -128,7 +128,7 @@ export const FILMS: Film[] = [
   },
   {
     id: "fYR_CjzvKXo",
-    title: "Panchaa — Where Revival Begins",
+    title: "Panchaa - Where Revival Begins",
     short: "Panchaa Revival",
     aspect: [4, 3],
     blurb:
@@ -140,7 +140,7 @@ export const FILMS: Film[] = [
     id: "AuArgQnZM2U",
     title: "The Last Thread",
     blurb:
-      "Ponduru Khadi is one of India's finest hand-spun, handwoven textiles — every thread patience, precision and generations of craft.",
+      "Ponduru Khadi is one of India's finest hand-spun, handwoven textiles - every thread patience, precision and generations of craft.",
     duration: "8:23",
     year: 2026,
   },
@@ -148,7 +148,7 @@ export const FILMS: Film[] = [
     id: "RjmAuww92w4",
     title: "Chetti Thaipoosam",
     blurb:
-      "The rituals, voices and spirit behind one of the most enduring festivals — a tradition carried in every step.",
+      "The rituals, voices and spirit behind one of the most enduring festivals - a tradition carried in every step.",
     duration: "6:26",
     year: 2026,
   },
@@ -156,7 +156,7 @@ export const FILMS: Film[] = [
     id: "ik3tc5eeTU8",
     title: "An Allegory",
     blurb:
-      "The artist as witness, as vessel, as the ground where culture takes root — from epic to everyday, the truth persists.",
+      "The artist as witness, as vessel, as the ground where culture takes root - from epic to everyday, the truth persists.",
     duration: "4:38",
     year: 2026,
   },
@@ -164,13 +164,13 @@ export const FILMS: Film[] = [
     id: "ks-MPN3ZdAw",
     title: "Bidri Craft",
     blurb:
-      "In the historic town of Bidar, metal meets soil and contrast becomes identity — a craft shaped over centuries.",
+      "In the historic town of Bidar, metal meets soil and contrast becomes identity - a craft shaped over centuries.",
     duration: "6:59",
     year: 2026,
   },
   {
     id: "6c_i4EoUaq4",
-    title: "Kalamkari — The Language of Ink & Cloth",
+    title: "Kalamkari - The Language of Ink & Cloth",
     short: "Kalamkari",
     blurb:
       "Bamboo pens trace epics onto river-washed cloth, and natural dyes bring gods, myths and memory to life.",
@@ -182,7 +182,7 @@ export const FILMS: Film[] = [
     title: "The Revival of Jamakkalam",
     short: "Jamakkalam",
     blurb:
-      "The handwoven mat that carried colour, comfort and community across Tamil floors — and the looms bringing it back.",
+      "The handwoven mat that carried colour, comfort and community across Tamil floors - and the looms bringing it back.",
     duration: "9:03",
     year: 2026,
   },
@@ -190,7 +190,7 @@ export const FILMS: Film[] = [
     id: "0Mi9fc4BF2A",
     title: "Sabarimala Dolly",
     blurb:
-      "On a pilgrimage that tests endurance, some journeys are carried on the shoulders of others — an act of faith, compassion and quiet strength.",
+      "On a pilgrimage that tests endurance, some journeys are carried on the shoulders of others - an act of faith, compassion and quiet strength.",
     duration: "8:45",
     year: 2026,
   },
@@ -198,7 +198,7 @@ export const FILMS: Film[] = [
     id: "mNtzbuAC4cA",
     title: "Madurai Sungudi",
     blurb:
-      "In the old dye streets of Madurai, women dot dreams onto fabric — thousands of tiny knots, each one almost sacred.",
+      "In the old dye streets of Madurai, women dot dreams onto fabric - thousands of tiny knots, each one almost sacred.",
     duration: "15:45",
     year: 2025,
   },
@@ -206,7 +206,7 @@ export const FILMS: Film[] = [
     id: "2jlCq2MwZ0U",
     title: "Pattamadai Pai",
     blurb:
-      "From the banks of the Tamirabarani, a mat born not from machines but from memory — handwoven from korai grass.",
+      "From the banks of the Tamirabarani, a mat born not from machines but from memory - handwoven from korai grass.",
     duration: "6:21",
     year: 2025,
   },
@@ -214,7 +214,7 @@ export const FILMS: Film[] = [
     id: "SX_zVy3KV0A",
     title: "Poo Chakra Kodai",
     blurb:
-      "A temple umbrella handwoven in devotion — silk, bamboo and thread carrying colours that never fade.",
+      "A temple umbrella handwoven in devotion - silk, bamboo and thread carrying colours that never fade.",
     duration: "4:36",
     year: 2025,
   },
@@ -222,7 +222,7 @@ export const FILMS: Film[] = [
     id: "QyugQe32OzQ",
     title: "Thenneera",
     blurb:
-      "Coconut sap drawn at dawn by skilled hands — not just a drink, but a tradition of patience and trust in the tree.",
+      "Coconut sap drawn at dawn by skilled hands - not just a drink, but a tradition of patience and trust in the tree.",
     duration: "10:45",
     year: 2025,
   },
@@ -250,19 +250,19 @@ export const FILMS: Film[] = [
 export const BSF_FILMS: Film[] = [
   {
     id: "7jyqXgRq9G4",
-    title: "Vaidyagrama — Ayurveda Healing Village",
+    title: "Vaidyagrama - Ayurveda Healing Village",
     short: "Vaidyagrama",
     blurb:
-      "In India's village societies, to heal was to belong — the vaidya lived among the people they treated, and care grew out of shared life.",
+      "In India's village societies, to heal was to belong - the vaidya lived among the people they treated, and care grew out of shared life.",
     duration: "15:29",
     year: 2026,
   },
   {
     id: "KfjgwQKVF9k",
-    title: "Thaipoosam — On the Trails of Aandi",
+    title: "Thaipoosam - On the Trails of Aandi",
     short: "Trails of Aandi",
     blurb:
-      "Pilgrims walk hundreds of kilometres across weeks, through sun and rain, to Murugan, the runaway god of Palani — a 400-year-old test of faith.",
+      "Pilgrims walk hundreds of kilometres across weeks, through sun and rain, to Murugan, the runaway god of Palani - a 400-year-old test of faith.",
     duration: "39:27",
     year: 2025,
   },
@@ -271,7 +271,7 @@ export const BSF_FILMS: Film[] = [
     title: "Paramount Textiles",
     aspect: [2.39, 1],
     blurb:
-      "Forty-five years of a home-linen brand that began in Thirali, near Madurai — a story of commitment, persistence and empowerment.",
+      "Forty-five years of a home-linen brand that began in Thirali, near Madurai - a story of commitment, persistence and empowerment.",
     duration: "19:42",
     year: 2024,
   },
@@ -281,7 +281,7 @@ export const BSF_FILMS: Film[] = [
     short: "Venkatagiri Sarees",
     aspect: [2.35, 1],
     blurb:
-      "The weavers of Venkatagiri — jamdani, jala and jacquard in cotton and silk — and a cluster's effort to overcome its challenges.",
+      "The weavers of Venkatagiri - jamdani, jala and jacquard in cotton and silk - and a cluster's effort to overcome its challenges.",
     duration: "12:41",
     year: 2023,
   },
@@ -326,7 +326,7 @@ export const BSF_FILMS: Film[] = [
     short: "Karlakattai",
     aspect: [2.39, 1],
     blurb:
-      "The club swung by warriors, soldiers and wrestlers for centuries — what happened to it, and who swings it today.",
+      "The club swung by warriors, soldiers and wrestlers for centuries - what happened to it, and who swings it today.",
     duration: "9:11",
     year: 2022,
   },
@@ -343,7 +343,7 @@ export const BSF_FILMS: Film[] = [
     title: "Pioneer",
     aspect: [2.35, 1],
     blurb:
-      "CS Ananth and Team CSA, the vintage-car restorers of Chennai — and the man who took the first step.",
+      "CS Ananth and Team CSA, the vintage-car restorers of Chennai - and the man who took the first step.",
     duration: "19:44",
     year: 2022,
   },
@@ -352,7 +352,7 @@ export const BSF_FILMS: Film[] = [
     title: "Kovilpatti Kadalai Mittai",
     short: "Kadalai Mittai",
     blurb:
-      "Palm jaggery and groundnuts from village festivals to a GI tag — the peanut burfi that put Kovilpatti on the map.",
+      "Palm jaggery and groundnuts from village festivals to a GI tag - the peanut burfi that put Kovilpatti on the map.",
     duration: "4:33",
     year: 2022,
   },
@@ -378,7 +378,7 @@ export const BSF_FILMS: Film[] = [
     id: "l8Yux0wZog0",
     title: "Drops of Life",
     blurb:
-      "Chennai's rainwater harvesting — and what a city can do about the water it already has.",
+      "Chennai's rainwater harvesting - and what a city can do about the water it already has.",
     duration: "10:14",
     year: 2021,
   },
@@ -396,7 +396,7 @@ export const BSF_FILMS: Film[] = [
     title: "Bhavani Jammakkalam",
     aspect: [2.39, 1],
     blurb:
-      "The people's carpet of South India — two hundred years on Bhavani's looms, and a craft whose weavers are growing old.",
+      "The people's carpet of South India - two hundred years on Bhavani's looms, and a craft whose weavers are growing old.",
     duration: "6:50",
     year: 2021,
   },
@@ -405,7 +405,7 @@ export const BSF_FILMS: Film[] = [
     title: "B for Biology",
     aspect: [2.39, 1],
     blurb:
-      "Four friends without resources who reinvented how biology is taught — the hands-on story of Biota.",
+      "Four friends without resources who reinvented how biology is taught - the hands-on story of Biota.",
     duration: "4:06",
     year: 2020,
   },
@@ -415,7 +415,7 @@ export const BSF_FILMS: Film[] = [
     short: "Handmade Petti",
     aspect: [2.39, 1],
     blurb:
-      "The coconut-palm basket Tamil tree climbers carry their tools in — a craft that may not outlast the trade.",
+      "The coconut-palm basket Tamil tree climbers carry their tools in - a craft that may not outlast the trade.",
     duration: "4:58",
     year: 2020,
   },
@@ -423,7 +423,7 @@ export const BSF_FILMS: Film[] = [
     id: "ii_T94RNeOA",
     title: "The Time Collector",
     blurb:
-      "Watch mechanic Robert Kennedy and his 2,200 rare antique clocks — a hobby, rooted in a personal story, turned phenomenon.",
+      "Watch mechanic Robert Kennedy and his 2,200 rare antique clocks - a hobby, rooted in a personal story, turned phenomenon.",
     duration: "4:50",
     year: 2019,
   },
@@ -462,7 +462,7 @@ export const BSF_FILMS: Film[] = [
     id: "8woJ0rtXuB4",
     title: "Children of Paradise",
     blurb:
-      "Schools, a health centre and open playgrounds — no one would believe Heal Paradise is an orphanage.",
+      "Schools, a health centre and open playgrounds - no one would believe Heal Paradise is an orphanage.",
     duration: "4:46",
     year: 2018,
   },
@@ -477,14 +477,14 @@ export const BSF_FILMS: Film[] = [
   {
     id: "fLwGPs2HlsI",
     title: "Time Traveler",
-    blurb: "Anand Kumar Bhowmick and his 1,50,000 rare photographs — history documented as it was.",
+    blurb: "Anand Kumar Bhowmick and his 1,50,000 rare photographs - history documented as it was.",
     duration: "4:02",
     year: 2017,
   },
   {
     id: "KF33FxDNJsU",
     title: "Seed Ball",
-    blurb: "In every seed lies a forest — five minutes, a handful of seed balls, and a throw.",
+    blurb: "In every seed lies a forest - five minutes, a handful of seed balls, and a throw.",
     duration: "2:26",
     year: 2017,
   },
@@ -507,7 +507,7 @@ export const BSF_FILMS: Film[] = [
     id: "zksDMZTM3X8",
     title: "One Man",
     blurb:
-      "Surendhar didn't wait to retire to serve — and one man's journey changed thousands of lives.",
+      "Surendhar didn't wait to retire to serve - and one man's journey changed thousands of lives.",
     duration: "4:02",
     year: 2017,
   },
@@ -523,7 +523,7 @@ export const BSF_FILMS: Film[] = [
     id: "-jb47eYjK64",
     title: "Little Things",
     blurb:
-      "Rajesh quit a high-paying corporate career for cooking and cows — the little things that matter in the pursuit of happiness.",
+      "Rajesh quit a high-paying corporate career for cooking and cows - the little things that matter in the pursuit of happiness.",
     duration: "3:25",
     year: 2017,
   },
@@ -583,7 +583,7 @@ export const BSF_FILMS: Film[] = [
     id: "T_3nxquEzjY",
     title: "A Ride to Remember",
     blurb:
-      "Auto Annadurai, who turned an auto ride into an experience — newspapers, TV, an iPad and a card machine.",
+      "Auto Annadurai, who turned an auto ride into an experience - newspapers, TV, an iPad and a card machine.",
     duration: "3:37",
     year: 2016,
   },

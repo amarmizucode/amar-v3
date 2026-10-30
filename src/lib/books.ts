@@ -29,7 +29,7 @@ export type Book = {
   /** Additional product shots, in store order. */
   plates: string[];
   /**
-   * The shelf's book art: a flat spine strip (`spine.png`) and flat
+   * The shelf's book art: a flat spine strip (`spine.webp`) and flat
    * front-cover artwork (`cover-art.jpg`), supplied per book. The ratios are
    * each image's width/height; `heightRatio` is this book's height relative
    * to the tallest of the set (the spine strips are height-matched), so the
@@ -62,7 +62,7 @@ const COPY: Array<{
     category: "Temples",
     blurb: "The Perur Pateeswarar temple, recorded in stone, light and living ritual.",
     description:
-      "A photographic and scholarly record of the Perur Pateeswarar temple near the Noyyal river — its mythology, its dynastic layers, and the Kanaka Sabha, one of only five dance halls of Nataraja. Bilingual in English and Tamil, and made to be returned to rather than displayed.",
+      "A photographic and scholarly record of the Perur Pateeswarar temple near the Noyyal river - its mythology, its dynastic layers, and the Kanaka Sabha, one of only five dance halls of Nataraja. Bilingual in English and Tamil, and made to be returned to rather than displayed.",
     price: 3800,
     available: true,
     plateCount: 2,
@@ -74,7 +74,7 @@ const COPY: Array<{
     category: "Textiles",
     blurb: "The handwoven carpet of Bhavani, and the community that sustains it.",
     description:
-      "Made with the craftsmen of Bhavani, alongside Kumaraguru Institutions and the Shakti initiative, this book follows the Jamakkalam — the bold striped cotton of the Kongu region — from dye vat to loom. A study of a working tradition: skill, cooperation and inherited knowledge, and what it takes to keep them.",
+      "Made with the craftsmen of Bhavani, alongside Kumaraguru Institutions and the Shakti initiative, this book follows the Jamakkalam - the bold striped cotton of the Kongu region - from dye vat to loom. A study of a working tradition: skill, cooperation and inherited knowledge, and what it takes to keep them.",
     price: 2499,
     available: true,
     plateCount: 4,
@@ -98,7 +98,7 @@ const COPY: Array<{
     category: "Temples",
     blurb: "Thirteen hundred years of the Kanchi Kailasanathar temple.",
     description:
-      "The Kanchi Kailasanathar temple has stood for thirteen hundred years, greeting kings and queens with the same magnificence. These photographs walk its sculptures, paintings and sacred pathways — chaos and calm coexisting in a space where every stone holds a story waiting to be discovered.",
+      "The Kanchi Kailasanathar temple has stood for thirteen hundred years, greeting kings and queens with the same magnificence. These photographs walk its sculptures, paintings and sacred pathways - chaos and calm coexisting in a space where every stone holds a story waiting to be discovered.",
     price: 1000,
     available: false,
     plateCount: 3,
@@ -110,7 +110,7 @@ const COPY: Array<{
     category: "Dance",
     blurb: "Fifty Bharatanatyam dancers, photographed beyond the stage.",
     description:
-      "The Madras Margazhi project continued, from musicians to dancers: fifty eminent Bharatanatyam artists photographed in the everyday spaces where the work actually happens. Practice, discipline and repetition — the routines that sustain an artistic life, recorded as a lived process.",
+      "The Madras Margazhi project continued, from musicians to dancers: fifty eminent Bharatanatyam artists photographed in the everyday spaces where the work actually happens. Practice, discipline and repetition - the routines that sustain an artistic life, recorded as a lived process.",
     price: 1199,
     available: true,
     plateCount: 2,
@@ -122,7 +122,7 @@ const COPY: Array<{
     category: "Architecture",
     blurb: "Madurai's seventeenth-century hall of 124 carved granite pillars.",
     description:
-      "A journey through Madurai's Pudhu Mandapam, the seventeenth-century masterpiece whose 124 intricately carved granite pillars narrate legendary stories — Thiruvilayadal among them. Architectural brilliance and cultural memory, photographed pillar by pillar, where every stone has a story to tell.",
+      "A journey through Madurai's Pudhu Mandapam, the seventeenth-century masterpiece whose 124 intricately carved granite pillars narrate legendary stories - Thiruvilayadal among them. Architectural brilliance and cultural memory, photographed pillar by pillar, where every stone has a story to tell.",
     price: 4800,
     available: true,
     plateCount: 6,
@@ -134,7 +134,7 @@ const COPY: Array<{
     category: "Chettinad",
     blurb: "The grand portals of Chettinad mansions, facade by facade.",
     description:
-      "Mogappu — 'the arrangement of the face' — is more than an entrance to a Chettinad mansion; it is a statement of wealth, devotion and artistic mastery. This book collects the grandest of those street-facing facades, the Therukadhavu, doorway by doorway, before they fade.",
+      "Mogappu - 'the arrangement of the face' - is more than an entrance to a Chettinad mansion; it is a statement of wealth, devotion and artistic mastery. This book collects the grandest of those street-facing facades, the Therukadhavu, doorway by doorway, before they fade.",
     price: 2800,
     available: true,
     plateCount: 4,
@@ -144,9 +144,9 @@ const COPY: Array<{
     slug: "kolli-kannu",
     title: "Kolli Kannu",
     category: "Folk Art",
-    blurb: "Drishti figures — the painted guardians that watch over Tamil homes.",
+    blurb: "Drishti figures - the painted guardians that watch over Tamil homes.",
     description:
-      "A journey into Drishti painting: the striking guardian figures placed on walls to ward off evil. Origins, meanings and a living tradition, in photographs and reflective writing — a preservation of the memory, belief and imagination that still watch over the homes, streets and temples of Tamil Nadu.",
+      "A journey into Drishti painting: the striking guardian figures placed on walls to ward off evil. Origins, meanings and a living tradition, in photographs and reflective writing - a preservation of the memory, belief and imagination that still watch over the homes, streets and temples of Tamil Nadu.",
     price: 2400,
     available: true,
     plateCount: 5,
@@ -166,7 +166,7 @@ export const BOOKS: Book[] = COPY.map((copy, i) => ({
   buyUrl: `https://maralabs.in/products/${copy.slug}`,
   cover: `/assets/books/${copy.slug}/cover.jpg`,
   art: {
-    spine: `/assets/books/${copy.slug}/spine.png`,
+    spine: `/assets/books/${copy.slug}/spine.webp`,
     cover: `/assets/books/${copy.slug}/cover-art.jpg`,
     ...copy.art,
   },

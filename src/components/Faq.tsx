@@ -27,17 +27,22 @@ export function Faq({ items }: { items: FaqItem[] }) {
             data-open={isOpen || undefined}
             className="faq_item"
           >
-            <button
-              type="button"
-              onClick={() => setOpen(isOpen ? null : i)}
-              aria-expanded={isOpen}
-              aria-controls={panelId}
-              className="faq_top"
-            >
-              <span aria-hidden className="faq_bg" />
-              <h3 className="faq_q">{item.q}</h3>
-              <span aria-hidden className="faq_square" />
-            </button>
+            {/* The heading wraps the button, not the reverse: a button's
+                content is flattened to its label, and a heading inside one
+                is invalid and lost to assistive tech. */}
+            <h3>
+              <button
+                type="button"
+                onClick={() => setOpen(isOpen ? null : i)}
+                aria-expanded={isOpen}
+                aria-controls={panelId}
+                className="faq_top"
+              >
+                <span aria-hidden className="faq_bg" />
+                <span className="faq_q">{item.q}</span>
+                <span aria-hidden className="faq_square" />
+              </button>
+            </h3>
 
             <div id={panelId} inert={!isOpen} className="faq_bottom">
               <div className="faq_bottom_wrap">

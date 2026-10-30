@@ -9,11 +9,11 @@
 export const GALLERY_PATH = /^\/photography\/[^/]+/;
 export const GALLERY_STOP = 0;
 
-/* Inline, so it runs as <body> is parsed — before React, before paint. It also
-   sets the header's ink pair, which SiteHeader would otherwise only correct
-   after hydration. */
+/* Inline, so it runs as <body> is parsed — before React, before paint. The
+   header's ink pair needs no correction here: it is the "page" pair, a tone of
+   whichever stop is active, so the black stop alone gives it light ink. */
 export const GALLERY_THEME_SCRIPT = `try{if(new RegExp(${JSON.stringify(
   GALLERY_PATH.source,
-)}).test(location.pathname)){var b=document.body;b.dataset.theme=${JSON.stringify(
+)}).test(location.pathname)){document.body.dataset.theme=${JSON.stringify(
   String(GALLERY_STOP).padStart(2, "0"),
-)};b.dataset.themeNav="dark"}}catch(e){}`;
+)}}}catch(e){}`;

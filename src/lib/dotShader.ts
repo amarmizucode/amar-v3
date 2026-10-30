@@ -121,7 +121,7 @@ const DOT_FRAG = /* glsl */ `
 export type DotShaderOptions = Partial<typeof DEFAULTS>;
 
 /** Reference defaults, with bg/fg swapped to the Figma's white/black. */
-export const DEFAULTS = {
+const DEFAULTS = {
   amplitude: 0.8,
   timeSpeed: 0.0045,
   holdAmplitudeMultiplier: 2,
@@ -149,13 +149,15 @@ export const DEFAULTS = {
  */
 function toVec3(color: string) {
   const modern = color.match(
-    /^rgba?(s*([d.]+)[s,]+([d.]+)[s,]+([d.]+)(?:s*[/,]s*[d.%]+)?s*)$/i,
+    /^rgba?\(\s*([\d.]+)[\s,]+([\d.]+)[\s,]+([\d.]+)(?:\s*[/,]\s*[\d.%]+)?\s*\)$/i,
   );
   if (modern) {
     const [r, g, b] = modern.slice(1, 4).map((n) => Number(n) / 255);
     return new THREE.Vector3(r, g, b);
   }
-  const c = new THREE.Color(color);
+  // Read back in sRGB: the shaders are raw, so they take the CSS values as
+  // written, while THREE.Color stores linear components internally.
+  const c = new THREE.Color(color).getRGB({ r: 0, g: 0, b: 0 }, THREE.SRGBColorSpace);
   return new THREE.Vector3(c.r, c.g, c.b);
 }
 
@@ -272,15 +274,21 @@ export function createDotShader(
     window.addEventListener("pointerup", onUp);
   }
 
-  const render = () => {
+  // Time advances by the real frame interval (the speeds are tuned per
+  // 16ms), so a 120Hz screen runs the field at the same pace as a 60Hz one.
+  // Clamped, so a long gap after the loop resumes doesn't jump the field.
+  let last = 0;
+  const render = (now: number) => {
     raf = requestAnimationFrame(render);
+    const dt = last ? Math.min(now - last, 50) : 16;
+    last = now;
 
     const targetAmp = holding ? o.amplitude * o.holdAmplitudeMultiplier : o.amplitude;
     const speed = holding ? o.timeSpeed * o.holdTimeSpeedMultiplier : o.timeSpeed;
 
     amplitude += (targetAmp - amplitude) * o.lerpSpeed;
-    time += speed * 16;
-    waveTime += o.waveTimeSpeed * 16;
+    time += speed * dt;
+    waveTime += o.waveTimeSpeed * dt;
 
     fieldMat.uniforms.uTime.value = time;
     fieldMat.uniforms.uAmplitude.value = amplitude;
@@ -291,7 +299,17 @@ export function createDotShader(
     renderer.setRenderTarget(null);
     renderer.render(scene, camera);
   };
-  render();
+
+  // Only draw while the canvas is on screen: the hero scrolls away and the
+  // loop would otherwise run two passes a frame for as long as the page lives.
+  const visibility = new IntersectionObserver(([entry]) => {
+    cancelAnimationFrame(raf);
+    if (entry.isIntersecting) {
+      last = 0;
+      raf = requestAnimationFrame(render);
+    }
+  });
+  visibility.observe(container);
 
   return {
     revealState,
@@ -302,6 +320,7 @@ export function createDotShader(
     destroy() {
       cancelAnimationFrame(raf);
       observer.disconnect();
+      visibility.disconnect();
       if (o.interactive) {
         container.removeEventListener("pointerdown", onDown);
         window.removeEventListener("pointerup", onUp);
@@ -310,6 +329,9 @@ export function createDotShader(
       fieldMat.dispose();
       dotMat.dispose();
       target.dispose();
+      // Release the GL context now rather than at GC: each client-side visit
+      // to the home page makes a new one, and browsers cap live contexts.
+      renderer.forceContextLoss();
       renderer.dispose();
     },
   };

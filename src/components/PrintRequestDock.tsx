@@ -28,7 +28,7 @@ const requestBody = (items: PrintItem[], name: string, email: string, notes: str
   const list = items
     .map(
       (it, i) =>
-        `${i + 1}. [${it.index}] ${it.gallery} — frame ${String(it.frame).padStart(3, "0")} (${it.file})\n   ${absolute(it.ref)}`,
+        `${i + 1}. [${it.index}] ${it.gallery} - frame ${String(it.frame).padStart(3, "0")} (${it.file})\n   ${absolute(it.ref)}`,
     )
     .join("\n\n");
   const one = items.length === 1;
@@ -124,7 +124,7 @@ export function PrintRequestDock() {
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    const subject = `Print request — ${count} ${count === 1 ? "photograph" : "photographs"}`;
+    const subject = `Print request - ${count} ${count === 1 ? "photograph" : "photographs"}`;
     const body = requestBody(items, name, email, notes);
     window.location.href = `mailto:${REQUEST_EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     setSentFor(items);
@@ -165,20 +165,21 @@ export function PrintRequestDock() {
           <p className="text-[15px] font-semibold uppercase tracking-[-0.01em]">
             Print requests [{pad(count)}]
           </p>
-          <button
-            type="button"
-            className="preq-close text-[15px] font-medium tracking-[-0.03em]"
-            onClick={closeDrawer}
-          >
-            Close
-          </button>
+          <div className="flex items-center gap-2">
+            <kbd className="close-kbd" aria-hidden>
+              Esc
+            </kbd>
+            <button type="button" className="close-btn" onClick={closeDrawer}>
+              Close
+            </button>
+          </div>
         </div>
 
         {count === 0 ? (
           <div className="preq-empty">
             <p>
               Nothing here yet. Open any photograph in a gallery and choose
-              &ldquo;Request a print&rdquo; — it will be saved to this list.
+              &ldquo;Request a print&rdquo; - it will be saved to this list.
             </p>
             <Link
               href="/photography"
@@ -242,7 +243,7 @@ export function PrintRequestDock() {
                 <textarea
                   id="preq-notes"
                   rows={3}
-                  placeholder="Preferred sizes, framing, quantities — anything useful."
+                  placeholder="Preferred sizes, framing, quantities - anything useful."
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                 />
@@ -254,7 +255,7 @@ export function PrintRequestDock() {
 
               <p className="preq-hint">
                 {sent
-                  ? "Your email draft is ready — press send in your mail app to finish."
+                  ? "Your email draft is ready - press send in your mail app to finish."
                   : `Opens your email app with the request addressed to ${REQUEST_EMAIL}; sizes and pricing are confirmed there.`}
               </p>
 

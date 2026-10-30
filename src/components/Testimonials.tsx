@@ -9,8 +9,6 @@ export type Testimonial = {
   quote: string;
   name: string;
   role: string;
-  /** Kept for the call sites; no longer drawn. */
-  avatar?: string;
 };
 
 /** "Dr. S. Raghunathan" -> "SR": the first letter of the first and last
@@ -196,11 +194,14 @@ export function Testimonials({
       }
 
       const step = (dir: 1 | -1) => {
+        const target = (index + dir + count) % count;
+        // Under reduced motion nothing advances on its own: the arrows just
+        // swap the quote, and no hold starts behind it.
+        if (reduced) return goTo(target);
         cycle?.kill();
         cycle = null;
         swap?.kill();
         swap = null;
-        const target = (index + dir + count) % count;
         handOff(0.2, () => goTo(target));
       };
 
@@ -222,23 +223,59 @@ export function Testimonials({
         start();
       }
 
-      // Hold still while the band is off screen.
+      // Hold still while the band is off screen, and while the reader is
+      // pointing at or focused inside it (WCAG 2.2.2: moving content can be
+      // paused). Under reduced motion it never auto-advances at all.
+      let held = false;
+      let visible = false;
       const pause = () => cycle?.pause();
-      const resume = () => (cycle ? cycle.resume() : start());
+      const resume = () => {
+        if (reduced || held || !visible) return;
+        if (cycle) cycle.resume();
+        else start();
+      };
       const watch = ScrollTrigger.create({
         trigger: el,
         start: "top bottom",
         end: "bottom top",
-        onEnter: resume,
-        onEnterBack: resume,
-        onLeave: pause,
-        onLeaveBack: pause,
+        onToggle: (self) => {
+          visible = self.isActive;
+          if (visible) resume();
+          else pause();
+        },
       });
+      // It mounts below the fold, so the first hold waits for it to show.
+      visible = watch.isActive;
+      if (!visible) pause();
+
+      const hold = () => {
+        held = true;
+        pause();
+      };
+      const release = (event: Event) => {
+        // Focus moving between the arrows is still inside.
+        if (event instanceof FocusEvent && el.contains(event.relatedTarget as Node)) return;
+        held = false;
+        resume();
+      };
+      el.addEventListener("pointerenter", hold);
+      el.addEventListener("pointerleave", release);
+      el.addEventListener("focusin", hold);
+      el.addEventListener("focusout", release);
 
       return () => {
         next?.removeEventListener("click", onNext);
         prev?.removeEventListener("click", onPrev);
+        el.removeEventListener("pointerenter", hold);
+        el.removeEventListener("pointerleave", release);
+        el.removeEventListener("focusin", hold);
+        el.removeEventListener("focusout", release);
         watch.kill();
+        // The cycle and swap are rebuilt from timeline callbacks and clicks,
+        // outside this context, so it can't revert them: kill them here or
+        // the 16s chain keeps running on detached nodes after navigation.
+        cycle?.kill();
+        swap?.kill();
         splits.forEach((s) => s.revert());
       };
     },

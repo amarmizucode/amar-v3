@@ -9,10 +9,10 @@ const TOP = 120;
 
 /**
  * Holds its children in view while the rest of the enclosing section
- * scrolls past — the About portrait beside its statements, numbers and
- * awards. The hold ends when the portrait's foot meets the section's last
- * content (its bottom padding excluded), so it never runs into the next
- * section.
+ * scrolls past — or, given `through`, until that later section has: the
+ * home hero's portrait holds through About's statements, numbers and awards.
+ * The hold ends when the portrait's foot meets that section's last content
+ * (its bottom padding excluded), so it never runs into the next section.
  *
  * Pinned through ScrollTrigger rather than `position: sticky`: ScrollSmoother
  * translates #smooth-content instead of scrolling it, so sticky has no
@@ -22,13 +22,20 @@ const TOP = 120;
  * Put this inside the grid cell, not on it: the pin wraps its element in a
  * spacer, which would otherwise take the cell's place in the grid.
  */
-export function StickyPortrait({ children }: { children: ReactNode }) {
+export function StickyPortrait({
+  children,
+  through,
+}: {
+  children: ReactNode;
+  /** Selector of the section to hold through. Defaults to the enclosing one. */
+  through?: string;
+}) {
   const root = useRef<HTMLDivElement>(null);
 
   useGSAP(
     () => {
       const el = root.current;
-      const band = el?.closest("section");
+      const band = through ? document.querySelector(through) : el?.closest("section");
       if (!el || !band) return;
 
       const mm = gsap.matchMedia();
@@ -49,7 +56,7 @@ export function StickyPortrait({ children }: { children: ReactNode }) {
       });
       return () => mm.revert();
     },
-    { scope: root },
+    { scope: root, dependencies: [through] },
   );
 
   return <div ref={root}>{children}</div>;

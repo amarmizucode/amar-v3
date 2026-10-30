@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
-import { usePathname } from "next/navigation";
-import { GALLERY_PATH, GALLERY_STOP } from "@/lib/theme";
 
 /**
  * Theme scale + grid overlay, ported from billysweeney.com.
@@ -24,20 +22,11 @@ const STOPS = 17; // 00..16
 const DEFAULT_STOP = 16; // the reference ships on theme--16 (white)
 
 /*
- * Theme switching is off for now: the page always renders on the white stop,
- * whatever the device's colour scheme, and the theme icon and slider are not
- * rendered. Set this back to true to restore both.
+ * Theme switching: the theme icon and slider are rendered, and the page
+ * follows the device's colour scheme until the slider is touched. Set this to
+ * false to pin every page to the white stop and hide both.
  */
-const THEME_SWITCHING = false;
-
-/*
- * A gallery detail page is shown on the black stop (see lib/theme). It is
- * decided here, by route, rather than by the gallery setting <body> itself,
- * so this component stays the one writer of `data-theme` after hydration:
- * two writers raced on a direct load, and this effect, running after the
- * gallery's, put the page back on white. The layout's pre-paint script sets
- * the same stop before React runs, so the first paint is already black.
- */
+const THEME_SWITCHING = true;
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -85,32 +74,18 @@ export function AppControls() {
     getDarkQueryMatches,
     getDarkQueryServerMatches,
   );
-  const pathname = usePathname();
-  const effectiveStop = GALLERY_PATH.test(pathname)
-    ? GALLERY_STOP
-    : THEME_SWITCHING
-      ? (stop ?? (prefersDark ? 0 : DEFAULT_STOP))
-      : DEFAULT_STOP;
+  // Every route, galleries included, sits on the same stop: the component
+  // lives in the root layout, so a chosen stop carries across navigations.
+  const effectiveStop = THEME_SWITCHING
+    ? (stop ?? (prefersDark ? 0 : DEFAULT_STOP))
+    : DEFAULT_STOP;
 
   // <body> is owned by the server layout, so drive its attributes directly.
-  // A layout effect, so a route's new page is never painted on the old stop.
-  const themedPath = useRef(pathname);
+  // A layout effect, so the stop lands before the browser paints.
   useLayoutEffect(() => {
-    const body = document.body;
     const next = pad(effectiveStop);
-    // A stop change that comes with a route change (into or out of a gallery)
-    // lands at once: `body[data-theme]` fades its ground for the slider, and
-    // on a navigation that fade showed the new page on the old colour first.
-    const instant = themedPath.current !== pathname;
-    themedPath.current = pathname;
-    if (body.dataset.theme === next) return;
-    if (instant) body.style.transition = "none";
-    body.dataset.theme = next;
-    if (instant) {
-      void body.offsetHeight; // commit the new ground before the fade returns
-      body.style.transition = "";
-    }
-  }, [effectiveStop, pathname]);
+    if (document.body.dataset.theme !== next) document.body.dataset.theme = next;
+  }, [effectiveStop]);
 
   useEffect(() => {
     if (sliderOpen) document.body.dataset.themeSlider = "open";

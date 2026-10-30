@@ -3,9 +3,9 @@ import { DocumentaryIndex } from "@/components/DocumentaryIndex";
 import { ALL_FILMS } from "@/lib/documentary";
 
 export const metadata: Metadata = {
-  title: "Documentary — Amar Ramesh",
+  title: "Documentary",
   description:
-    "Culture of India: a growing documentary archive of the crafts, rituals, festivals and art forms of India's living culture — Kalamkari, Jamakkalam, Madurai Sungudi, Bidri, the mridangam makers and more — directed and filmed by Amar Ramesh, alongside the Big Short Films archive of real, inspiring stories.",
+    "Culture of India: a growing documentary archive of the crafts, rituals, festivals and art forms of India's living culture - Kalamkari, Jamakkalam, Madurai Sungudi, Bidri, the mridangam makers and more - directed and filmed by Amar Ramesh, alongside the Big Short Films archive of real, inspiring stories.",
 };
 
 /*
