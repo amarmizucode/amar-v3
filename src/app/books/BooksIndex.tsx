@@ -11,6 +11,7 @@ import {
 import { createPortal } from "react-dom";
 import { useGSAP } from "@gsap/react";
 import { CornerArrow } from "@/components/Arrows";
+import { Eyebrow } from "@/components/Eyebrow";
 import { usePageReady } from "@/components/PageTransition";
 import { gsap, DUR } from "@/lib/gsap";
 import type { Book } from "@/lib/books";
@@ -58,8 +59,6 @@ export function BooksIndex({ books }: { books: Book[] }) {
   const [open, setOpen] = useState<number | null>(null);
   /** Phone only: the book held under a finger, its cover lifted off the pile. */
   const [peek, setPeek] = useState<number | null>(null);
-  /** Which shot the viewer's frame holds: 0 is the cover, then the plates. */
-  const [shot, setShot] = useState(0);
 
   const closing = useRef(false);
   const lastFocus = useRef<HTMLElement | null>(null);
@@ -184,7 +183,6 @@ export function BooksIndex({ books }: { books: Book[] }) {
   const openBook = (i: number) => {
     if (peeked.current) return;
     setActive(i);
-    setShot(0);
     setOpen(i);
   };
 
@@ -258,7 +256,6 @@ export function BooksIndex({ books }: { books: Book[] }) {
   const featured = books[useLastNonNull(active, 0)];
   const peekBook = books[useLastNonNull(peek, 0)];
   const book = open != null ? books[open] : null;
-  const shots = book ? [book.cover, ...book.plates] : [];
 
   return (
     <div ref={root}>
@@ -394,68 +391,59 @@ export function BooksIndex({ books }: { books: Book[] }) {
               className="bk-lg_scrim"
             />
 
-            <div className="bk-lg_panel">
-              {/* The pop-up's own head: which book this is, and the way out. */}
-              <div className="bk-bar">
-                <div className="shell grid-12 items-center">
-                  <p className="bk-bar_title col-span-8 text-[15px] font-semibold uppercase tracking-[-0.01em] md:col-span-9">
-                    {book.title}
-                  </p>
-                  <div className="col-span-4 flex items-center justify-end gap-2 md:col-span-3">
-                    {/* The shortcut sits with the button it doubles for. */}
-                    <kbd className="close-kbd" aria-hidden>
-                      Esc
-                    </kbd>
-                    <button
-                      ref={closeBtn}
-                      type="button"
-                      onClick={requestClose}
-                      className="close-btn"
-                    >
-                      Close
-                    </button>
-                  </div>
+            {/* The print-requests panel's look on the earlier measure: a
+                fixed-height panel that scrolls inside, the category and
+                Close along its head, the book's name and details in the
+                right-hand column. */}
+            <div className="bk-lg_panel works">
+              <div className="flex items-center justify-between gap-6">
+                <Eyebrow>{book.category}</Eyebrow>
+                <div className="flex items-center gap-2">
+                  {/* The shortcut sits with the button it doubles for. */}
+                  <kbd className="close-kbd" aria-hidden>
+                    Esc
+                  </kbd>
+                  <button
+                    ref={closeBtn}
+                    type="button"
+                    onClick={requestClose}
+                    className="close-btn"
+                  >
+                    Close
+                  </button>
                 </div>
               </div>
 
-              <div className="bk-lg_scroll">
-                <div className="bk-lg_grid shell grid-12">
-                  <div className="col-span-12 md:col-span-5">
-                    <div className="bk-lg_frame">
-                      <div className="bk-lg_mask">
-                        <div className="bk-lg_mask_inside">
-                          <Shot
-                            key={`${book.slug}-${shot}`}
-                            src={shots[shot]}
-                            alt={
-                              shot === 0
-                                ? `${book.title} - cover`
-                                : `${book.title} - plate ${shot}`
-                            }
+              <div className="bk-lg_body">
+                {/* Every shot the store carries, stacked as the print
+                    requests stack theirs: the cover full width, the plates
+                    in masonry columns below, each uncropped. Keyed per
+                    book, so stepping to a neighbour starts at its cover. */}
+                <div key={`${book.slug}-shots`} className="bk-lg_mask">
+                  <div className="bk-lg_mask_inside">
+                    <img
+                      src={book.cover}
+                      alt={`${book.title} - cover`}
+                      draggable={false}
+                      className="bk-lg_lead"
+                    />
+                    {book.plates.length > 0 && (
+                      <div className="bk-lg_plates">
+                        {book.plates.map((src, n) => (
+                          <img
+                            key={src}
+                            src={src}
+                            alt={`${book.title} - plate ${n + 1}`}
+                            draggable={false}
+                            loading="lazy"
                           />
-                        </div>
+                        ))}
                       </div>
-                    </div>
-                    {/* Every shot the store carries; the frame shows the pick. */}
-                    <div className="bk-lg_thumbs" role="tablist" aria-label="Book photographs">
-                      {shots.map((s, n) => (
-                        <button
-                          key={s}
-                          type="button"
-                          role="tab"
-                          aria-selected={n === shot}
-                          aria-label={n === 0 ? "Cover" : `Plate ${n}`}
-                          className={n === shot ? "is-cur" : ""}
-                          onClick={() => setShot(n)}
-                        >
-                          <img src={s} alt="" draggable={false} loading="lazy" />
-                        </button>
-                      ))}
-                    </div>
+                    )}
                   </div>
-
-                  <TextCol key={book.slug} book={book} />
                 </div>
+
+                <TextCol key={book.slug} book={book} />
               </div>
             </div>
           </div>,
@@ -464,31 +452,6 @@ export function BooksIndex({ books }: { books: Book[] }) {
         : null}
 
     </div>
-  );
-}
-
-/**
- * The viewer's frame. Keyed per shot, so each swap fades its mount in. The
- * shot is contained rather than cropped, so each keeps its own proportions.
- */
-function Shot({ src, alt }: { src: string; alt: string }) {
-  const img = useRef<HTMLImageElement>(null);
-  useLayoutEffect(() => {
-    if (reduced() || !img.current) return;
-    gsap.fromTo(
-      img.current,
-      { autoAlpha: 0, scale: 1.04 },
-      { autoAlpha: 1, scale: 1, duration: DUR.normal, ease: "ease-transition" },
-    );
-  }, []);
-  return (
-    <img
-      ref={img}
-      src={src}
-      alt={alt}
-      draggable={false}
-      className="absolute inset-0 h-full w-full object-contain"
-    />
   );
 }
 
@@ -517,14 +480,9 @@ function TextCol({ book }: { book: Book }) {
   return (
     <div
       ref={col}
-      className="bk-lg_text col-span-12 flex flex-col items-start gap-5 md:col-start-7 md:col-span-6"
+      className="bk-lg_text flex flex-col items-start gap-5"
     >
-      <p className="text-[15px] font-medium text-muted">
-        {book.category}
-      </p>
-      <h2 className="text-[clamp(2rem,3.4vw,3.5rem)] font-semibold uppercase leading-[0.95] tracking-[-0.03em]">
-        {book.title}
-      </h2>
+      <h2 className="section_heading">{book.title}</h2>
       <p className="max-w-[52ch] text-[clamp(15px,1.15vw,18px)] leading-[1.5] tracking-[-0.01em]">
         {book.description}
       </p>

@@ -53,7 +53,7 @@ const requestBody = (items: PrintItem[], name: string, email: string, notes: str
 
 /**
  * The trigger, the top pill of the floating controls (AppControls), above the
- * theme pill: the photograph icon with the running count as a badge. It
+ * theme pill: two stacked prints with the running count as a badge. It
  * collapses to nothing while the list is empty, so the stack reads unchanged
  * until a print is saved.
  */
@@ -76,8 +76,12 @@ export function PrintRequestTrigger() {
         viewBox="0 0 32 32"
         aria-hidden
       >
-        <path d="M19 14a3 3 0 1 0-3-3 3 3 0 0 0 3 3zm0-4a1 1 0 1 1-1 1 1 1 0 0 1 1-1z" />
-        <path d="M26 4H6a2 2 0 0 0-2 2v20a2 2 0 0 0 2 2h20a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zm0 22H6v-6l5-5 5.59 5.59a2 2 0 0 0 2.82 0L21 19l5 5zm0-4.83-3.59-3.59a2 2 0 0 0-2.82 0L18 19.17l-5.59-5.59a2 2 0 0 0-2.82 0L6 17.17V6h20z" />
+        {/* Two prints, stacked: the back one's visible edges, then the
+            front frame with its landscape and sun. */}
+        <path d="M9 4h19v19h-4v-2h2V6H11v3H9z" />
+        <path d="M4 9h20v19H4zm2 2v15h16V11z" />
+        <path d="M7 25l5-6 3 3.5 2.5-2.5 4.5 5z" />
+        <path d="M17 13a1.5 1.5 0 1 0 0 3 1.5 1.5 0 1 0 0-3z" />
       </svg>
       {/* Remounted per count so the badge pulses when it changes. */}
       <span key={count} className="preq-badge" aria-hidden>
@@ -291,7 +295,12 @@ function PrintRequestModal({
                 {items.map((it) => (
                   <li key={it.id} className="preq-tile">
                     <div className="preq-tile_media">
-                      <img src={it.thumb} alt="" loading="lazy" decoding="async" />
+                      <img
+                        src={it.thumb}
+                        alt={`${it.gallery}, frame ${it.frame}`}
+                        loading="lazy"
+                        decoding="async"
+                      />
                       <button
                         type="button"
                         className="preq-tile_remove"
@@ -303,12 +312,6 @@ function PrintRequestModal({
                         </svg>
                       </button>
                     </div>
-                    <p className="mt-2 text-[15px] font-medium tracking-[-0.02em]">
-                      [{it.index}] {it.gallery}
-                    </p>
-                    <p className="preq-tile_sub text-[13px]">
-                      Frame {String(it.frame).padStart(3, "0")} · {it.file}
-                    </p>
                   </li>
                 ))}
               </ul>

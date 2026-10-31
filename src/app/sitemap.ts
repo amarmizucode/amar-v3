@@ -14,6 +14,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/photography",
     "/books",
     "/documentary",
+    "/films",
+    "/photos",
     ...GALLERIES.map((gallery) => `/photography/${gallery.slug}`),
   ];
   return paths.map((path) => ({ url: `${SITE_URL}${path}` }));
