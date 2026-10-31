@@ -16,6 +16,9 @@ const PORTRAIT = assetUrl("/assets/amar-ramesh.jpg");
  */
 const CUTOUT = "/assets/amar-ramesh-cutout.webp";
 
+/** The greeting chip's headshot, already cropped to the face. */
+const HEADSHOT = "/assets/amar-ramesh-headshot.jpg";
+
 /**
  * One display line, in its own mask so it can rise into place. `lead` is the
  * line's first letter when it is an A, whose ink starts at its origin; every
@@ -53,9 +56,9 @@ function Chip() {
       className="hero_chip relative mx-[0.12em] inline-block h-[0.78em] w-[0.78em] overflow-hidden rounded-full align-[-0.06em]"
     >
       <img
-        src={PORTRAIT}
+        src={HEADSHOT}
         alt=""
-        className="absolute inset-0 h-full w-full origin-[49%_30%] scale-[2.6] object-cover object-[50%_26%]"
+        className="absolute inset-0 h-full w-full object-cover"
       />
     </span>
   );
@@ -97,11 +100,7 @@ export function Hero({ start }: { start: boolean }) {
 
       const navHome = q(".navbar_home");
       const navItems = q(".navbar_links_li");
-      // :not(.preq-trigger): the print-request trigger manages its own
-      // entrance (it collapses while the list is empty); riding this intro
-      // too left it parked a row below the CTA whenever the tween was
-      // interrupted mid-flight.
-      const navCta = q(".navbar_cta_wrap > :not(.preq-trigger)");
+      const navCta = q(".navbar_cta_wrap > *");
 
       // Initial states — everything waits below its mask until `start`. Set
       // from JS (not markup) so a script failure leaves the page readable.

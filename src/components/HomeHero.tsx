@@ -4,7 +4,7 @@ import { Hero } from "@/components/Hero";
 import { usePageReady } from "@/components/PageTransition";
 
 /**
- * The home hero, gated on the preloader (first load) or the route curtain.
+ * The home hero, gated on hydration (first load) or the route curtain.
  *
  * This is the only part of the home page that needs the client, so it lives
  * on its own: the page itself stays a server component, which keeps the

@@ -4,9 +4,11 @@ import "./globals.css";
 import { SiteHeader } from "@/components/SiteHeader";
 import { PageTransition } from "@/components/PageTransition";
 import { PrintRequestProvider } from "@/components/PrintRequest";
+import { ContactModalProvider } from "@/components/ContactModal";
 import { PrintRequestDock } from "@/components/PrintRequestDock";
 import { AppControls } from "@/components/AppControls";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
+import { THEME_SCRIPT } from "@/lib/theme";
 
 // KH Teka ships as static instances, not a variable font, so each weight is
 // its own file. Light (300) is not loaded: nothing on the site sets it, and
@@ -89,49 +91,41 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    // The inline script below adds `preloaded` to <html> before hydration, so
-    // React must accept the class the DOM has rather than the one it rendered.
     <html
       lang="en"
       className={`${khTeka.variable} ${khTekaStatement.variable} h-full antialiased`}
-      suppressHydrationWarning
     >
-      <head>
-        {/* Runs before paint: once the preloader has played this visit, hide
-            its server-rendered cover so a reload never flashes it before
-            hydration gets to skip it. */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html:
-              'try{if(sessionStorage.getItem("amar:preloaded")==="1")document.documentElement.classList.add("preloaded")}catch(e){}',
-          }}
-        />
-        {/* Only script ever lifts the preloader's cover, so without it the
-            page would stay blank behind it. */}
-        <noscript>
-          <style>{".preloader{display:none}"}</style>
-        </noscript>
-      </head>
       {/* data-theme is the server's starting stop only. AppControls owns the
           attribute from mount on, so 16 — the ramp's white, its own
-          DEFAULT_STOP — is what the first paint shows before the slider or
-          prefers-color-scheme moves it, on every route alike. */}
-      <body className="min-h-full flex flex-col font-sans" data-theme="16" data-theme-nav="page">
+          DEFAULT_STOP — is what the first paint shows before a saved stop,
+          the slider or prefers-color-scheme moves it, on every route alike. */}
+      {/* suppressHydrationWarning: THEME_SCRIPT rewrites data-theme to the
+          saved stop before React hydrates, so the attribute differs on
+          purpose. */}
+      <body
+        className="min-h-full flex flex-col font-sans"
+        data-theme="16"
+        data-theme-nav="page"
+        suppressHydrationWarning
+      >
+        {/* Runs as <body> is parsed: a saved stop paints from the first frame. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:bg-background focus:px-4 focus:py-2 focus:text-foreground"
         >
           Skip to content
         </a>
-        {/* Header and curtain live here so they persist across routes; the
-            preloader inside PageTransition plays once per visit. The print
+        {/* Header and curtain live here so they persist across routes. The print
             request selection wraps both so a pick made inside a gallery is
             still on the pill anywhere else on the site. */}
         <PrintRequestProvider>
-          <PageTransition>
-            <SiteHeader />
-            {children}
-          </PageTransition>
+          <ContactModalProvider>
+            <PageTransition>
+              <SiteHeader />
+              {children}
+            </PageTransition>
+          </ContactModalProvider>
           <PrintRequestDock />
           {/* The theme ramp and grid overlay, fixed to the viewport. */}
           <AppControls />

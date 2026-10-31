@@ -16,7 +16,7 @@ const BOTTOM = { max: 240, resistance: 3.2 };
 /**
  * GSAP ScrollSmoother. Smoothing is applied by transforming #smooth-content
  * inside a fixed-height #smooth-wrapper, so anything that must stay pinned to
- * the viewport (header, preloader, overlays) has to render OUTSIDE this
+ * the viewport (header, overlays) has to render OUTSIDE this
  * wrapper — transformed ancestors break `position: fixed`.
  *
  * ScrollSmoother owns ScrollTrigger.update itself, so scrub-linked triggers

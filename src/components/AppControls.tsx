@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
+import { THEME_STORAGE_KEY } from "@/lib/theme";
+import { PrintRequestTrigger } from "@/components/PrintRequestDock";
 
 /**
  * Theme scale + grid overlay, ported from billysweeney.com.
@@ -51,6 +53,48 @@ const getDarkQueryMatches = () =>
 
 const getDarkQueryServerMatches = () => false;
 
+/*
+ * The chosen stop, kept in localStorage so a reload lands on it. Read through
+ * useSyncExternalStore for the same reason as the colour scheme: the server
+ * snapshot is null ("follow the system"), and the stored stop takes over
+ * before paint. `memoryStop` keeps the slider working where storage throws
+ * (private windows, blocked site data); it just won't survive the reload.
+ */
+let memoryStop: number | null = null;
+const storedStopListeners = new Set<() => void>();
+
+const subscribeToStoredStop = (onChange: () => void) => {
+  storedStopListeners.add(onChange);
+  return () => storedStopListeners.delete(onChange);
+};
+
+const getStoredStop = (): number | null => {
+  if (memoryStop !== null) return memoryStop;
+  try {
+    const saved = localStorage.getItem(THEME_STORAGE_KEY);
+    const n = saved === null ? NaN : Number(saved);
+    return Number.isInteger(n) && n >= 0 && n < STOPS ? n : null;
+  } catch {
+    return null;
+  }
+};
+
+const getStoredStopServer = () => null;
+
+// true on the client, false on the server and through hydration.
+const subscribeToNothing = () => () => {};
+const getTrue = () => true;
+const getFalse = () => false;
+
+const saveStop = (next: number) => {
+  if (next === getStoredStop()) return;
+  memoryStop = next;
+  try {
+    localStorage.setItem(THEME_STORAGE_KEY, pad(next));
+  } catch {}
+  storedStopListeners.forEach((listener) => listener());
+};
+
 export function AppControls() {
   /*
    * The reference honours prefers-color-scheme on load: if the user has not
@@ -63,7 +107,8 @@ export function AppControls() {
    * and the first client render agree, and the subscription below corrects it
    * before paint.
    */
-  const [stop, setStop] = useState<number | null>(null);
+  const stop = useSyncExternalStore(subscribeToStoredStop, getStoredStop, getStoredStopServer);
+  const setStop = saveStop;
   const [sliderOpen, setSliderOpen] = useState(false);
   const [gridOn, setGridOn] = useState(false);
   const themeOption = useRef<HTMLDivElement>(null);
@@ -81,11 +126,16 @@ export function AppControls() {
     : DEFAULT_STOP;
 
   // <body> is owned by the server layout, so drive its attributes directly.
-  // A layout effect, so the stop lands before the browser paints.
+  // A layout effect, so the stop lands before the browser paints. The
+  // hydration pass renders the server snapshots (white, nothing saved), so it
+  // leaves <body> alone: THEME_SCRIPT has already put the right stop there,
+  // and writing white over it would show for a frame and fade back.
+  const hydrated = useSyncExternalStore(subscribeToNothing, getTrue, getFalse);
   useLayoutEffect(() => {
+    if (!hydrated) return;
     const next = pad(effectiveStop);
     if (document.body.dataset.theme !== next) document.body.dataset.theme = next;
-  }, [effectiveStop]);
+  }, [hydrated, effectiveStop]);
 
   useEffect(() => {
     if (sliderOpen) document.body.dataset.themeSlider = "open";
@@ -142,6 +192,9 @@ export function AppControls() {
     <>
       <aside className="app-aside">
         <div className="options">
+          {/* Above the theme pill; collapsed until a print is saved. */}
+          <PrintRequestTrigger />
+
           {THEME_SWITCHING && (
             <div
               ref={themeOption}

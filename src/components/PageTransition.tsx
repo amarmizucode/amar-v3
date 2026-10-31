@@ -12,13 +12,12 @@ import {
 } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { gsap, DUR } from "@/lib/gsap";
-import { Preloader } from "@/components/Preloader";
 import { preloadRoute } from "@/lib/preloadRoute";
 
 const ReadyContext = createContext(false);
 
 /**
- * True once the page is on show: after the preloader on the first load, and
+ * True once the page is on show: from hydration on the first load, and
  * after the curtain lifts on every navigation. Intros key off this so they
  * never play behind a cover.
  */
@@ -67,15 +66,13 @@ const SWEEP = 0.385;
  * the new pathname mounts they retract off it in the same order. Back/forward
  * cannot be intercepted, so those get the retract only. Same-page hash links
  * are left alone.
- *
- * The preloader lives here too, so it plays once per visit — on whichever
- * page is loaded first — and never on a client-side navigation.
  */
 export function PageTransition({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const curtain = useRef<HTMLDivElement>(null);
-  const [ready, setReady] = useState(false);
+  // The first page is on show from hydration; only navigations take it away.
+  const [ready, setReady] = useState(true);
 
   // Curtain is down and a route is on its way.
   const busy = useRef(false);
@@ -93,6 +90,15 @@ export function PageTransition({ children }: { children: ReactNode }) {
       .toArray<HTMLElement>(".pt-strip", curtain.current)
       .filter((el) => getComputedStyle(el).display !== "none");
   const stagger = (count: number) => (count > 1 ? SWEEP / (count - 1) : 0);
+
+  /*
+   * Lifts the pre-hydration hold in globals.css. Children's layout effects run
+   * before this one, so every intro has set its starting state by the time
+   * the page is first painted.
+   */
+  useLayoutEffect(() => {
+    document.documentElement.classList.add("is-hydrated");
+  }, []);
 
   // Strips collapsed until needed; hidden until hydrated so the server markup
   // never flashes a full-screen panel.
@@ -241,7 +247,6 @@ export function PageTransition({ children }: { children: ReactNode }) {
 
   return (
     <ReadyContext.Provider value={ready}>
-      <Preloader onDone={() => setReady(true)} />
       {children}
       {/* While CURTAIN_HIDDEN, the strips are not rendered at all: left in
           the tree they sit at their default scaleY and would show the moment

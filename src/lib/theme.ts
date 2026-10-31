@@ -17,3 +17,15 @@ export const GALLERY_THEME_SCRIPT = `try{if(new RegExp(${JSON.stringify(
 )}).test(location.pathname)){document.body.dataset.theme=${JSON.stringify(
   String(GALLERY_STOP).padStart(2, "0"),
 )}}}catch(e){}`;
+
+/**
+ * The slider's chosen stop, kept across reloads. AppControls writes it; the
+ * script below reads it as <body> is parsed, so a reload paints the saved
+ * stop rather than the server's white one and fading over. With nothing
+ * saved it applies AppControls' own fallback, black for a dark-scheme device.
+ */
+export const THEME_STORAGE_KEY = "amar:theme";
+
+export const THEME_SCRIPT = `try{var s=localStorage.getItem(${JSON.stringify(
+  THEME_STORAGE_KEY,
+)});if(s===null||!/^(0\\d|1[0-6])$/.test(s))s=matchMedia("(prefers-color-scheme: dark)").matches?"00":null;if(s)document.body.dataset.theme=s}catch(e){}`;

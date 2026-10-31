@@ -49,7 +49,7 @@ export function GalleryCanvas({ gallery }: { gallery: Gallery }) {
   const [openIdx, setOpenIdx] = useState<number | null>(null);
   const prints = usePrintRequest();
 
-  // The entrance waits for the page to be on show (preloader / route curtain).
+  // The entrance waits for the page to be on show (hydration / route curtain).
   const ready = usePageReady();
   const readyRef = useRef(ready);
   const start = useRef<(() => void) | null>(null);

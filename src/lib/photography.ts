@@ -184,3 +184,13 @@ export const GALLERIES: Gallery[] = COPY.flatMap((copy, i) => {
 /** Lookup by slug, for the `[slug]` route. */
 export const galleryBySlug = (slug: string) =>
   GALLERIES.find((gallery) => gallery.slug === slug);
+
+/**
+ * The image trail's deck: every frame of every gallery (350-odd), at the
+ * 480px thumb cut the gallery canvas tiles use. Shared by Work with me and
+ * the 404 page. The trail swaps sources into a small pool of cards and
+ * preloads a few deals ahead, so the size of the deck costs nothing up front.
+ */
+export const TRAIL_IMAGES = GALLERIES.flatMap((gallery) =>
+  gallery.frames.map((frame) => frame.thumb),
+);

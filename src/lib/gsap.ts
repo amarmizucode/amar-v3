@@ -17,8 +17,6 @@ if (typeof window !== "undefined") {
     CustomEase.create("ease-fade", "0.76, 0, 0.24, 1");
     CustomEase.create("ease-transition", "0.22, 1, 0.36, 1");
     CustomEase.create("ease-menu", ".7,0,.22,1");
-    // The counter's run to 100: slow to start, decisive through the middle.
-    CustomEase.create("ease-preloader", "0.65, 0, 0.35, 1");
   }
 }
 

@@ -18,11 +18,11 @@ import { CornerArrow } from "@/components/Arrows";
 import { ContactSection } from "@/components/ContactSection";
 import { ImageTrail } from "@/components/ImageTrail";
 import { ClosingCta } from "@/components/ClosingCta";
-import { CtaPill } from "@/components/CtaPill";
+import { ContactCta } from "@/components/ContactModal";
 import { SiteFooter } from "@/components/SiteFooter";
 import { assetUrl } from "@/lib/assetUrl";
-import { BSF_CHANNEL, thumbUrl } from "@/lib/documentary";
-import { GALLERIES, galleryBySlug } from "@/lib/photography";
+import { BSF_CHANNEL, CHANNEL, thumbUrl } from "@/lib/documentary";
+import { TRAIL_IMAGES, galleryBySlug } from "@/lib/photography";
 import { Eyebrow } from "@/components/Eyebrow";
 
 /** A landscape frame other than the cover, to suit the 3:2 hover card. */
@@ -41,8 +41,9 @@ const galleryFrame = (slug: string, file: string) =>
 /*
  * The copy document's "Selected work" — the four subjects it singles out,
  * in its order, with its blurbs. Each leads to where that work actually
- * lives on the site: the galleries for the photographic subjects, the
- * documentary index for the films. `reveal` is the second frame the cover
+ * lives: the galleries for the photographic subjects, the Culture of India
+ * YouTube channel for the films, DT Next's write-up for the women's portrait
+ * series. `reveal` is the second frame the cover
  * lifts out on hover.
  */
 const WORKS = [
@@ -52,7 +53,8 @@ const WORKS = [
     blurb:
       "The more I travel across India, the more fascinated I become by the sheer variety of art, craft and traditions we have. I've met musicians, dancers, artisans and craftspeople who have spent years mastering what they do.",
     cta: "Explore Culture of India",
-    href: "/photography/folk-art",
+    // The channel itself, where the films are published.
+    href: CHANNEL.url,
     // From the Folk Art gallery: a painted performer's face in close-up,
     // and a Theyyam performer leaping between fishing boats.
     image: galleryFrame("folk-art", "26.jpg"),
@@ -64,7 +66,10 @@ const WORKS = [
     blurb:
       "I've met some remarkable women through my photography projects. Women from different backgrounds, each with their own experiences, achievements and stories. It's always fascinating to learn about the different paths people take in life.",
     cta: "Explore Inspiring Women",
-    href: "/books",
+    // The series (fifty Chennai women, three questions each) is published on
+    // social media with no page of its own; DT Next's piece is the one place
+    // it is written up.
+    href: "https://www.dtnext.in/news/chennai/photo-series-to-narrate-inspiring-stories-of-50-women-from-the-city",
     // Amar's own portraits of women, from the Classical Dancers gallery: a
     // studio portrait with grain against a red disc, and a dancer seated in
     // a carved Chettinad doorway.
@@ -214,16 +219,6 @@ const SERVICES = [
   { label: "Mentorship", image: "/assets/ventures/kanavu.jpg" },
 ];
 
-/*
- * Work with me — the image trail's deck: every frame of every gallery
- * (350-odd), at the 480px thumb cut the gallery canvas tiles use. The
- * trail swaps sources into a small pool of cards and preloads a few deals
- * ahead, so the size of the deck costs nothing up front.
- */
-const TRAIL_IMAGES = GALLERIES.flatMap((gallery) =>
-  gallery.frames.map((frame) => frame.thumb),
-);
-
 const FAQS = [
   {
     q: "What kind of photography projects do you take up?",
@@ -262,6 +257,7 @@ const FAQS = [
  */
 const SHOW_BYLINE = false;
 const SHOW_REEL = false;
+const SHOW_WORKS_ALL = false;
 
 const TESTIMONIALS = [
   {
@@ -317,8 +313,8 @@ const TESTIMONIALS = [
 
 /*
  * A server component: only the hero needs the client (HomeHero gates its
- * intro on the preloader / route curtain), and every interactive section is
- * its own client component. Fixed UI — header, preloader, curtain — lives in
+ * intro on the route curtain), and every interactive section is its own
+ * client component. Fixed UI — header, curtain — lives in
  * the root layout, outside the smooth wrapper: ScrollSmoother transforms
  * #smooth-content, which would break `position: fixed`.
  */
@@ -384,9 +380,9 @@ export default function Home() {
               </HighlightText>
 
               {/* In numbers — the same figures as <InNumbers />, set as a
-                  2×2 grid under a hairline: the numeral at display scale,
-                  its measure in small muted type beneath. */}
-              <ul className="mt-16 grid grid-cols-2 gap-x-6 gap-y-10 border-t border-rule pt-8 md:mt-24 md:pt-10">
+                  2×2 grid: the numeral at display scale, its measure in
+                  small muted type beneath. */}
+              <ul className="mt-12 grid grid-cols-2 gap-x-6 gap-y-10 md:mt-16">
                 {NUMBERS.map((item) => (
                   <Reveal as="li" key={item.label} className="flex flex-col gap-2">
                     <span className="about_type text-[clamp(2rem,1.5rem+2vw,3.5rem)] leading-none">
@@ -426,9 +422,8 @@ export default function Home() {
           </div>
 
           {/* Featured in + Awards — shared with the About page, set inside
-              the band on its black. Its separator sits as far below the
-              numbers as their hairline sits above them (pt-8 / md:pt-10),
-              so the figures centre between the two rules. */}
+              the band on its black, as far below the numbers as they sit
+              below the copy above them. */}
           <Recognition className="mt-8 md:mt-10" />
         </section>
 
@@ -563,9 +558,14 @@ export default function Home() {
                   {WORKS.map((work) => (
                     <Reveal as="li" key={work.title} className="works_item">
                       {/* The whole row is the link, so the cover and its copy
-                          lead to the same place. */}
+                          lead to the same place. Off-site rows open in a new
+                          tab, as the brand marks do. */}
                       <a
                         href={work.href}
+                        {...(work.href.startsWith("http") && {
+                          target: "_blank",
+                          rel: "noopener noreferrer",
+                        })}
                         aria-labelledby={`work-${work.index}`}
                         className="grid-12 items-start gap-y-4"
                       >
@@ -617,19 +617,22 @@ export default function Home() {
           </div>
 
           {/* The reference's closing bar: the count, the label and the
-              arrow across the full measure on a solid rule. */}
-          <Reveal>
-            {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- plain anchor so the route curtain handles the transition, as everywhere on the site. */}
-            <a href="/photography" className="works_all grid-12 items-center">
-              <span className="works_all_text col-span-2">
-                {String(WORKS.length).padStart(2, "0")}
-              </span>
-              <span className="works_all_text col-span-8">View all work</span>
-              <span aria-hidden className="works_all_text works_all_arrow col-span-2">
-                (→)
-              </span>
-            </a>
-          </Reveal>
+              arrow across the full measure on a solid rule. Parked — see
+              SHOW_WORKS_ALL. */}
+          {SHOW_WORKS_ALL && (
+            <Reveal>
+              {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- plain anchor so the route curtain handles the transition, as everywhere on the site. */}
+              <a href="/photography" className="works_all grid-12 items-center">
+                <span className="works_all_text col-span-2">
+                  {String(WORKS.length).padStart(2, "0")}
+                </span>
+                <span className="works_all_text col-span-8">View all work</span>
+                <span aria-hidden className="works_all_text works_all_arrow col-span-2">
+                  (→)
+                </span>
+              </a>
+            </Reveal>
+          )}
         </section>
 
         {/* ── Services + testimonial — the reference's `services_home_*`
@@ -742,13 +745,13 @@ export default function Home() {
               className="faq_headshot"
             />
             <p className="faq_p">Have an interesting idea? I&rsquo;d love to hear about it.</p>
-            <CtaPill label="Start a Conversation" className="self-start" />
+            <ContactCta label="Start a Conversation" className="self-start" />
           </Reveal>
         </section>
 
         {/* ── Work with me — the copy document's invitation, on the black
-             band. Its CTA leads into #contact below, which the header and
-             footer link to. ───────── */}
+             band. Its CTA opens the contact modal; the form also sits in
+             #contact below, which the footer links to. ───────── */}
         <ClosingCta>
           {/* Frames of the work trail the cursor across the band. The layer
               is positioned (z-0), so it paints over the statement's
@@ -772,7 +775,7 @@ export default function Home() {
                 you&rsquo;ve been wanting to explore.
               </HighlightText>
               <Reveal className="relative z-10 mt-10 md:mt-14">
-                <CtaPill label="Start a Conversation" href="#contact" />
+                <ContactCta label="Start a Conversation" />
               </Reveal>
             </div>
           </div>

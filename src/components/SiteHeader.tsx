@@ -5,10 +5,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 import { usePageReady } from "@/components/PageTransition";
-import { CtaPill } from "@/components/CtaPill";
+import { ContactCta } from "@/components/ContactModal";
 import { SoundToggle } from "@/components/SoundToggle";
 import { SOUND_AVAILABLE } from "@/lib/sound";
-import { PrintRequestTrigger } from "@/components/PrintRequestDock";
 import { RightArrow } from "@/components/Arrows";
 import { galleryBySlug } from "@/lib/photography";
 
@@ -167,9 +166,8 @@ export function SiteHeader() {
         .to(bar, { autoAlpha: 1, duration: 0 }, "<")
         .from(".navbar_links_li", { yPercent: 100, duration: 0.95, rotate: 0.001, stagger }, "<")
         .from(
-          // The reference tweens `.navbar_cta_wrap > *`; the print-request
-          // trigger also lives in that cell and runs its own reveal, so the
-          // three that do rise are named instead.
+          // The reference tweens `.navbar_cta_wrap > *`; the three are named
+          // so the conditional sound toggle can drop out of the list.
           [".navbar_left_sound_wrap", ".navbar_cta_contain", ".navbar_menu_btn"],
           { yPercent: 100, rotate: 0.001, duration: 0.95, stagger },
           "<",
@@ -323,13 +321,10 @@ export function SiteHeader() {
         </nav>
 
         <div className="navbar_cta_wrap text-style-small text-trim-off">
-          {/* The print-request trigger: zero-width until a print is saved. */}
-          <PrintRequestTrigger />
-
           {SOUND_AVAILABLE && <SoundToggle />}
 
           <div className="navbar_cta_contain">
-            <CtaPill label="Get in Touch" href="/#contact" />
+            <ContactCta label="Get in Touch" />
           </div>
 
           {/* The label animates Menu -> Close, so it is both the opener and

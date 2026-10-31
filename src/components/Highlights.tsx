@@ -51,6 +51,9 @@ const PRESS_LOGO_SIDE = 50;
 /* The "Featured in" mastheads under the awards — off for now. */
 const SHOW_PRESS = false;
 
+/* The two intro sentences under the Recognition headline. */
+const SHOW_RECOGNITION_INTRO = true;
+
 /*
  * The press, as the mastheads themselves — the files under
  * public/assets/press/, which the site carried but no longer drew.
@@ -109,14 +112,10 @@ export function Recognition({ className = "pb-24 md:pb-36" }: { className?: stri
           the About statements' line above. All copy verbatim from the
           document's AWARDS & RECOGNITION section. */}
       <div className="grid-12 gap-y-10 md:gap-y-14">
-        {/* The separator above the section: the same hairline the About
-            numbers sit under, on the content measure so it stays clear of
-            the pinned portrait. */}
-        <div aria-hidden className="col-span-12 border-t border-rule md:col-start-5 md:col-span-6" />
-
-        {/* mt tops the row gap up to the About copy's gap above its
-            numbers (mt-16 / md:mt-24), so the rules sit symmetrically. */}
-        <div className="col-span-12 mt-6 flex flex-col gap-3 md:col-start-5 md:col-span-3 md:mt-10 md:gap-4">
+        {/* mt tops the section's own margin (mt-8 / md:mt-10 on the home
+            page) up to the About numbers' gap above them (mt-12 /
+            md:mt-16), so the figures sit centred. */}
+        <div className="col-span-12 mt-4 flex flex-col gap-3 md:col-start-5 md:col-span-3 md:mt-6 md:gap-4">
           <Reveal>
             <Eyebrow>Recognition</Eyebrow>
           </Reveal>
@@ -125,14 +124,17 @@ export function Recognition({ className = "pb-24 md:pb-36" }: { className?: stri
               It&rsquo;s always lovely when the work gets appreciated
             </h2>
           </Reveal>
-          <Reveal>
-            {/* The document's two sentences, set as one paragraph. */}
-            <p className="text-[17px] leading-[1.5] text-muted">
-              I&rsquo;ve been fortunate to receive recognition for my photography and filmmaking
-              over the years. It&rsquo;s encouraging, especially when the recognition comes for
-              projects that my team and I have spent so much time working on.
-            </p>
-          </Reveal>
+          {/* Hidden for now — set SHOW_RECOGNITION_INTRO to true to restore it. */}
+          {SHOW_RECOGNITION_INTRO && (
+            <Reveal>
+              {/* The document's two sentences, set as one paragraph. */}
+              <p className="text-[17px] leading-[1.5] text-muted">
+                I&rsquo;ve been fortunate to receive recognition for my photography and filmmaking
+                over the years. It&rsquo;s encouraging, especially when the recognition comes for
+                projects that my team and I have spent so much time working on.
+              </p>
+            </Reveal>
+          )}
         </div>
 
         <div className="col-span-12 md:col-start-5 md:col-span-6">

@@ -60,7 +60,7 @@ export function GalleryCarousel({
     onChangeRef.current = onChange;
   }, [onChange]);
 
-  // The reveal waits for the page to be on show (preloader / route curtain).
+  // The reveal waits for the page to be on show (hydration / route curtain).
   const ready = usePageReady();
   const readyRef = useRef(ready);
   const intro = useRef<gsap.core.Timeline | null>(null);
