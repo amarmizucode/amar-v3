@@ -52,8 +52,17 @@ export function HighlightText({
               scrollTrigger: { scrub: true, trigger: target, start, end },
             });
 
+            // fromTo, not from: this runs while globals.css still holds <body>
+            // at `visibility: hidden` for hydration, and autoAlpha reads a
+            // hidden element's current value as 0 — so a bare `from` faded
+            // each char 0.2 → 0 on a fresh load, leaving the copy unreadable.
             lines.forEach((chars, i) => {
-              tl.from(chars, { autoAlpha: fade, stagger, ease: "linear" }, i * lineStagger);
+              tl.fromTo(
+                chars,
+                { autoAlpha: fade },
+                { autoAlpha: 1, stagger, ease: "linear" },
+                i * lineStagger,
+              );
             });
           });
         },

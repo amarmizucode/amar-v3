@@ -20,7 +20,7 @@
 # or in the dashboard's build settings). It is inlined at build time, so a
 # build without it compiles every gallery URL as a root-relative path to
 # files that were deliberately not uploaded.
-name = "amar-v3"
+name = "amar"
 compatibility_date = "2026-10-29"
 
 [assets]
