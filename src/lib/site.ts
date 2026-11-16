@@ -12,3 +12,12 @@
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL ?? "").replace(/\/+$/, "");
 
 export const SITE_NAME = "Amar Ramesh";
+
+/*
+ * The one contact address: the mailto links, the enquiry form and the print
+ * requests all send here. It lives in this plain module, not in a client
+ * component: a server component importing a constant from a "use client"
+ * file gets a client-reference stub instead of the string, and a mailto
+ * built from it renders as the stub's source.
+ */
+export const CONTACT_EMAIL = "hello@amarramesh.com";

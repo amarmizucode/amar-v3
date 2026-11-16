@@ -16,7 +16,7 @@ const PORTRAIT = assetUrl("/assets/amar-ramesh.jpg");
  */
 const CUTOUT = "/assets/amar-ramesh-cutout.webp";
 
-/** The greeting chip's headshot, already cropped to the face. */
+/** The headshot chip's image, already cropped to the face. */
 const HEADSHOT = "/assets/amar-ramesh-headshot.jpg";
 
 /**
@@ -66,7 +66,7 @@ function Chip() {
 
 /**
  * Hero, after sebastian-martinez.com's: the display type steps down the right
- * of the frame — a greeting, the name, then his five roles with small
+ * of the frame — the name, then his five roles with small
  * captions hung off them — while the portrait sits in a 4:5 frame in the
  * bottom-left corner.
  *
@@ -108,6 +108,7 @@ export function Hero({ start }: { start: boolean }) {
       // hidden line has to clear that taller window too.
       gsap.set(".hero_line", { yPercent: 140 });
       gsap.set(".hero_chip", { scale: 0 });
+      gsap.set(".hero_lede", { autoAlpha: 0, y: 16 });
       gsap.set(".hero_photo", { clipPath: "inset(100% 0% 0% 0%)" });
       gsap.set(".hero_photo_img", { scale: 1.2 });
       gsap.set(navWrap, { autoAlpha: 0 });
@@ -119,7 +120,8 @@ export function Hero({ start }: { start: boolean }) {
       tl.to(".hero_photo", { clipPath: "inset(0% 0% 0% 0%)", duration: DUR.slow })
         .to(".hero_photo_img", { scale: 1, duration: DUR.slow * 1.6 }, "<")
         .to(".hero_line", { yPercent: 0, duration: DUR.slow, stagger: 0.065 }, "<0.15")
-        .to(".hero_chip", { scale: 1, duration: DUR.slow }, "-=0.6");
+        .to(".hero_chip", { scale: 1, duration: DUR.slow }, "-=0.6")
+        .to(".hero_lede", { autoAlpha: 1, y: 0, duration: DUR.slow }, "<");
 
       // Navbar entrance, exactly as the reference sequences it: the wordmark
       // leads, then the links and CTA rise out of their own clips in stagger.
@@ -154,7 +156,8 @@ export function Hero({ start }: { start: boolean }) {
       </div>
 
       {/* Phones only: the figure again, cut from its backdrop and stacked
-          over the name, so "Amar" reads as set behind him. It carries the
+          over the name, so the name reads as set behind him wherever the
+          two meet. It carries the
           same scrim, masked to his outline, so the layer is invisible except
           where it covers the type; it shares .hero_photo / .hero_photo_img
           with the portrait to wipe and settle in step with it. The roles
@@ -189,18 +192,19 @@ export function Hero({ start }: { start: boolean }) {
 
       <div className="shell relative flex flex-1 flex-col pt-24 pb-5 max-md:text-white md:pt-32 md:pb-8">
         {/* The display stack. Each line takes its own columns, so the stack
-            steps right as it descends the way the reference's does; the
-            crafts share one left edge (column 7). */}
+            steps right as it descends the way the reference's does: "It's
+            (headshot) me" on column 4, the name on 5, and the crafts on one
+            left edge (column 7). */}
         <h1 className="hero_title relative z-2 order-3 mt-auto md:order-1 md:mt-0 md:grid-12">
-          <span className="hidden md:col-span-8 md:col-start-5 md:block">
+          <span className="hidden md:col-span-9 md:col-start-4 md:block">
             <Line>
-              Hi, welcome
+              It&rsquo;s
               <Chip />
-              home
+              me
             </Line>
           </span>
-          <span className="hidden md:col-span-7 md:col-start-6 md:block">
-            <Line>It&rsquo;s me - Amar</Line>
+          <span className="hidden md:col-span-8 md:col-start-5 md:block">
+            <Line lead="A">Amar Ramesh</Line>
           </span>
           <span className="block md:col-span-6 md:col-start-7">
             <span className="relative inline-block">
@@ -247,9 +251,21 @@ export function Hero({ start }: { start: boolean }) {
           </span>
         </h1>
 
+        {/* What the roles add up to, in a sentence: the stack is the
+            striking part, this is the offer. On the crafts' left edge
+            (column 7) under the stack; on phones, under the roles. The
+            right padding there clears the floating controls. */}
+        <div className="relative z-2 order-4 mt-4 max-md:pr-16 md:order-2 md:mt-10 md:grid-12">
+          <p className="hero_lede md:col-span-4 md:col-start-7 md:text-muted">
+            I take on photography, films, books and cultural projects for families, brands and
+            institutions.
+          </p>
+        </div>
+
         {/* Phones only: the name heads the frame, as the reference's does. */}
         <p aria-hidden className="hero_title hero_sig order-1 md:hidden">
           <Line lead="A">Amar</Line>
+          <Line>Ramesh</Line>
         </p>
 
         {/* From `md`: the portrait in a 4:5 frame with a slow drift, in the

@@ -324,10 +324,10 @@ body::after {
   text-transform: uppercase;
 }
 
-/* The name heads the phone layout at the width of the frame ("Amar" is
-   2.79em). Phones only. */
+/* The full name heads the phone layout, stacked, with "Ramesh" (the longer
+   line, 3.97em) at the width of the frame. Phones only. */
 .hero_sig {
-  font-size: calc((100vw - 2 * var(--grid-margin)) / 2.85);
+  font-size: calc((100vw - 2 * var(--grid-margin)) / 4.05);
 }
 
 /*
@@ -367,6 +367,17 @@ body::after {
   line-height: 1.1;
   letter-spacing: -0.01em;
   white-space: nowrap;
+}
+
+/* The line under the stack, set as the sections' `works_p` intros. */
+.hero_lede {
+  max-width: 36ch;
+  font-size: var(--ref-main);
+  font-weight: 500;
+  line-height: 1.25;
+  letter-spacing: -0.01em;
+  text-wrap: balance;
+  font-feature-settings: "ss01", "ss07";
 }
 
 /*

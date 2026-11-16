@@ -7,6 +7,7 @@ import { useGSAP } from "@gsap/react";
 import { gsap, DUR } from "@/lib/gsap";
 import { Eyebrow } from "@/components/Eyebrow";
 import { usePrintRequest, type PrintItem } from "@/components/PrintRequest";
+import { CONTACT_EMAIL } from "@/lib/site";
 
 /**
  * The print-request surface: a pill in the floating controls that carries
@@ -20,7 +21,7 @@ import { usePrintRequest, type PrintItem } from "@/components/PrintRequest";
  * ever opens.
  */
 
-const REQUEST_EMAIL = "hello@amarramesh.com";
+const REQUEST_EMAIL = CONTACT_EMAIL;
 
 const pad = (v: number) => String(v).padStart(2, "0");
 

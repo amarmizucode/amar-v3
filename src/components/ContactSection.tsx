@@ -1,7 +1,8 @@
 import { Reveal } from "@/components/Reveal";
 import { CornerArrow } from "@/components/Arrows";
 import { Eyebrow } from "@/components/Eyebrow";
-import { ContactForm, CONTACT_EMAIL } from "@/components/ContactForm";
+import { ContactForm } from "@/components/ContactForm";
+import { CONTACT_EMAIL } from "@/lib/site";
 
 /**
  * The copy document's CONTACT section: the invitation, where Amar is based,

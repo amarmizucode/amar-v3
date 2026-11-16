@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { CtaPill } from "@/components/CtaPill";
+import { CONTACT_EMAIL } from "@/lib/site";
 
 /**
  * The copy document's enquiry form — Name, Email, Organisation (optional),
@@ -19,8 +20,6 @@ import { CtaPill } from "@/components/CtaPill";
  * their own mail app, and Copy covers the machines where no mail client ever
  * opens.
  */
-
-export const CONTACT_EMAIL = "hello@amarramesh.com";
 
 /* The doc lists no options for Project Type, so these follow its own "What I
    do" sections, with a catch-all last. */

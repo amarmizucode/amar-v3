@@ -15,7 +15,8 @@ import { useGSAP } from "@gsap/react";
 import { gsap, DUR } from "@/lib/gsap";
 import { CtaPill } from "@/components/CtaPill";
 import { Eyebrow } from "@/components/Eyebrow";
-import { ContactForm, CONTACT_EMAIL } from "@/components/ContactForm";
+import { ContactForm } from "@/components/ContactForm";
+import { CONTACT_EMAIL } from "@/lib/site";
 
 /**
  * The contact modal — the enquiry form opened in place by the site's CTAs

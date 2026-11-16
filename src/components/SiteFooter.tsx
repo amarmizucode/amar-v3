@@ -1,6 +1,7 @@
 import { CornerArrow, RightArrow } from "@/components/Arrows";
 import { AI_SERVICES, AiIcon, aiHref } from "@/components/AiIcons";
 import { Eyebrow } from "@/components/Eyebrow";
+import { CONTACT_EMAIL } from "@/lib/site";
 
 /* The copy document's footer navigation, in its order. Ventures and Contact
    are home-page sections; the rest are pages. Work is removed — restore by
@@ -80,10 +81,10 @@ export function SiteFooter() {
 
             <div className="footer_middle_wrap">
               <a
-                href="mailto:hello@amarramesh.com"
+                href={`mailto:${CONTACT_EMAIL}`}
                 className="footer_email footer_hover_row is-inline-row flex w-fit items-center gap-[0.3em] self-start"
               >
-                <span className="footer_hover_label">hello@amarramesh.com</span>
+                <span className="footer_hover_label">{CONTACT_EMAIL}</span>
                 <span className="footer_hover_marker flex items-center">
                   <CornerArrow className="inline-arrow" />
                 </span>
