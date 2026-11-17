@@ -20,7 +20,7 @@ const BIRDMAN_ID = "oykTD4Y9hl4";
 export const NUMBERS = [
   { stat: "750+", label: "weddings photographed" },
   { stat: "22", label: "countries worked in" },
-  { stat: "1,000+", label: "temples documented" },
+  { stat: "100+", label: "temples documented" },
   { stat: "8", label: "books authored" },
 ];
 
