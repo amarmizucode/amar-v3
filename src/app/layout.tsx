@@ -8,7 +8,6 @@ import { ContactModalProvider } from "@/components/ContactModal";
 import { PrintRequestDock } from "@/components/PrintRequestDock";
 import { AppControls } from "@/components/AppControls";
 import { SITE_NAME, SITE_URL } from "@/lib/site";
-import { THEME_SCRIPT } from "@/lib/theme";
 
 // KH Teka ships as static instances, not a variable font, so each weight is
 // its own file. Light (300) is not loaded: nothing on the site sets it, and
@@ -95,21 +94,22 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${khTeka.variable} ${khTekaStatement.variable} h-full antialiased`}
     >
-      {/* data-theme is the server's starting stop only. AppControls owns the
-          attribute from mount on, so 16 — the ramp's white, its own
-          DEFAULT_STOP — is what the first paint shows before a saved stop,
-          the slider or prefers-color-scheme moves it, on every route alike. */}
-      {/* suppressHydrationWarning: THEME_SCRIPT rewrites data-theme to the
-          saved stop before React hydrates, so the attribute differs on
-          purpose. */}
+      {/* data-theme is the server's starting stop. AppControls owns the
+          attribute from mount on; with theme switching off it pins every
+          route to its DEFAULT_STOP, 16 — the ramp's white, on which the
+          inverted bands are black — so the server renders that too and the
+          first paint never shows another stop.
+          THEME_SCRIPT (a saved slider stop, applied before paint) is left
+          out while the slider is hidden: a stop saved before then would
+          otherwise paint for a frame and fade back to black. */}
+      {/* suppressHydrationWarning: kept for THEME_SCRIPT, which rewrites
+          data-theme before React hydrates when the slider is back on. */}
       <body
         className="min-h-full flex flex-col font-sans"
         data-theme="16"
         data-theme-nav="page"
         suppressHydrationWarning
       >
-        {/* Runs as <body> is parsed: a saved stop paints from the first frame. */}
-        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         <a
           href="#main"
           className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[200] focus:bg-background focus:px-4 focus:py-2 focus:text-foreground"

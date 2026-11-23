@@ -24,11 +24,16 @@ const STOPS = 17; // 00..16
 const DEFAULT_STOP = 16; // the reference ships on theme--16 (white)
 
 /*
- * Theme switching: the theme icon and slider are rendered, and the page
- * follows the device's colour scheme until the slider is touched. Set this to
- * false to pin every page to the white stop and hide both.
+ * Theme switching: when true, the theme icon and slider are rendered, and the
+ * page follows the device's colour scheme until the slider is touched. Off
+ * for now: every page is pinned to DEFAULT_STOP — the white stop, on which
+ * the hero, About and the other inverted bands are black — whatever the
+ * device's scheme or a stop saved earlier, and both are hidden.
  */
-const THEME_SWITCHING = true;
+const THEME_SWITCHING = false;
+
+/* The grid-overlay toggle: off for now. Set to true to restore the button. */
+const GRID_TOGGLE = false;
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
@@ -248,26 +253,28 @@ export function AppControls() {
             </div>
           )}
 
-          <button
-            type="button"
-            className="option grid"
-            aria-pressed={gridOn}
-            aria-label="Toggle grid overlay"
-            onClick={() => setGridOn((on) => !on)}
-          >
-            <div className="content">
-              <svg
-                className="icon grid"
-                xmlns="http://www.w3.org/2000/svg"
-                width="32"
-                height="32"
-                viewBox="0 0 32 32"
-                aria-hidden
-              >
-                <path d="M5 28h2V4H5v24zm5 0h2V4h-2v24zm5 0h2V4h-2v24zm5 0h2V4h-2v24zm5-24v24h2V4h-2z" />
-              </svg>
-            </div>
-          </button>
+          {GRID_TOGGLE && (
+            <button
+              type="button"
+              className="option grid"
+              aria-pressed={gridOn}
+              aria-label="Toggle grid overlay"
+              onClick={() => setGridOn((on) => !on)}
+            >
+              <div className="content">
+                <svg
+                  className="icon grid"
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="32"
+                  height="32"
+                  viewBox="0 0 32 32"
+                  aria-hidden
+                >
+                  <path d="M5 28h2V4H5v24zm5 0h2V4h-2v24zm5 0h2V4h-2v24zm5 0h2V4h-2v24zm5-24v24h2V4h-2z" />
+                </svg>
+              </div>
+            </button>
+          )}
         </div>
       </aside>
 

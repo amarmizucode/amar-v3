@@ -1,10 +1,6 @@
 import { Reveal } from "@/components/Reveal";
 import { RightArrow } from "@/components/Arrows";
-import { watchUrl } from "@/lib/documentary";
 import { Eyebrow } from "@/components/Eyebrow";
-
-/* "The Birdman" in the Big Short Films catalogue (lib/documentary). */
-const BIRDMAN_ID = "oykTD4Y9hl4";
 
 /**
  * "In numbers" and "Recognition", shared by the About and home pages so the
@@ -24,13 +20,13 @@ export const NUMBERS = [
   { stat: "8", label: "books authored" },
 ];
 
-/* The copy document's award list, verbatim; the Birdman line is a
-   sentence in the doc, not a fourth item, and renders below the rows. Each
-   row leads to the award's own site. */
+/* The award list. Each row leads to the award's own site; YES Bank's
+   Change Maker award is run through YES Foundation. */
 const AWARDS = [
   { title: "Fearless Photographers Award", href: "https://www.fearlessphotographers.com/" },
   { title: "WPPI Award", href: "https://www.wppionline.com/" },
   { title: "One Eyeland Award", href: "https://oneeyeland.com/" },
+  { title: "YES Bank Change Maker Award", href: "https://www.yesfoundation.in/" },
 ];
 
 /**
@@ -167,36 +163,6 @@ export function Recognition({ className = "pb-24 md:pb-36" }: { className?: stri
               </Reveal>
             ))}
           </ul>
-          <Reveal className="mt-6 md:mt-8">
-            {/* One line from 80rem: it runs past the awards' measure into
-                the empty columns beside them rather than wrapping. Below
-                that there is too little room beside them, so it wraps. */}
-            <p className="text-[17px] leading-[1.5] text-muted min-[80rem]:whitespace-nowrap">
-              {/* The film opens on Big Short Films' YouTube; the contest
-                  on YES Foundation's site, which runs it. */}
-              Big Short Films&rsquo;{" "}
-              <a
-                href={watchUrl(BIRDMAN_ID)}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="link-wipe font-medium text-foreground"
-              >
-                Birdman
-                <span className="sr-only"> (opens in a new tab)</span>
-              </a>{" "}
-              was also recognised at the{" "}
-              <a
-                href="https://www.yesfoundation.in/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="link-wipe font-medium text-foreground"
-              >
-                YES I AM THE CHANGE
-                <span className="sr-only"> (opens in a new tab)</span>
-              </a>{" "}
-              social film contest.
-            </p>
-          </Reveal>
 
           {/* Hidden for now — set SHOW_PRESS to true to restore it. */}
           {SHOW_PRESS && (

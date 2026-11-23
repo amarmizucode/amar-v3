@@ -2,11 +2,10 @@
 
 import { useRef, type ReactNode } from "react";
 import { useGSAP } from "@gsap/react";
-import { gsap, DUR } from "@/lib/gsap";
+import { gsap, SplitText, DUR } from "@/lib/gsap";
 import { assetUrl } from "@/lib/assetUrl";
-import { MediaFrame } from "@/components/MediaFrame";
-import { StickyPortrait } from "@/components/StickyPortrait";
 
+/** The phone layout's full-bleed portrait. */
 const PORTRAIT = assetUrl("/assets/amar-ramesh.jpg");
 /**
  * The same frame with the backdrop cut away, pixel-aligned with PORTRAIT.
@@ -16,14 +15,11 @@ const PORTRAIT = assetUrl("/assets/amar-ramesh.jpg");
  */
 const CUTOUT = "/assets/amar-ramesh-cutout.webp";
 
-/** The headshot chip's image, already cropped to the face. */
-const HEADSHOT = "/assets/amar-ramesh-headshot.jpg";
-
 /**
- * One display line, in its own mask so it can rise into place. `lead` is the
- * line's first letter when it is an A, whose ink starts at its origin; every
- * other line opens on a straight stem (H, I, P, F, E, M) and takes the
- * default bearing. See .hero_line.
+ * One line of the crafts stack, in its own mask so it can rise into place.
+ * `lead` is the line's first letter when it is an A, whose ink starts at its
+ * origin; every other line opens on a straight stem (P, F, E, M) and takes
+ * the default bearing. See .hero_line.
  */
 function Line({ children, lead }: { children: ReactNode; lead?: "A" }) {
   return (
@@ -34,8 +30,8 @@ function Line({ children, lead }: { children: ReactNode; lead?: "A" }) {
 }
 
 /**
- * A two-line caption hung beside a display line, top-aligned with its caps.
- * `side` is which side of the word it hangs on.
+ * A two-line caption hung beside a craft, top-aligned with its caps. `side`
+ * is which side of the word it hangs on. Desktop only.
  */
 function Note({ side, children }: { side: "left" | "right"; children: ReactNode }) {
   return (
@@ -48,67 +44,117 @@ function Note({ side, children }: { side: "left" | "right"; children: ReactNode 
   );
 }
 
-/** The portrait set into the first line, cropped to the face. */
-function Chip() {
+/**
+ * One craft, linking to its work, with its caption when it has one. A plain
+ * anchor, not next/link, so the route curtain's click handler picks it up.
+ * The row (`data-craft`) is what dims on hover, caption and all; the anchor
+ * (`data-craft-trigger`) is what takes it, so the empty run beside a short
+ * word doesn't.
+ */
+function Craft({
+  children,
+  href,
+  lead,
+  note,
+  side = "left",
+}: {
+  children: ReactNode;
+  href: string;
+  lead?: "A";
+  note?: ReactNode;
+  side?: "left" | "right";
+}) {
   return (
-    <span
-      aria-hidden
-      className="hero_chip relative mx-[0.12em] inline-block h-[0.78em] w-[0.78em] overflow-hidden rounded-full align-[-0.06em]"
-    >
-      <img
-        src={HEADSHOT}
-        alt=""
-        className="absolute inset-0 h-full w-full object-cover"
-      />
+    <span data-craft className="block">
+      <span className="relative inline-block">
+        <a href={href} data-craft-trigger className="block">
+          <Line lead={lead}>{children}</Line>
+        </a>
+        {note && <Note side={side}>{note}</Note>}
+      </span>
     </span>
   );
 }
 
 /**
- * Hero, after sebastian-martinez.com's: the display type steps down the right
- * of the frame — the name, then his five roles with small
- * captions hung off them — while the portrait sits in a 4:5 frame in the
- * bottom-left corner.
+ * Hero: the crafts stack and the name, each rising from a mask — the
+ * reference's intro timeline (`yt`) with this project's content.
  *
- * Below `md` it takes the reference's phone layout instead: the portrait goes
- * full-bleed behind everything, the name heads the frame, and the roles
- * land at the bottom over a scrim, in white.
- *
- * Every display line rises out of its own mask as the photo wipes up.
- * The section is an inverted band, as About is, so the two read as one
- * ground and the portrait can hold in view across both. It overlaps About by
- * a pixel (`-mb-px`): ScrollSmoother leaves the seam on a fractional pixel,
- * where both grounds anti-alias their edge and the page's light ground showed
- * through as a hairline. It fills the viewport; About drops its top padding
- * from `md` (page.tsx) so the hero's own foot is the only gap between them.
+ * The crafts hover as the Services list's rows do (Services.tsx), without
+ * its frames: the hovered one stays at full strength while the rest drop to
+ * 30%, and leaving the stack returns it to rest. Pointer devices only; on
+ * touch a tap is the link.
  */
 export function Hero({ start }: { start: boolean }) {
   const root = useRef<HTMLElement>(null);
 
   useGSAP(
     () => {
+      const mm = gsap.matchMedia();
+      mm.add("(hover: hover) and (pointer: fine)", () => {
+        const stack = root.current?.querySelector<HTMLElement>("[data-crafts]");
+        if (!stack) return;
+        const rows = gsap.utils.toArray<HTMLElement>("[data-craft]", stack);
+        const triggers = gsap.utils.toArray<HTMLElement>("[data-craft-trigger]", stack);
+
+        const activate = (i: number) =>
+          rows.forEach((row, n) =>
+            gsap.to(row, { opacity: n === i ? 1 : 0.3, duration: 0.2, ease: "ease-fade" }),
+          );
+
+        // Rest: every craft full strength.
+        const reset = () => gsap.to(rows, { opacity: 1, duration: 0.2, ease: "ease-fade" });
+
+        const offs = triggers.map((trigger, i) => {
+          const onEnter = () => activate(i);
+          trigger.addEventListener("mouseenter", onEnter);
+          return () => trigger.removeEventListener("mouseenter", onEnter);
+        });
+        stack.addEventListener("mouseleave", reset);
+
+        return () => {
+          offs.forEach((off) => off());
+          stack.removeEventListener("mouseleave", reset);
+        };
+      });
+      return () => mm.revert();
+    },
+    { scope: root },
+  );
+
+  useGSAP(
+    () => {
       const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      const displaySplits = gsap.utils
+        .toArray<HTMLElement>(".hero_display")
+        .map((d) => new SplitText(d, { type: "lines", linesClass: "split-line", mask: "lines" }));
+
+      const displayLines = displaySplits.flatMap((s) => s.lines);
+
+      if (reduced) {
+        gsap.set([...displayLines, ".hero_line"], { yPercent: 0 });
+        gsap.set(document.querySelectorAll(".navbar_wrap"), { autoAlpha: 1 });
+        return;
+      }
+
       // The navbar is rendered outside this component's scope, so its nodes
       // are queried from the document rather than as scoped selector strings.
       const q = (sel: string) => gsap.utils.toArray<HTMLElement>(document.querySelectorAll(sel));
       const navWrap = q(".navbar_wrap");
-
-      if (reduced) {
-        gsap.set(navWrap, { autoAlpha: 1 });
-        return;
-      }
-
       const navHome = q(".navbar_home");
       const navItems = q(".navbar_links_li");
       const navCta = q(".navbar_cta_wrap > *");
 
-      // Initial states — everything waits below its mask until `start`. Set
-      // from JS (not markup) so a script failure leaves the page readable.
-      // 140, not 110: the masks clip past the line box (see .hero_mask), so a
-      // hidden line has to clear that taller window too.
+      // Initial states — everything sits below its mask until `start`. Set from
+      // JS (not markup) so a script failure leaves the page readable.
+      // The crafts start at 140, not 110: their masks clip past the line box
+      // (see .hero_mask), so a hidden line has to clear that taller window.
       gsap.set(".hero_line", { yPercent: 140 });
-      gsap.set(".hero_chip", { scale: 0 });
+      gsap.set(displayLines, { yPercent: 110 });
       gsap.set(".hero_lede", { autoAlpha: 0, y: 16 });
+      // Phones only (hidden from md, where these tweens are harmless): the
+      // portrait wipes up from the bottom and settles from a slight zoom.
       gsap.set(".hero_photo", { clipPath: "inset(100% 0% 0% 0%)" });
       gsap.set(".hero_photo_img", { scale: 1.2 });
       gsap.set(navWrap, { autoAlpha: 0 });
@@ -120,7 +166,7 @@ export function Hero({ start }: { start: boolean }) {
       tl.to(".hero_photo", { clipPath: "inset(0% 0% 0% 0%)", duration: DUR.slow })
         .to(".hero_photo_img", { scale: 1, duration: DUR.slow * 1.6 }, "<")
         .to(".hero_line", { yPercent: 0, duration: DUR.slow, stagger: 0.065 }, "<0.15")
-        .to(".hero_chip", { scale: 1, duration: DUR.slow }, "-=0.6")
+        .to(displayLines, { yPercent: 0, duration: DUR.slow, stagger: 0.065 }, "-=0.85")
         .to(".hero_lede", { autoAlpha: 1, y: 0, duration: DUR.slow }, "<");
 
       // Navbar entrance, exactly as the reference sequences it: the wordmark
@@ -134,14 +180,15 @@ export function Hero({ start }: { start: boolean }) {
   );
 
   return (
+    // Inverted, like About below it, so the two read as one band; full
+    // bleed, with the shell inside so the ground runs edge to edge.
     <section
       ref={root}
       id="top"
       data-theme-section="invert"
-      className="hero relative isolate -mb-px flex min-h-svh flex-col overflow-x-clip"
+      className="hero hero_home relative isolate -mb-px flex min-h-svh flex-col overflow-hidden"
     >
-      {/* Phones only: the portrait, full-bleed behind the type. From `md`
-          it is the framed portrait in the shell below. */}
+      {/* Phones only: the portrait, full-bleed behind the type. */}
       <div className="hero_photo absolute inset-0 -z-10 overflow-hidden md:hidden">
         <img
           src={PORTRAIT}
@@ -156,12 +203,11 @@ export function Hero({ start }: { start: boolean }) {
       </div>
 
       {/* Phones only: the figure again, cut from its backdrop and stacked
-          over the name, so the name reads as set behind him wherever the
-          two meet. It carries the
-          same scrim, masked to his outline, so the layer is invisible except
-          where it covers the type; it shares .hero_photo / .hero_photo_img
-          with the portrait to wipe and settle in step with it. The roles
-          (z-2 below) stay in front. */}
+          over the name, so the name reads as set behind him wherever the two
+          meet. It carries the same scrim, masked to his outline, so the layer
+          is invisible except where it covers the type; it shares .hero_photo /
+          .hero_photo_img with the portrait to wipe and settle in step with
+          it. The crafts (z-2 below) stay in front. */}
       <div
         aria-hidden
         className="hero_photo pointer-events-none absolute inset-0 z-1 overflow-hidden md:hidden"
@@ -182,110 +228,102 @@ export function Hero({ start }: { start: boolean }) {
       </div>
 
       {/* On phones the bar sits over the photo, so claim it as a photo
-          section (light ink on every stop); hidden from `md`, where the bar
-          sits on the ground. */}
+          section (light ink on every stop); hidden from md, where the bar
+          sits on the band. */}
       <div
         aria-hidden
         data-theme-section="photo"
         className="pointer-events-none absolute inset-0 md:hidden"
       />
 
-      <div className="shell relative flex flex-1 flex-col pt-24 pb-5 max-md:text-white md:pt-32 md:pb-8">
-        {/* The display stack. Each line takes its own columns, so the stack
-            steps right as it descends the way the reference's does: "It's
-            (headshot) me" on column 4, the name on 5, and the crafts on one
-            left edge (column 7). */}
-        <h1 className="hero_title relative z-2 order-3 mt-auto md:order-1 md:mt-0 md:grid-12">
-          <span className="hidden md:col-span-9 md:col-start-4 md:block">
-            <Line>
-              It&rsquo;s
-              <Chip />
-              me
-            </Line>
-          </span>
-          <span className="hidden md:col-span-8 md:col-start-5 md:block">
-            <Line lead="A">Amar Ramesh</Line>
-          </span>
-          <span className="block md:col-span-6 md:col-start-7">
-            <span className="relative inline-block">
-              <Line>Photographer,</Line>
-              <Note side="left">
-                Weddings, temples
-                <br />
-                people, places
-              </Note>
-            </span>
-          </span>
-          <span className="block md:col-span-6 md:col-start-7">
-            <span className="relative inline-block">
-              <Line>Filmmaker,</Line>
-              <Note side="right">
-                Documentaries
-                <br />
-                short films
-              </Note>
-            </span>
-          </span>
-          <span className="block md:col-span-6 md:col-start-7">
-            <Line lead="A">Author,</Line>
-          </span>
-          <span className="block md:col-span-6 md:col-start-7">
-            <span className="relative inline-block">
-              <Line>Entrepreneur,</Line>
-              <Note side="left">
-                Studio A, Mara Labs
-                <br />
-                Big Short Films
-              </Note>
-            </span>
-          </span>
-          <span className="block md:col-span-6 md:col-start-7">
-            <span className="relative inline-block">
-              <Line>Mentor</Line>
-              <Note side="right">
-                Camera was only
-                <br />
-                the beginning
-              </Note>
-            </span>
-          </span>
+      {/* Columns follow the navbar's: the crafts and "Ramesh" under the links
+          (from column 5, where About's copy starts too); "Amar" under the
+          wordmark (columns 1–4), which the captions hung left of the crafts
+          otherwise have to themselves. On phones: the name heads the photo,
+          the crafts and the offer sit at its foot. */}
+      <div className="shell flex flex-1 flex-col pt-24 pb-5 max-md:text-white md:pt-32 md:pb-8">
+        {/* Phones only: the name, stacked, behind the cut-out figure. */}
+        <h1 className="hero_title hero_sig md:hidden">
+          <Line lead="A">Amar</Line>
+          <Line>Ramesh</Line>
         </h1>
 
-        {/* What the roles add up to, in a sentence: the stack is the
-            striking part, this is the offer. On the crafts' left edge
-            (column 7) under the stack; on phones, under the roles. The
-            right padding there clears the floating controls. */}
-        <div className="relative z-2 order-4 mt-4 max-md:pr-16 md:order-2 md:mt-10 md:grid-12">
-          <p className="hero_lede md:col-span-4 md:col-start-7 md:text-muted">
+        <div className="relative z-2 mt-auto shrink-0 md:my-auto">
+          <h2 data-crafts className="hero_title md:grid-12">
+            <span className="block md:col-span-8 md:col-start-5">
+              <Craft
+                href="/photography"
+                note={
+                  <>
+                    Weddings, temples
+                    <br />
+                    people, places
+                  </>
+                }
+              >
+                Photographer,
+              </Craft>
+              <Craft
+                href="/documentary"
+                side="right"
+                note={
+                  <>
+                    Documentaries
+                    <br />
+                    short films
+                  </>
+                }
+              >
+                Filmmaker,
+              </Craft>
+              <Craft href="/books" lead="A">
+                Author,
+              </Craft>
+              <Craft
+                href="/#ventures"
+                note={
+                  <>
+                    Studio A, Mara Labs
+                    <br />
+                    Big Short Films
+                  </>
+                }
+              >
+                Entrepreneur,
+              </Craft>
+              <Craft
+                href="/#ventures"
+                side="right"
+                note={
+                  <>
+                    Camera was only
+                    <br />
+                    the beginning
+                  </>
+                }
+              >
+                Mentor
+              </Craft>
+            </span>
+          </h2>
+
+          {/* Phones only: what the crafts add up to, in a sentence. The
+              right padding clears the floating controls. */}
+          <p className="hero_lede mt-4 pr-16 md:hidden">
             I take on photography, films, books and cultural projects for families, brands and
             institutions.
           </p>
         </div>
 
-        {/* Phones only: the name heads the frame, as the reference's does. */}
-        <p aria-hidden className="hero_title hero_sig order-1 md:hidden">
-          <Line lead="A">Amar</Line>
-          <Line>Ramesh</Line>
-        </p>
-
-        {/* From `md`: the portrait in a 4:5 frame with a slow drift, in the
-            bottom-left corner. Taken out of flow and bottom-aligned with the shell's padding, so it
-            sits beside the stack (columns 1–3, clear of the captions hung
-            left of column 7) rather than below it, and the hero still fits
-            one screen. */}
-        <div className="hero_frame absolute bottom-8 left-[var(--grid-margin)] hidden md:block">
-          {/* Held in view, once it nears the top, until About's content has
-              scrolled past — hence `overflow-x-clip` on the section rather
-              than `overflow-hidden`, which would cut it off as it travels. */}
-          <StickyPortrait through="#about">
-            <MediaFrame
-              ratio="4 / 5"
-              src={PORTRAIT}
-              alt="Portrait of Amar Ramesh"
-              parallax={14}
-              className="hero_photo"
-            />
-          </StickyPortrait>
+        {/* From md: the name, split across the grid. On phones it heads the
+            photo instead (above). */}
+        <div className="grid-12 shrink-0 pt-16 max-md:hidden md:pt-24">
+          <h1 className="contents">
+            <span className="hero_display display optical-A col-span-12 md:col-span-4">Amar</span>
+            <span className="hero_display display optical-R col-span-12 md:col-start-5 md:col-span-8">
+              Ramesh
+            </span>
+          </h1>
         </div>
       </div>
     </section>

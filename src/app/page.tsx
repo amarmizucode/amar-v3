@@ -1,5 +1,4 @@
-import { HomeHero } from "@/components/HomeHero";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars -- the work sections are hidden for now, not removed.
+import { HomeHero } from "@/components/HomeHero";// eslint-disable-next-line @typescript-eslint/no-unused-vars -- the work sections are hidden for now, not removed.
 import { DocumentarySection, PhotographySection, BooksSection } from "@/components/HomeWork";
 import { VentureCards } from "@/components/VentureCards";
 import { WorksActiveOnScroll } from "@/components/WorksActiveOnScroll";
@@ -10,6 +9,7 @@ import { Services } from "@/components/Services";
 import { Testimonials } from "@/components/Testimonials";
 import { Reveal } from "@/components/Reveal";
 import { MediaFrame } from "@/components/MediaFrame";
+import { StickyPortrait } from "@/components/StickyPortrait";
 import { Faq } from "@/components/Faq";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars -- GapSection is hidden for now, not removed.
 import { GapSection } from "@/components/GapSection";
@@ -331,10 +331,22 @@ export default function Home() {
              portrait's hover read against it. `data-theme-section="invert"`
              flips the page's ramp onto it (dark on the light stops) and
              turns the bar to the inverted pair over it. ──────────────── */}
-        <section id="about" data-theme-section="invert" className="pt-20 pb-28 md:pt-0 md:pb-44">
+        <section id="about" data-theme-section="invert" className="pt-20 pb-28 md:pt-32 md:pb-44">
           <div className="shell grid-12 gap-y-10">
-            {/* The portrait beside this copy is the hero's, held in view
-                through the band (see Hero.tsx); its columns stay clear. */}
+            {/* The portrait, left of the copy in a 4:5 frame with a slow
+                drift, held in view while the copy, numbers and awards scroll
+                past (StickyPortrait). From md only: on phones the hero is
+                the portrait already. */}
+            <div className="col-span-3 max-md:hidden">
+              <StickyPortrait>
+                <MediaFrame
+                  ratio="4 / 5"
+                  src={assetUrl("/assets/amar-ramesh.jpg")}
+                  alt="Portrait of Amar Ramesh"
+                  parallax={14}
+                />
+              </StickyPortrait>
+            </div>
             <div className="col-span-12 md:col-start-5 md:col-span-6 flex flex-col">
               {/* All three set as the reference's `problems_home_heading`
                   (see `.about_statement` in globals.css), spaced as its
